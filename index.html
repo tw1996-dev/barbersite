@@ -17,7 +17,12 @@
 </head>
 
 <body>
-    <div class="background"><img class="photo1" src="images/photo1.webp" alt=""></div>
+    <div class="background">
+        <img class="photo1" src="images/photo1.webp" srcset="images/photo1_320px.webp 320w,
+                 images/photo1_640px.webp 640w,
+                 images/photo1_960px.webp 960w,
+                 images/photo1_1200px.webp 1200w" sizes="80vw" alt="">
+    </div>
 
     <header class="main-header">
         <h1 class="logo">Elite Barber Studio</h1>
@@ -25,7 +30,7 @@
             <ul class="nav-list">
                 <li class="nav-item"><a href="">What We Offer</a></li>
                 <li class="nav-item"><a href="">Pricing</a></li>
-                <li class="nav-item booking"><a href="">BOOKING</a></li>
+                <li class="nav-item booking"><a href="">BOOK NOW</a></li>
             </ul>
         </nav>
     </header>
@@ -76,6 +81,81 @@
                         <h3 class="service-title">Hot Towel Shave</h3>
                         <p class="service-description">Traditional straight razor shave with hot towel treatment</p>
                     </article>
+
+                    <article class="service-card">
+                        <img class="service-image" src="images/photo5_640px.webp" srcset="images/photo5_320px.webp 320w,
+         images/photo5_640px.webp 640w,
+         images/photo5_960px.webp 960w,
+         images/photo5_1200px.webp 1200w" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            alt="Professional mustache trimming">
+                        <h3 class="service-title">Mustache Trim</h3>
+                        <p class="service-description">Precision mustache grooming and styling</p>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+
+
+
+
+        <section class="pricing-section" id="pricing">
+            <div class="container">
+                <header class="section-header">
+                    <h2 class="section-title">Pricing</h2>
+                    <p class="section-subtitle">Transparent pricing for professional barbering services</p>
+                </header>
+
+                <div class="pricing-table-container">
+                    <table class="pricing-table">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Description</th>
+                                <th>Duration</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="service-name">Premium Haircut</td>
+                                <td>Expert scissor and clipper work tailored to your style</td>
+                                <td>45 min</td>
+                                <td class="price">$35</td>
+                            </tr>
+                            <tr>
+                                <td class="service-name">Beard Trim & Style</td>
+                                <td>Precision beard shaping and maintenance</td>
+                                <td>30 min</td>
+                                <td class="price">$25</td>
+                            </tr>
+                            <tr>
+                                <td class="service-name">Hot Towel Shave</td>
+                                <td>Traditional straight razor shave with hot towel</td>
+                                <td>40 min</td>
+                                <td class="price">$40</td>
+                            </tr>
+                            <tr>
+                                <td class="service-name">Haircut + Beard Trim</td>
+                                <td>Complete grooming package</td>
+                                <td>80 min</td>
+                                <td class="price">$50</td>
+                            </tr>
+                            <tr>
+                                <td class="service-name">Head Shave</td>
+                                <td>Professional head shave with razor finish</td>
+                                <td>35 min</td>
+                                <td class="price">$30</td>
+                            </tr>
+                            <tr>
+                                <td class="service-name">Mustache Trim</td>
+                                <td>Precision mustache grooming and styling</td>
+                                <td>15 min</td>
+                                <td class="price">$15</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>

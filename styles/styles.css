@@ -108,7 +108,8 @@ body {
 }
 
 .services-section {
-    padding: 80px 20px;
+    /* padding: 80px 20px; */
+    padding: 8% 5%;
 
 }
 
@@ -151,6 +152,21 @@ body {
   
 }
 
+@media screen and (max-width: 450px) {
+    .service-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 90%;
+}
+
+.service-image {
+    display: block;
+    margin: 0 auto;
+}
+}
+
 
 
 .service-image  {
@@ -181,4 +197,130 @@ transform: scale(1.1)
     color: #bbb;
     line-height: 1.6;
     margin: 0 24px 24px;
+}
+
+
+/* Pricing Section */
+.pricing-section {
+    padding: 80px 20px;
+    background: rgba(42, 31, 21, 0.3);
+}
+
+.pricing-table-container {
+    max-width: 900px;
+    margin: 0 auto;
+    overflow-x: auto;
+    background: rgba(26, 20, 16, 0.8);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.pricing-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'DM Sans', sans-serif;
+    background: transparent;
+}
+
+.pricing-table th {
+    background: rgba(212, 175, 55, 0.2);
+    color: #d4af37;
+    padding: 16px 12px;
+    text-align: left;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #d4af37;
+}
+
+.pricing-table td {
+    padding: 16px 12px;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    vertical-align: top;
+}
+
+.pricing-table tbody tr:hover {
+    background: rgba(212, 175, 55, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.service-name {
+    font-weight: 600;
+    color: #f5f5f5;
+    font-size: 1.05rem;
+}
+
+.price {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #d4af37;
+    text-align: right;
+}
+
+.pricing-table td:nth-child(2) {
+    font-family: 'DM Sans', sans-serif;
+    color: #bbb;
+    line-height: 1.6;
+}
+
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .pricing-table-container {
+        margin: 0 10px;
+        padding: 15px;
+    }
+    
+    .pricing-table th,
+    .pricing-table td {
+        padding: 12px 8px;
+        font-size: 0.9rem;
+    }
+    
+    .pricing-table th {
+        font-size: 1rem;
+    }
+    
+    .price {
+        font-size: 1.2rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .pricing-section {
+        padding: 60px 10px;
+    }
+    
+    .pricing-table-container {
+        padding: 10px;
+    }
+    
+    .pricing-table th,
+    .pricing-table td {
+        padding: 10px 6px;
+        font-size: 0.85rem;
+    }
+    
+    .service-name {
+        font-size: 0.95rem;
+    }
+    
+    .price {
+        font-size: 1.1rem;
+    }
+    
+    /* very small screens */
+    .pricing-table th:nth-child(2),
+    .pricing-table td:nth-child(2) {
+        display: none;
+    }
+    
+    .pricing-table th:nth-child(3),
+    .pricing-table td:nth-child(3) {
+        font-size: 0.8rem;
+    }
 }
