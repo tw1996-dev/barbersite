@@ -153,11 +153,20 @@ body {
 
 
 
-.service-image img {
+.service-image  {
     width: 100%;
     height: 250px;
     object-fit: cover;
+    filter: contrast(1.2) saturate(1.3) brightness(1.1) blur(-1px);
+     image-rendering: auto; 
+    -webkit-font-smoothing: antialiased;
 }
+
+
+.service-image2 {
+transform: scale(1.1)
+}
+
 
 .service-title {
     font-family: 'Oswald', sans-serif;
