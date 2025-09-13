@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Elite Barber Studio</title>
+    <link rel="stylesheet" href="styles/styles.css">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&display=swap"
+        rel="stylesheet">
+
+    <script src="scripts/hamburger-menu.js" defer></script>
+    <script src="scripts/booking.js" defer></script>
+    <script src="scripts/form-validation.js" defer></script>
+</head>
+
+<body>
+    <div class="background">
+        <img class="photo1" src="images/photo1.webp" srcset="images/photo1_320px.webp 320w,
+                 images/photo1_640px.webp 640w,
+                 images/photo1_960px.webp 960w,
+                 images/photo1_1200px.webp 1200w" sizes="80vw" alt="">
+    </div>
+
+    <header class="main-header">
+        <h1 class="logo">Elite Barber Studio</h1>
+        <button class="hamburger" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li class="nav-item"><a href="index.html">Home</a></li>
+                <li class="nav-item"><a href="index.html#what-we-offer">What We Offer</a></li>
+                <li class="nav-item"><a href="index.html#pricing">Pricing</a></li>
+            </ul>
+        </nav>
+
+        <!-- Mobile Menu Drawer -->
+        <div class="mobile-menu-overlay"></div>
+        <nav class="mobile-menu">
+            <button class="mobile-menu-close" aria-label="Close menu">&times;</button>
+            <ul class="mobile-nav-list">
+                <li class="mobile-nav-item"><a href="index.html">Home</a></li>
+                <li class="mobile-nav-item"><a href="index.html#what-we-offer">What We Offer</a></li>
+                <li class="mobile-nav-item"><a href="index.html#pricing">Pricing</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="booking-container">
+            <header class="section-header">
+                <h1 class="section-title">Book Your Appointment</h1>
+                <p class="section-subtitle">Select your services and preferred time</p>
+            </header>
+
+            <!-- Service Selection -->
+            <section class="booking-section" id="service-selection">
+                <h2 class="booking-step-title">1. Select Services</h2>
+                <div class="services-grid">
+                    <div class="service-option" data-service="haircut-beard-package" data-duration="80" data-price="50">
+                        <div class="service-checkbox">
+                            <input type="checkbox" id="haircut-beard-package" name="services">
+                            <label for="haircut-beard-package">
+                                <div class="service-card-booking">
+                                    <h3 class="service-name">Haircut + Beard Trim Package</h3>
+                                    <p class="service-details">80 min • $50</p>
+                                    <p class="service-description">Complete grooming package - Save $10!</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="service-option" data-service="premium-haircut" data-duration="45" data-price="35">
+                        <div class="service-checkbox">
+                            <input type="checkbox" id="premium-haircut" name="services">
+                            <label for="premium-haircut">
+                                <div class="service-card-booking">
+                                    <h3 class="service-name">Premium Haircut</h3>
+                                    <p class="service-details">45 min • $35</p>
+                                    <p class="service-description">Expert scissor and clipper work tailored to your
+                                        style</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="service-option" data-service="beard-trim" data-duration="30" data-price="25">
+                        <div class="service-checkbox">
+                            <input type="checkbox" id="beard-trim" name="services">
+                            <label for="beard-trim">
+                                <div class="service-card-booking">
+                                    <h3 class="service-name">Beard Trim & Style</h3>
+                                    <p class="service-details">30 min • $25</p>
+                                    <p class="service-description">Precision beard shaping and maintenance</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="service-option" data-service="hot-towel-shave" data-duration="40" data-price="40">
+                        <div class="service-checkbox">
+                            <input type="checkbox" id="hot-towel-shave" name="services">
+                            <label for="hot-towel-shave">
+                                <div class="service-card-booking">
+                                    <h3 class="service-name">Hot Towel Shave</h3>
+                                    <p class="service-details">40 min • $40</p>
+                                    <p class="service-description">Traditional straight razor shave with hot towel</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="service-option" data-service="head-shave" data-duration="35" data-price="30">
+                        <div class="service-checkbox">
+                            <input type="checkbox" id="head-shave" name="services">
+                            <label for="head-shave">
+                                <div class="service-card-booking">
+                                    <h3 class="service-name">Head Shave</h3>
+                                    <p class="service-details">35 min • $30</p>
+                                    <p class="service-description">Professional head shave with razor finish</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="service-option" data-service="mustache-trim" data-duration="15" data-price="15">
+                        <div class="service-checkbox">
+                            <input type="checkbox" id="mustache-trim" name="services">
+                            <label for="mustache-trim">
+                                <div class="service-card-booking">
+                                    <h3 class="service-name">Mustache Trim</h3>
+                                    <p class="service-details">15 min • $15</p>
+                                    <p class="service-description">Precision mustache grooming and styling</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="package-suggestion" id="package-suggestion" style="display: none;">
+                    <div class="suggestion-card">
+                        <h3>💡 Package Available</h3>
+                        <p id="suggestion-text"></p>
+                        <button type="button" id="apply-package">Apply Package</button>
+                    </div>
+                </div>
+
+                <div class="selection-summary">
+                    <div class="summary-row">
+                        <span>Total Duration:</span>
+                        <span id="total-duration">0 min</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Total Price:</span>
+                        <span id="total-price">$0</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Date & Time Selection -->
+            <section class="booking-section" id="datetime-selection">
+                <h2 class="booking-step-title">2. Select Date & Time</h2>
+
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button type="button" id="prev-month" class="calendar-nav">&lt;</button>
+                        <h3 id="calendar-month-year"></h3>
+                        <button type="button" id="next-month" class="calendar-nav">&gt;</button>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Calendar days will be generated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="time-slots" id="time-slots" style="display: none;">
+                    <h3>Available Times for <span id="selected-date"></span></h3>
+                    <div class="time-grid" id="time-grid">
+                        <!-- Time slots will be generated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Customer Information -->
+            <section class="booking-section" id="customer-info">
+                <h2 class="booking-step-title">3. Your Information</h2>
+
+                <form class="booking-form" id="booking-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first-name">First Name</label>
+                            <input type="text" id="first-name" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="last-name">Last Name</label>
+                            <input type="text" id="last-name" name="lastName" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Special Requests (Optional)</label>
+                        <textarea id="notes" name="notes" rows="4"
+                            placeholder="Any special requests or notes for your appointment..."></textarea>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Booking Summary & Confirmation -->
+            <section class="booking-section" id="booking-summary">
+                <h2 class="booking-step-title">4. Confirm Booking</h2>
+
+                <div class="summary-card">
+                    <h3>Appointment Summary</h3>
+
+                    <div class="summary-section">
+                        <h4>Services</h4>
+                        <div id="selected-services-summary">
+                            <!-- Selected services will be displayed here -->
+                        </div>
+                    </div>
+
+                    <div class="summary-section">
+                        <h4>Date & Time</h4>
+                        <p id="appointment-datetime">Please select date and time</p>
+                    </div>
+
+                    <div class="summary-section">
+                        <h4>Contact</h4>
+                        <p id="customer-summary">Please fill in your information</p>
+                    </div>
+
+                    <div class="summary-total">
+                        <div class="total-row">
+                            <span>Total Duration:</span>
+                            <span id="final-duration">0 min</span>
+                        </div>
+                        <div class="total-row final-price">
+                            <span>Total Price:</span>
+                            <span id="final-price">$0</span>
+                        </div>
+                    </div>
+
+                    <button type="button" id="confirm-booking" class="confirm-btn" disabled>
+                        Confirm Appointment
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+
+</html>
