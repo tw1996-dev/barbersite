@@ -1,6 +1,7 @@
 {
   "name": "barbersite",
   "version": "1.0.0",
+  "type": "module",
   "dependencies": {
     "pg": "^8.11.0"
   }
