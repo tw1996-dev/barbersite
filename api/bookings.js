@@ -10,25 +10,27 @@ const pool = new Pool({
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
-      
-      const result = await pool.query('SELECT NOW() as current_time');
-      
-     
-      const bookings = await pool.query('SELECT * FROM bookings ORDER BY date, time');
-      
-      return res.status(200).json({
-        success: true,
-        connection_time: result.rows[0].current_time,
-        bookings: bookings.rows,
-        total_bookings: bookings.rows.length
-      });
-      
+      const result = await pool.query('SELECT * FROM bookings ORDER BY date, time');
+      return res.status(200).json(result.rows);
     } catch (error) {
       console.error('Database error:', error);
-      return res.status(500).json({ 
-        error: 'Database error',
-        details: error.message 
-      });
+      return res.status(500).json({ error: 'Database error' });
+    }
+  }
+  
+  if (req.method === 'POST') {
+    try {
+      const { date, time, customer, phone, email, services, duration, price, status, notes } = req.body;
+      
+      const result = await pool.query(
+        'INSERT INTO bookings (date, time, customer, phone, email, services, duration, price, status, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+        [date, time, customer, phone, email || '', services, duration, price, status || 'confirmed', notes || '']
+      );
+      
+      return res.status(201).json(result.rows[0]);
+    } catch (error) {
+      console.error('Database error:', error);
+      return res.status(500).json({ error: 'Database error' });
     }
   }
   
