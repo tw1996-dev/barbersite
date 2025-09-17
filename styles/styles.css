@@ -1273,5 +1273,33 @@ padding: 100px 5px 40px;
     margin: 0;
 }
 
-
 }
+
+
+/* Force equal height service cards - stronger selectors */
+.booking-container .services-grid {
+    align-items: stretch !important;
+}
+
+.booking-container .service-option {
+     display: flex !important;
+    
+     
+}
+
+
+ .booking-container .service-card-booking {
+     height: 100% !important; 
+    
+
+}  
+
+@media screen and (max-width: 520px) {
+.booking-container .service-option {
+    display: initial !important; 
+}
+    
+}
+
+
+

@@ -380,6 +380,8 @@ body {
     gap: 4px;
 }
 
+
+
 /* Tables - Mobile First */
 .bookings-table-container {
     background: rgba(26, 31, 46, 0.8);
@@ -1215,6 +1217,7 @@ body {
     .services-selection {
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 16px;
+       
     }
     
     .form-actions {
@@ -1399,6 +1402,7 @@ body {
     }
   
 }
+
 
 
 

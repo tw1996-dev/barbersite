@@ -9,6 +9,7 @@ import {
     currentDashboardFilter, 
     currentDashboardMonth, 
     currentDashboardYear,
+    businessHours,
     setCurrentDashboardFilter,
     setCurrentDashboardMonth,
     setCurrentDashboardYear
@@ -74,29 +75,17 @@ export function setupDashboard() {
 }
 
 export function updateDashboard() {
-    // Show/hide revenue cards based on filter
-    const todayCard = document.querySelector('.revenue-cards .revenue-card:nth-child(1)');
-    const weekCard = document.querySelector('.revenue-cards .revenue-card:nth-child(2)');
-    const monthCard = document.querySelector('.revenue-cards .revenue-card:nth-child(3)');
+    const isCurrentMonth = isCurrentMonthSelected();
     
-    if (currentDashboardFilter === 'month') {
-        // Hide today and week cards, show only month
-        if (todayCard) todayCard.classList.add('hidden');
-        if (weekCard) weekCard.classList.add('hidden');
-        if (monthCard) monthCard.classList.remove('hidden');
-        
-        // Update only monthly revenue
-        updateRevenueCard('month', 'month');
+    // Update revenue labels and visibility
+    updateRevenueLabels(isCurrentMonth);
+    updateRevenueCardsVisibility();
+    
+    // Update revenue data
+    if (isCurrentMonth) {
+        updateCurrentMonthRevenue();
     } else {
-        // Show all cards
-        if (todayCard) todayCard.classList.remove('hidden');
-        if (weekCard) weekCard.classList.remove('hidden');
-        if (monthCard) monthCard.classList.remove('hidden');
-        
-        // Update all revenue cards
-        updateRevenueCard('today', 'today');
-        updateRevenueCard('week', 'week');
-        updateRevenueCard('month', 'month');
+        updateSelectedMonthRevenue();
     }
     
     // Update quick stats
@@ -106,57 +95,184 @@ export function updateDashboard() {
     updateRecentBookingsTable();
 }
 
-function updateRevenueCard(period, dateFilter) {
+function isCurrentMonthSelected() {
+    const now = new Date();
+    return currentDashboardMonth === now.getMonth() && currentDashboardYear === now.getFullYear();
+}
+
+function updateRevenueLabels(isCurrentMonth) {
+    const todayCard = document.querySelector('.revenue-cards .revenue-card:nth-child(1)');
+    const weekCard = document.querySelector('.revenue-cards .revenue-card:nth-child(2)');
+    const monthCard = document.querySelector('.revenue-cards .revenue-card:nth-child(3)');
+    
+    if (isCurrentMonth) {
+        // Current month labels
+        if (todayCard) todayCard.querySelector('h3').textContent = "Today's Revenue";
+        if (weekCard) weekCard.querySelector('h3').textContent = "Weekly Revenue";
+        if (monthCard) monthCard.querySelector('h3').textContent = "Monthly Revenue";
+    } else {
+        // Selected month labels (averages)
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+        const selectedMonthName = monthNames[currentDashboardMonth];
+        
+        if (todayCard) todayCard.querySelector('h3').textContent = `Daily Average (${selectedMonthName})`;
+        if (weekCard) weekCard.querySelector('h3').textContent = `Weekly Average (${selectedMonthName})`;
+        if (monthCard) monthCard.querySelector('h3').textContent = `${selectedMonthName} Total`;
+    }
+}
+
+function updateRevenueCardsVisibility() {
+    const todayCard = document.querySelector('.revenue-cards .revenue-card:nth-child(1)');
+    const weekCard = document.querySelector('.revenue-cards .revenue-card:nth-child(2)');
+    const monthCard = document.querySelector('.revenue-cards .revenue-card:nth-child(3)');
+    
+    // Reset visibility
+    if (todayCard) todayCard.classList.remove('hidden');
+    if (weekCard) weekCard.classList.remove('hidden');
+    if (monthCard) monthCard.classList.remove('hidden');
+    
+    // Apply filter-based visibility
+    if (currentDashboardFilter === 'week') {
+        if (todayCard) todayCard.classList.add('hidden');
+        if (monthCard) monthCard.classList.add('hidden');
+    } else if (currentDashboardFilter === 'month') {
+        if (todayCard) todayCard.classList.add('hidden');
+        if (weekCard) weekCard.classList.add('hidden');
+    }
+}
+
+function updateCurrentMonthRevenue() {
+    if (currentDashboardFilter === 'today') {
+        updateRevenueCard('today', 'today');
+        updateRevenueCard('week', 'current-week');
+        updateRevenueCard('month', 'current-month');
+    } else if (currentDashboardFilter === 'week') {
+        updateRevenueCard('week', 'current-week');
+    } else if (currentDashboardFilter === 'month') {
+        updateRevenueCard('month', 'current-month');
+    }
+}
+
+function updateSelectedMonthRevenue() {
+    // For selected months, always show all three cards with averages/totals
+    updateRevenueCard('today', 'selected-month-daily-avg');
+    updateRevenueCard('week', 'selected-month-weekly-avg');
+    updateRevenueCard('month', 'selected-month-total');
+}
+
+function updateRevenueCard(cardType, calculationType) {
+    let revenue = 0;
+    let bookingCount = 0;
     let filteredBookings = [];
+    
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
     
-    switch(period) {
+    switch(calculationType) {
         case 'today':
-            if (currentDashboardFilter === 'today') {
-                filteredBookings = currentBookings.filter(b => b.date === todayStr && b.status === 'confirmed');
-            } else {
-                const targetDate = new Date(currentDashboardYear, currentDashboardMonth, today.getDate());
-                const targetDateStr = targetDate.toISOString().split('T')[0];
-                filteredBookings = currentBookings.filter(b => b.date === targetDateStr && b.status === 'confirmed');
-            }
+            filteredBookings = currentBookings.filter(b => b.date === todayStr && b.status === 'confirmed');
             break;
-        case 'week':
-            if (currentDashboardFilter === 'today' || currentDashboardFilter === 'week') {
-                const weekStart = getWeekStart(today);
-                const weekEnd = getWeekEnd(today);
-                filteredBookings = currentBookings.filter(b => {
-                    const bookingDate = new Date(b.date);
-                    return bookingDate >= weekStart && bookingDate <= weekEnd && b.status === 'confirmed';
-                });
-            } else {
-                const targetDate = new Date(currentDashboardYear, currentDashboardMonth, today.getDate());
-                const weekStart = getWeekStart(targetDate);
-                const weekEnd = getWeekEnd(targetDate);
-                filteredBookings = currentBookings.filter(b => {
-                    const bookingDate = new Date(b.date);
-                    return bookingDate >= weekStart && bookingDate <= weekEnd && b.status === 'confirmed';
-                });
-            }
+            
+        case 'current-week':
+            const weekStart = getWeekStart(today);
+            const weekEnd = getWeekEnd(today);
+            filteredBookings = currentBookings.filter(b => {
+                const bookingDate = new Date(b.date);
+                return bookingDate >= weekStart && bookingDate <= weekEnd && b.status === 'confirmed';
+            });
             break;
-        case 'month':
-            const monthStart = new Date(currentDashboardYear, currentDashboardMonth, 1);
-            const monthEnd = new Date(currentDashboardYear, currentDashboardMonth + 1, 0);
+            
+        case 'current-month':
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
             filteredBookings = currentBookings.filter(b => {
                 const bookingDate = new Date(b.date);
                 return bookingDate >= monthStart && bookingDate <= monthEnd && b.status === 'confirmed';
             });
             break;
+            
+        case 'selected-month-daily-avg':
+            revenue = calculateDailyAverage();
+            bookingCount = getSelectedMonthBookings().length;
+            break;
+            
+        case 'selected-month-weekly-avg':
+            revenue = calculateWeeklyAverage();
+            bookingCount = getSelectedMonthBookings().length;
+            break;
+            
+        case 'selected-month-total':
+            filteredBookings = getSelectedMonthBookings();
+            break;
     }
     
-    const revenue = filteredBookings.reduce((sum, booking) => sum + booking.price, 0);
-    const bookingCount = filteredBookings.length;
+    // Calculate revenue and booking count for non-average calculations
+    if (calculationType !== 'selected-month-daily-avg' && calculationType !== 'selected-month-weekly-avg') {
+        revenue = filteredBookings.reduce((sum, booking) => sum + booking.price, 0);
+        bookingCount = filteredBookings.length;
+    }
     
-    const revenueElement = document.getElementById(`${period}-revenue`);
-    const bookingsElement = document.getElementById(`${period}-bookings`);
+    // Update DOM elements
+    const revenueElement = document.getElementById(`${cardType}-revenue`);
+    const bookingsElement = document.getElementById(`${cardType}-bookings`);
     
-    if (revenueElement) revenueElement.textContent = `$${revenue}`;
-    if (bookingsElement) bookingsElement.textContent = `${bookingCount} bookings`;
+    if (revenueElement) {
+        revenueElement.textContent = `$${Math.round(revenue)}`;
+    }
+    
+    if (bookingsElement) {
+        if (calculationType === 'selected-month-daily-avg') {
+            const workingDays = getWorkingDaysInMonth();
+            bookingsElement.textContent = `${workingDays} working days`;
+        } else if (calculationType === 'selected-month-weekly-avg') {
+            bookingsElement.textContent = `4 weeks average`;
+        } else {
+            bookingsElement.textContent = `${bookingCount} bookings`;
+        }
+    }
+}
+
+function getSelectedMonthBookings() {
+    const monthStart = new Date(currentDashboardYear, currentDashboardMonth, 1);
+    const monthEnd = new Date(currentDashboardYear, currentDashboardMonth + 1, 0);
+    
+    return currentBookings.filter(b => {
+        const bookingDate = new Date(b.date);
+        return bookingDate >= monthStart && bookingDate <= monthEnd && b.status === 'confirmed';
+    });
+}
+
+function calculateDailyAverage() {
+    const selectedBookings = getSelectedMonthBookings();
+    const totalRevenue = selectedBookings.reduce((sum, booking) => sum + booking.price, 0);
+    const workingDays = getWorkingDaysInMonth();
+    
+    return workingDays > 0 ? totalRevenue / workingDays : 0;
+}
+
+function calculateWeeklyAverage() {
+    const selectedBookings = getSelectedMonthBookings();
+    const totalRevenue = selectedBookings.reduce((sum, booking) => sum + booking.price, 0);
+    
+    return totalRevenue / 4; // 1/4 of the month
+}
+
+function getWorkingDaysInMonth() {
+    const daysInMonth = new Date(currentDashboardYear, currentDashboardMonth + 1, 0).getDate();
+    let workingDays = 0;
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(currentDashboardYear, currentDashboardMonth, day);
+        const dayOfWeek = date.getDay();
+        const dayName = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][dayOfWeek];
+        
+        if (businessHours[dayName] && businessHours[dayName].enabled) {
+            workingDays++;
+        }
+    }
+    
+    return workingDays;
 }
 
 function updateQuickStats() {
@@ -213,6 +329,49 @@ function updateRecentBookingsTable() {
     }
 }
 
+function getFilteredRecentBookings(showAll = false) {
+    const today = new Date();
+    const isCurrentMonth = isCurrentMonthSelected();
+    
+    let filteredBookings = [];
+    
+    if (isCurrentMonth) {
+        // Current month logic
+        const todayStr = today.toISOString().split('T')[0];
+        
+        if (currentDashboardFilter === 'today') {
+            filteredBookings = currentBookings.filter(b => 
+                b.date === todayStr && b.status === 'confirmed'
+            );
+        } else if (currentDashboardFilter === 'week') {
+            const weekStart = getWeekStart(today);
+            const weekEnd = getWeekEnd(today);
+            filteredBookings = currentBookings.filter(b => {
+                const bookingDate = new Date(b.date);
+                return bookingDate >= weekStart && bookingDate <= weekEnd && b.status === 'confirmed';
+            });
+        } else if (currentDashboardFilter === 'month') {
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            filteredBookings = currentBookings.filter(b => {
+                const bookingDate = new Date(b.date);
+                return bookingDate >= monthStart && bookingDate <= monthEnd && b.status === 'confirmed';
+            });
+        }
+    } else {
+        // Selected month logic
+        filteredBookings = getSelectedMonthBookings();
+    }
+    
+    // Sort by date and time
+    filteredBookings = filteredBookings.sort((a, b) => 
+        new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`)
+    );
+    
+    // Limit to 15 unless showAll is true
+    return showAll ? filteredBookings : filteredBookings.slice(0, 15);
+}
+
 function updateMobileBookingsView() {
     let mobileContainer = document.querySelector('.recent-bookings .mobile-bookings-container');
     if (!mobileContainer) {
@@ -228,24 +387,13 @@ function updateMobileBookingsView() {
         recentBookingsDiv.appendChild(mobileContainer);
     }
     
-    // Get recent bookings
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    const weekEnd = getWeekEnd(today);
-    
-    const recentBookings = currentBookings
-        .filter(b => {
-            const bookingDate = new Date(b.date);
-            return (b.date === todayStr || (bookingDate > today && bookingDate <= weekEnd)) && 
-                   b.status === 'confirmed';
-        })
-        .sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`))
-        .slice(0, 8);
+    const recentBookings = getFilteredRecentBookings();
+    const allBookings = getFilteredRecentBookings(true);
     
     mobileContainer.innerHTML = '';
     
     if (recentBookings.length === 0) {
-        mobileContainer.innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">No recent or upcoming bookings</p>';
+        mobileContainer.innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">No bookings found</p>';
         return;
     }
     
@@ -253,7 +401,101 @@ function updateMobileBookingsView() {
         const card = createMobileBookingCard(booking);
         mobileContainer.appendChild(card);
     });
+    
+    // Add "Show All" button if there are more bookings
+    if (allBookings.length > 15) {
+        const showAllBtn = document.createElement('button');
+        showAllBtn.className = 'action-btn view-btn';
+        showAllBtn.textContent = `Show All (${allBookings.length} total)`;
+        showAllBtn.style.width = '100%';
+        showAllBtn.style.marginTop = '16px';
+        showAllBtn.addEventListener('click', () => showAllBookings('mobile'));
+        mobileContainer.appendChild(showAllBtn);
+    }
 }
+
+function updateDesktopBookingsTable() {
+    const tableBody = document.querySelector('#recent-bookings-table tbody');
+    if (!tableBody) return;
+    
+    // Show table container
+    const tableContainer = document.querySelector('.recent-bookings .bookings-table-container');
+    if (tableContainer) {
+        tableContainer.style.display = 'block';
+    }
+    
+    const recentBookings = getFilteredRecentBookings();
+    const allBookings = getFilteredRecentBookings(true);
+    
+    tableBody.innerHTML = '';
+    
+    recentBookings.forEach(booking => {
+        const row = createBookingRow(booking, false);
+        tableBody.appendChild(row);
+    });
+    
+    if (recentBookings.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td colspan="6" style="text-align: center; color: #64748b; padding: 20px;">No bookings found</td>';
+        tableBody.appendChild(row);
+    }
+    
+    // Add "Show All" button row if there are more bookings
+    if (allBookings.length > 15) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="6" style="text-align: center; padding: 16px;">
+            <button class="action-btn view-btn" onclick="showAllBookings('desktop')" style="padding: 8px 16px;">
+                Show All (${allBookings.length} total)
+            </button>
+        </td>`;
+        tableBody.appendChild(row);
+    }
+}
+
+function showAllBookings(viewType) {
+    const allBookings = getFilteredRecentBookings(true);
+    
+    if (viewType === 'mobile') {
+        const mobileContainer = document.querySelector('.recent-bookings .mobile-bookings-container');
+        mobileContainer.innerHTML = '';
+        
+        allBookings.forEach(booking => {
+            const card = createMobileBookingCard(booking);
+            mobileContainer.appendChild(card);
+        });
+        
+        // Add "Show Less" button
+        const showLessBtn = document.createElement('button');
+        showLessBtn.className = 'action-btn cancel-btn';
+        showLessBtn.textContent = 'Show Less';
+        showLessBtn.style.width = '100%';
+        showLessBtn.style.marginTop = '16px';
+        showLessBtn.addEventListener('click', () => updateMobileBookingsView());
+        mobileContainer.appendChild(showLessBtn);
+        
+    } else {
+        const tableBody = document.querySelector('#recent-bookings-table tbody');
+        tableBody.innerHTML = '';
+        
+        allBookings.forEach(booking => {
+            const row = createBookingRow(booking, false);
+            tableBody.appendChild(row);
+        });
+        
+        // Add "Show Less" button row
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="6" style="text-align: center; padding: 16px;">
+            <button class="action-btn cancel-btn" onclick="updateDesktopBookingsTable()" style="padding: 8px 16px;">
+                Show Less
+            </button>
+        </td>`;
+        tableBody.appendChild(row);
+    }
+}
+
+// Make functions available globally for onclick handlers
+window.showAllBookings = showAllBookings;
+window.updateDesktopBookingsTable = updateDesktopBookingsTable;
 
 function createMobileBookingCard(booking) {
     const card = document.createElement('div');
@@ -282,44 +524,6 @@ function createMobileBookingCard(booking) {
     return card;
 }
 
-function updateDesktopBookingsTable() {
-    const tableBody = document.querySelector('#recent-bookings-table tbody');
-    if (!tableBody) return;
-    
-    // Show table container
-    const tableContainer = document.querySelector('.recent-bookings .bookings-table-container');
-    if (tableContainer) {
-        tableContainer.style.display = 'block';
-    }
-    
-    // Get recent bookings
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    const weekEnd = getWeekEnd(today);
-    
-    const recentBookings = currentBookings
-        .filter(b => {
-            const bookingDate = new Date(b.date);
-            return (b.date === todayStr || (bookingDate > today && bookingDate <= weekEnd)) && 
-                   b.status === 'confirmed';
-        })
-        .sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`))
-        .slice(0, 8);
-    
-    tableBody.innerHTML = '';
-    
-    recentBookings.forEach(booking => {
-        const row = createBookingRow(booking, false);
-        tableBody.appendChild(row);
-    });
-    
-    if (recentBookings.length === 0) {
-        const row = document.createElement('tr');
-        row.innerHTML = '<td colspan="6" style="text-align: center; color: #64748b; padding: 20px;">No recent or upcoming bookings</td>';
-        tableBody.appendChild(row);
-    }
-}
-
 function createBookingRow(booking, includeActions = false) {
     const row = document.createElement('tr');
     
@@ -334,7 +538,7 @@ function createBookingRow(booking, includeActions = false) {
         ${includeActions ? `<td>${booking.phone}</td>` : ''}
         <td>${booking.services.join(', ')}</td>
         ${includeActions ? `<td>${booking.duration} min</td>` : ''}
-        <td>${booking.price}</td>
+        <td>$${booking.price}</td>
         <td><span class="status-badge status-${booking.status}">${booking.status}</span></td>
         ${includeActions ? `
             <td>
