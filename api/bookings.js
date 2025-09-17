@@ -1,18 +1,13 @@
-const { Pool } = require('pg');
-
 module.exports = async function handler(req, res) {
-  // DEBUG: 
-  if (!process.env.DATABASE_URL) {
-    return res.status(500).json({ error: 'DATABASE_URL not found' });
-  }
+ 
+  const envInfo = {
+    hasDATABASE_URL: !!process.env.DATABASE_URL,
+    hasPGUSER: !!process.env.PGUSER,
+    hasPGPASSWORD: !!process.env.PGPASSWORD,
+    allEnvKeys: Object.keys(process.env).filter(key => 
+      key.includes('PG') || key.includes('DATABASE')
+    )
+  };
 
-  
-  const dbUrl = process.env.DATABASE_URL;
-  const safeUrl = dbUrl.substring(0, 50) + '...';
-  
-  return res.status(200).json({ 
-    debug: 'DATABASE_URL found',
-    url_start: safeUrl,
-    length: dbUrl.length
-  });
+  return res.status(200).json(envInfo);
 };
