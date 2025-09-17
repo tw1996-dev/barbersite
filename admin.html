@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Elite Barber Studio</title>
+    <link rel="stylesheet" href="styles/admin.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Admin Panel Scripts -->
+    <script src="scripts/admin-auth.js" defer></script>
+    <script type="module" src="scripts/admin/mockbookings.js"></script>
+
+    <!-- Admin Panel Modules -->
+    <script type="module" src="scripts/admin/admin-state.js"></script>
+    <script type="module" src="scripts/admin/admin-utils.js"></script>
+    <script type="module" src="scripts/admin/admin-navigation.js"></script>
+    <script type="module" src="scripts/admin/admin-dashboard.js"></script>
+    <script type="module" src="scripts/admin/admin-bookings.js"></script>
+    <script type="module" src="scripts/admin/admin-calendar.js"></script>
+    <script type="module" src="scripts/admin/admin-schedule.js"></script>
+    <script type="module" src="scripts/admin/admin-add-booking.js"></script>
+    <script type="module" src="scripts/admin/admin-modal.js"></script>
+    <script type="module" src="scripts/admin/admin-actions.js"></script>
+
+    <!-- Main Admin Panel Entry Point -->
+    <script type="module" src="scripts/admin/admin-panel.js"></script>
+
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Elite Barber Studio</h1>
+                <h2>Admin Panel</h2>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="admin-password">Admin Password</label>
+                    <input type="password" id="admin-password" required>
+                </div>
+                <button type="submit" class="login-btn">Access Panel</button>
+                <div id="login-error" class="login-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="admin-container" style="display: none;">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1>Elite Barber Studio</h1>
+                <span class="header-subtitle">Admin Panel</span>
+            </div>
+            <div class="header-right">
+                <span id="current-date"></span>
+                <button id="logout-btn" class="logout-btn">Logout</button>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="admin-nav">
+            <button class="nav-item active" data-section="dashboard">Dashboard</button>
+            <button class="nav-item" data-section="bookings">Bookings</button>
+            <button class="nav-item" data-section="calendar">Calendar</button>
+            <button class="nav-item" data-section="schedule">Business Hours</button>
+            <button class="nav-item" data-section="add-booking">Add Booking</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="admin-section active">
+                <div class="section-header">
+                    <h2>Dashboard Overview</h2>
+                    <div class="date-filter">
+                        <select id="dashboard-filter">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Revenue Cards -->
+                <div class="revenue-cards">
+                    <div class="revenue-card">
+                        <div class="revenue-icon">💰</div>
+                        <div class="revenue-info">
+                            <h3>Today's Revenue</h3>
+                            <div class="revenue-amount" id="today-revenue">$0</div>
+                            <div class="revenue-bookings" id="today-bookings">0 bookings</div>
+                        </div>
+                    </div>
+                    <div class="revenue-card">
+                        <div class="revenue-icon">📊</div>
+                        <div class="revenue-info">
+                            <h3>Weekly Revenue</h3>
+                            <div class="revenue-amount" id="week-revenue">$0</div>
+                            <div class="revenue-bookings" id="week-bookings">0 bookings</div>
+                        </div>
+                    </div>
+                    <div class="revenue-card">
+                        <div class="revenue-icon">📈</div>
+                        <div class="revenue-info">
+                            <h3>Monthly Revenue</h3>
+                            <div class="revenue-amount" id="month-revenue">$0</div>
+                            <div class="revenue-bookings" id="month-bookings">0 bookings</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <h4>Next Appointment</h4>
+                        <div id="next-appointment">No upcoming appointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Today's Schedule</h4>
+                        <div id="today-schedule">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings -->
+                <div class="recent-bookings">
+                    <h3>Recent & Upcoming Bookings</h3>
+                    <div class="bookings-table-container">
+                        <table class="bookings-table" id="recent-bookings-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Customer</th>
+                                    <th>Services</th>
+                                    <th>Revenue</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Recent bookings will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bookings Section -->
+            <section id="bookings-section" class="admin-section">
+                <div class="section-header">
+                    <h2>All Bookings</h2>
+                    <div class="bookings-filters">
+                        <select id="status-filter">
+                            <option value="all">All Status</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                        <select id="date-filter">
+                            <option value="all">All Dates</option>
+                            <option value="today">Today</option>
+                            <option value="tomorrow">Tomorrow</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bookings-table-container">
+                    <table class="bookings-table" id="all-bookings-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Customer</th>
+                                <th>Phone</th>
+                                <th>Services</th>
+                                <th>Duration</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- All bookings will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Calendar Section -->
+            <section id="calendar-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Calendar View</h2>
+                    <div class="calendar-controls">
+                        <button id="prev-month-cal" class="calendar-nav-btn">&lt;</button>
+                        <h3 id="calendar-month-year"></h3>
+                        <button id="next-month-cal" class="calendar-nav-btn">&gt;</button>
+                    </div>
+                </div>
+
+                <div class="calendar-container">
+                    <div class="calendar-grid" id="admin-calendar">
+                        <!-- Calendar will be generated here -->
+                    </div>
+                </div>
+
+                <div class="calendar-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot available"></span>
+                        <span>Available</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot busy"></span>
+                        <span>Busy</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot full"></span>
+                        <span>Fully Booked</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Business Hours Section -->
+            <section id="schedule-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Business Hours</h2>
+                    <button id="save-schedule-btn" class="save-btn">Save Changes</button>
+                </div>
+
+                <div class="schedule-container">
+                    <div class="schedule-card">
+                        <h3>Weekly Schedule</h3>
+                        <div class="schedule-grid">
+                            <div class="day-schedule" data-day="monday">
+                                <label>Monday</label>
+                                <input type="checkbox" class="day-enabled" checked>
+                                <input type="time" class="open-time" value="09:00">
+                                <span>to</span>
+                                <input type="time" class="close-time" value="18:00">
+                            </div>
+                            <div class="day-schedule" data-day="tuesday">
+                                <label>Tuesday</label>
+                                <input type="checkbox" class="day-enabled" checked>
+                                <input type="time" class="open-time" value="09:00">
+                                <span>to</span>
+                                <input type="time" class="close-time" value="18:00">
+                            </div>
+                            <div class="day-schedule" data-day="wednesday">
+                                <label>Wednesday</label>
+                                <input type="checkbox" class="day-enabled" checked>
+                                <input type="time" class="open-time" value="09:00">
+                                <span>to</span>
+                                <input type="time" class="close-time" value="18:00">
+                            </div>
+                            <div class="day-schedule" data-day="thursday">
+                                <label>Thursday</label>
+                                <input type="checkbox" class="day-enabled" checked>
+                                <input type="time" class="open-time" value="09:00">
+                                <span>to</span>
+                                <input type="time" class="close-time" value="18:00">
+                            </div>
+                            <div class="day-schedule" data-day="friday">
+                                <label>Friday</label>
+                                <input type="checkbox" class="day-enabled" checked>
+                                <input type="time" class="open-time" value="09:00">
+                                <span>to</span>
+                                <input type="time" class="close-time" value="18:00">
+                            </div>
+                            <div class="day-schedule" data-day="saturday">
+                                <label>Saturday</label>
+                                <input type="checkbox" class="day-enabled" checked>
+                                <input type="time" class="open-time" value="10:00">
+                                <span>to</span>
+                                <input type="time" class="close-time" value="16:00">
+                            </div>
+                            <div class="day-schedule" data-day="sunday">
+                                <label>Sunday</label>
+                                <input type="checkbox" class="day-enabled">
+                                <input type="time" class="open-time" value="11:00" disabled>
+                                <span>to</span>
+                                <input type="time" class="close-time" value="15:00" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schedule-presets">
+                        <h3>Quick Presets</h3>
+                        <button class="preset-btn" data-preset="standard">Standard (Mon-Fri 9-18, Sat 10-16)</button>
+                        <button class="preset-btn" data-preset="extended">Extended (Mon-Sat 9-19, Sun 11-15)</button>
+                        <button class="preset-btn" data-preset="weekend">Weekend Only (Sat-Sun 10-18)</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add Booking Section -->
+            <section id="add-booking-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Add New Booking</h2>
+                </div>
+
+                <div class="add-booking-form">
+                    <div class="form-section">
+                        <h3>Customer Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customer-name">Full Name</label>
+                                <input type="text" id="customer-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="customer-phone">Phone</label>
+                                <input type="tel" id="customer-phone" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customer-email">Email (Optional)</label>
+                                <input type="email" id="customer-email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Services Selection</h3>
+                        <p style="color: #94a3b8; margin-bottom: 16px; font-size: 0.9rem;">Select services first to see
+                            available time slots</p>
+                        <div class="services-selection">
+                            <label class="service-checkbox">
+                                <input type="checkbox" name="admin-services" value="premium-haircut" data-duration="45"
+                                    data-price="35">
+                                <span class="checkmark"></span>
+                                <div class="service-info">
+                                    <div class="service-name">Premium Haircut</div>
+                                    <div class="service-details">45 min • $35</div>
+                                </div>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" name="admin-services" value="beard-trim" data-duration="30"
+                                    data-price="25">
+                                <span class="checkmark"></span>
+                                <div class="service-info">
+                                    <div class="service-name">Beard Trim & Style</div>
+                                    <div class="service-details">30 min • $25</div>
+                                </div>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" name="admin-services" value="hot-towel-shave" data-duration="40"
+                                    data-price="40">
+                                <span class="checkmark"></span>
+                                <div class="service-info">
+                                    <div class="service-name">Hot Towel Shave</div>
+                                    <div class="service-details">40 min • $40</div>
+                                </div>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" name="admin-services" value="head-shave" data-duration="35"
+                                    data-price="30">
+                                <span class="checkmark"></span>
+                                <div class="service-info">
+                                    <div class="service-name">Head Shave</div>
+                                    <div class="service-details">35 min • $30</div>
+                                </div>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" name="admin-services" value="mustache-trim" data-duration="15"
+                                    data-price="15">
+                                <span class="checkmark"></span>
+                                <div class="service-info">
+                                    <div class="service-name">Mustache Trim</div>
+                                    <div class="service-details">15 min • $15</div>
+                                </div>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" name="admin-services" value="haircut-beard-package"
+                                    data-duration="80" data-price="50">
+                                <span class="checkmark"></span>
+                                <div class="service-info">
+                                    <div class="service-name">Haircut + Beard Package</div>
+                                    <div class="service-details">80 min • $50</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Appointment Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="booking-date">Date</label>
+                                <input type="date" id="booking-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="booking-time">Time</label>
+                                <select id="booking-time" required>
+                                    <option value="">Select services first...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Booking Summary</h3>
+                        <div class="booking-summary">
+                            <div class="summary-row">
+                                <span>Total Duration:</span>
+                                <span id="admin-total-duration">0 min</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Total Price:</span>
+                                <span id="admin-total-price">$0</span>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="booking-status">Status</label>
+                                <select id="booking-status">
+                                    <option value="confirmed">Confirmed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="admin-notes">Internal Notes (Optional)</label>
+                            <textarea id="admin-notes" rows="3" placeholder="Add any internal notes..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="save-booking-btn" class="save-btn">Create Booking</button>
+                        <button type="button" id="reset-form-btn" class="cancel-btn">Reset Form</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Booking Details Modal -->
+    <div id="booking-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Booking Details</h3>
+                <button class="modal-close" id="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-booking-details">
+                <!-- Booking details will be inserted here -->
+            </div>
+            <div class="modal-actions">
+                <button id="edit-booking-btn" class="edit-btn">Edit</button>
+                <button id="delete-booking-btn" class="delete-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
