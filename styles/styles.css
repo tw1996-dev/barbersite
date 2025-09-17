@@ -646,6 +646,10 @@ body {
     .footer-bottom {
         padding-top: 15px;
     }
+
+    ..contact-symbol {
+        margin-top: -3px;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -1239,9 +1243,6 @@ body {
 }
 
 @media screen and (max-width: 480px) {
-    .calendar-grid {
-        padding: 15px;
-    }
     
     .calendar-day {
         min-height: 40px;
@@ -1259,4 +1260,18 @@ body {
     .time-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .calendar-day-header {
+        padding: 0;
+    }
+
+    .booking-container {
+padding: 100px 5px 40px;
+}
+
+.service-description {
+    margin: 0;
+}
+
+
 }
