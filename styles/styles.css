@@ -570,7 +570,7 @@ body {
 .contact-symbol {
     font-size: 1.1rem;
     color: #d4af37;
-    margin-top: 2px;
+    margin-top: -1px;
     flex-shrink: 0;
 }
 
@@ -1216,7 +1216,7 @@ body {
 /* Responsive Design for Booking */
 @media screen and (max-width: 768px) {
     .booking-container {
-        padding: 100px 15px 40px;
+        padding: 30px 15px 40px;
     }
     
     .booking-section {
@@ -1266,11 +1266,17 @@ body {
     }
 
     .booking-container {
-padding: 100px 5px 40px;
+padding: 10px 5px 40px;
 }
 
 .service-description {
     margin: 0;
+    padding-left: 5%;
+    padding-bottom: 5%;
+}
+.contact-symbol {
+    margin-top: -3px;
+    font-size: 1.2rem;
 }
 
 }
