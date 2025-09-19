@@ -7,11 +7,22 @@
  * after each operation to maintain sync between frontend and database
  */
 
+
+
+function normalizeBookingData(bookings) {
+    return bookings.map(booking => ({
+        ...booking,
+        date: booking.date.split('T')[0], // '2025-09-15T00:00:00.000Z' → '2025-09-15'
+        time: booking.time.substring(0, 5)  // '09:00:00' → '09:00'
+    }));
+}
+
 // API functions for data fetching
 async function fetchBookings() {
     try {
         const response = await fetch('/api/bookings');
-        return await response.json();
+        const data = await response.json();
+        return normalizeBookingData(data);
     } catch (error) {
         console.error('Error fetching bookings:', error);
         return [];

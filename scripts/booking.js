@@ -1,3 +1,11 @@
+function normalizeBookingData(bookings) {
+    return bookings.map(booking => ({
+        ...booking,
+        date: booking.date.split('T')[0], // '2025-09-15T00:00:00.000Z' → '2025-09-15'
+        time: booking.time.substring(0, 5)  // '09:00:00' → '09:00'
+    }));
+}
+
 // Booking System JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     // Service data
@@ -74,9 +82,10 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             // Load existing bookings
             const bookingsResponse = await fetch('/api/bookings');
-            if (bookingsResponse.ok) {
-                existingBookings = await bookingsResponse.json();
-            }
+if (bookingsResponse.ok) {
+    const rawBookings = await bookingsResponse.json();
+    existingBookings = normalizeBookingData(rawBookings);
+}
 
             // Load business hours
             const hoursResponse = await fetch('/api/business-hours');
