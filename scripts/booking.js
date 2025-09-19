@@ -483,7 +483,10 @@ if (!isAvailable || !fitsInBusinessHours || isPastTime) {
 } else {
     timeSlot.addEventListener('click', () => selectTime(displayTime, timeSlot));
 }
-
+timeGrid.appendChild(timeSlot);
+            }
+        }
+    }
     function formatTime(hour, minute) {
         const period = hour >= 12 ? 'PM' : 'AM';
         const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
