@@ -159,7 +159,8 @@ if (bookingsResponse.ok) {
                 
                 // Only update if data actually changed to avoid unnecessary re-renders
                 if (JSON.stringify(newBookings) !== JSON.stringify(existingBookings)) {
-                    existingBookings = newBookings;
+                    const normalizedBookings = normalizeBookingData(newBookings);
+                    existingBookings = normalizedBookings;
                     console.log('Bookings updated:', newBookings.length, 'total bookings');
                     return true;
                 }
@@ -459,7 +460,7 @@ if (bookingsResponse.ok) {
                 timeSlot.textContent = displayTime;
                 timeSlot.dataset.time = timeString;
 
-                const isAvailable = isTimeSlotAvailable(dateStr, timeString, totals.duration, currentBookings);
+const isAvailable = isTimeSlotAvailable(dateStr, timeString, totals.duration, existingBookings);
 const endTime = getBookingEndTime(timeString, totals.duration);
 const endMinutes = timeToMinutes(endTime);
 const closeMinutes = timeToMinutes(closeTime);
