@@ -161,11 +161,14 @@ function getFilteredBookings() {
 }
 
 function updateBookingsTable() {
-    const tableBody = document.querySelector('#all-bookings-table tbody');
-    if (!tableBody) return;
+    // Hide mobile container when showing table
+    const mobileContainer = document.querySelector('.mobile-bookings-container');
+    if (mobileContainer) {
+        mobileContainer.style.display = 'none';
+    }
     
     // Show table container
-    const tableContainer = document.querySelector('#bookings-section .bookings-table-container');
+    const tableContainer = document.querySelector('.bookings-table-container');
     if (tableContainer) {
         tableContainer.style.display = 'block';
     }
