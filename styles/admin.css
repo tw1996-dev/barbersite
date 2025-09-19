@@ -1257,9 +1257,9 @@ body {
 /* Mobile specific overrides */
 
 
-@media (max-width: 940px) {
+@media (max-width: 870px) {
     .bookings-table-container {
-        display: none;
+        display: none !important;
     }
         .mobile-bookings-container {
         display: block;
