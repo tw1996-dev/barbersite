@@ -8,6 +8,7 @@ import {
     currentBookings, 
     currentCalendarMonth, 
     currentCalendarYear,
+    businessHours,
     setCurrentCalendarMonth,
     setCurrentCalendarYear
 } from './admin-state.js';
@@ -15,7 +16,8 @@ import {
     getBookingEndTime, 
     formatTimeRange, 
     formatFullDate,
-    timeToMinutes
+    timeToMinutes,
+    checkDayAvailability
 } from './admin-utils.js';
 import { showModal } from './admin-modal.js';
 
@@ -94,14 +96,17 @@ export function renderAdminCalendar() {
         const dayDate = `${currentCalendarYear}-${String(currentCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const dayBookings = currentBookings.filter(b => b.date === dayDate && b.status === 'confirmed');
         
-        // Apply status based on booking load
-        if (dayBookings.length === 0) {
-            dayElement.classList.add('available');
-        } else if (dayBookings.length <= 3) {
-            dayElement.classList.add('busy');
-        } else {
-            dayElement.classList.add('full');
-        }
+        // Check if day has available slots for standard service (45 min)
+const dayDateStr = `${currentCalendarYear}-${String(currentCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+const hasAvailableSlots = checkDayAvailability(dayDateStr, 45, businessHours, currentBookings);
+
+if (dayBookings.length === 0) {
+    dayElement.classList.add('available');
+} else if (hasAvailableSlots) {
+    dayElement.classList.add('busy');    // Ma rezerwacje ale są wolne sloty
+} else {
+    dayElement.classList.add('full');     // Brak wolnych slotów
+}
         
         dayElement.addEventListener('click', () => {
             showDayBookings(dayDate, dayBookings);
