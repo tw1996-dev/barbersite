@@ -4,7 +4,7 @@
  * preset configurations, and responsive layout for very small screens
  */
 
-import { businessHours, saveBusinessHoursToStorage } from './admin-state.js';
+import { businessHours, saveBusinessHoursToAPI } from './admin-state.js';
 import { showNotification } from './admin-utils.js';
 
 export function setupScheduleSection() {
@@ -124,7 +124,7 @@ function applyPreset(preset) {
     });
 }
 
-function saveSchedule() {
+async function saveSchedule() {
     const schedules = document.querySelectorAll('.day-schedule');
     
     schedules.forEach(schedule => {
@@ -140,8 +140,9 @@ function saveSchedule() {
         };
     });
     
-    // Save to localStorage
-    if (saveBusinessHoursToStorage()) {
+    // Save to API
+    const success = await saveBusinessHoursToAPI();
+    if (success) {
         showNotification('Business hours saved successfully!', 'success');
     } else {
         showNotification('Failed to save business hours.', 'error');

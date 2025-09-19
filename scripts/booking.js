@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
     let currentPackage = null;
+    let existingBookings = [];
+    let businessHours = {};
 
     // DOM elements
     const serviceCheckboxes = document.querySelectorAll('input[name="services"]');
@@ -49,11 +51,79 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize
     init();
 
-    function init() {
+    async function init() {
+        await loadInitialData();
         setupServiceSelection();
         setupCalendar();
         setupForm();
         updateSummary();
+    }
+
+    // Load data from API
+    async function loadInitialData() {
+        try {
+            // Load existing bookings
+            const bookingsResponse = await fetch('/api/bookings');
+            if (bookingsResponse.ok) {
+                existingBookings = await bookingsResponse.json();
+            }
+
+            // Load business hours
+            const hoursResponse = await fetch('/api/business-hours');
+            if (hoursResponse.ok) {
+                const hoursData = await hoursResponse.json();
+                businessHours = {};
+                hoursData.forEach(day => {
+                    businessHours[day.day_name] = {
+                        enabled: day.enabled,
+                        open: day.open_time.substring(0, 5),
+                        close: day.close_time.substring(0, 5)
+                    };
+                });
+            }
+        } catch (error) {
+            console.error('Error loading initial data:', error);
+        }
+    }
+
+    // Check if time slot is available
+    function isTimeSlotAvailable(date, time, duration) {
+        const endTime = getBookingEndTime(time, duration);
+        const newStartMinutes = timeToMinutes(time);
+        const newEndMinutes = timeToMinutes(endTime);
+        
+        const dayBookings = existingBookings.filter(booking => 
+            booking.date === date && booking.status === 'confirmed'
+        );
+        
+        for (const booking of dayBookings) {
+            const existingStartMinutes = timeToMinutes(booking.time);
+            const existingEndTime = getBookingEndTime(booking.time, booking.duration);
+            const existingEndMinutes = timeToMinutes(existingEndTime);
+            
+            if (newStartMinutes < existingEndMinutes && newEndMinutes > existingStartMinutes) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    // Helper functions for time calculations
+    function timeToMinutes(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+
+    function getBookingEndTime(startTime, duration) {
+        const [hours, minutes] = startTime.split(':').map(Number);
+        const startMinutes = hours * 60 + minutes;
+        const endMinutes = startMinutes + duration;
+        
+        const endHours = Math.floor(endMinutes / 60);
+        const endMins = endMinutes % 60;
+        
+        return `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`;
     }
 
     // Service Selection Logic
@@ -71,7 +141,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const triggerId = event.target.id;
         const isChecked = event.target.checked;
         
-        // Apply conflicts immediately if checking
         if (isChecked) {
             handleConflicts(triggerId);
         }
@@ -83,7 +152,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleConflicts(triggerId) {
-        // Define all conflicts clearly
         const conflicts = {
             'haircut-beard-package': ['premium-haircut', 'beard-trim', 'head-shave'],
             'premium-haircut': ['head-shave', 'haircut-beard-package'],
@@ -91,10 +159,8 @@ document.addEventListener('DOMContentLoaded', function() {
             'head-shave': ['premium-haircut', 'haircut-beard-package']
         };
 
-        // Get conflicting services for the selected service
         const conflictingServices = conflicts[triggerId] || [];
         
-        // Uncheck all conflicting services
         conflictingServices.forEach(conflictId => {
             const conflictCheckbox = document.getElementById(conflictId);
             if (conflictCheckbox && conflictCheckbox.checked) {
@@ -117,7 +183,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const hasBeardTrim = selectedServices.has('beard-trim');
         const hasPackage = selectedServices.has('haircut-beard-package');
 
-        // Only suggest package if individual services are selected (not package itself)
         if (hasHaircut && hasBeardTrim && !hasPackage) {
             showPackageSuggestion();
         } else {
@@ -141,14 +206,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function applyPackage() {
         if (!currentPackage) return;
 
-        // Uncheck individual services
         document.getElementById('premium-haircut').checked = false;
         document.getElementById('beard-trim').checked = false;
-
-        // Check package service
         document.getElementById('haircut-beard-package').checked = true;
 
-        // Update state
         updateSelectedServices();
         hidePackageSuggestion();
         updateSummary();
@@ -159,7 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
         let totalDur = 0;
         let totalPr = 0;
 
-        // Calculate totals based on selected services
         selectedServices.forEach(serviceId => {
             const service = services[serviceId];
             if (service) {
@@ -176,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function() {
         totalDuration.textContent = `${totals.duration} min`;
         totalPrice.textContent = `$${totals.price}`;
         
-        // Update final summary
         document.getElementById('final-duration').textContent = `${totals.duration} min`;
         document.getElementById('final-price').textContent = `$${totals.price}`;
 
@@ -235,10 +294,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         calendarMonthYear.textContent = `${monthNames[currentMonth]} ${currentYear}`;
         
-        // Clear calendar
         calendarGrid.innerHTML = '';
 
-        // Add day headers
         const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         dayHeaders.forEach(day => {
             const dayHeader = document.createElement('div');
@@ -247,20 +304,17 @@ document.addEventListener('DOMContentLoaded', function() {
             calendarGrid.appendChild(dayHeader);
         });
 
-        // Get first day of month and number of days
         const firstDay = new Date(currentYear, currentMonth, 1).getDay();
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // Add empty cells for previous month
         for (let i = 0; i < firstDay; i++) {
             const emptyDay = document.createElement('div');
             emptyDay.className = 'calendar-day other-month';
             calendarGrid.appendChild(emptyDay);
         }
 
-        // Add days of current month
         for (let day = 1; day <= daysInMonth; day++) {
             const dayElement = document.createElement('div');
             dayElement.className = 'calendar-day';
@@ -269,7 +323,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const dayDate = new Date(currentYear, currentMonth, day);
             dayDate.setHours(0, 0, 0, 0);
             
-            // Disable past dates
             if (dayDate < today) {
                 dayElement.classList.add('disabled');
             } else {
@@ -281,16 +334,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function selectDate(date, element) {
-        // Remove previous selection
         document.querySelectorAll('.calendar-day.selected').forEach(el => {
             el.classList.remove('selected');
         });
 
-        // Add selection to clicked element
         element.classList.add('selected');
         selectedDate = date;
 
-        // Show time slots
         showTimeSlots(date);
         validateBooking();
     }
@@ -306,28 +356,51 @@ document.addEventListener('DOMContentLoaded', function() {
         selectedDateSpan.textContent = dateString;
         timeSlots.style.display = 'block';
 
-        // Generate time slots (9 AM to 6 PM, every 30 minutes)
-        generateTimeSlots();
-        
-        // Update appointment summary
+        generateTimeSlots(date);
         updateAppointmentDateTime();
     }
 
-    function generateTimeSlots() {
+    function generateTimeSlots(date) {
         timeGrid.innerHTML = '';
         
-        // Generate time slots from 9:00 AM to 6:00 PM
-        for (let hour = 9; hour < 18; hour++) {
-            for (let minute = 0; minute < 60; minute += 30) {
+        const dayOfWeek = date.getDay();
+        const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const dayName = dayNames[dayOfWeek];
+        const dayHours = businessHours[dayName];
+        
+        if (!dayHours || !dayHours.enabled) {
+            timeGrid.innerHTML = '<p style="text-align: center; color: #666;">Closed on this day</p>';
+            return;
+        }
+
+        const [openHour, openMin] = dayHours.open.split(':').map(Number);
+        const [closeHour, closeMin] = dayHours.close.split(':').map(Number);
+        const totals = calculateTotals();
+        const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+        for (let hour = openHour; hour < closeHour || (hour === closeHour && 0 < closeMin); hour++) {
+            for (let minute = (hour === openHour ? openMin : 0); minute < 60; minute += 30) {
+                if (hour === closeHour && minute >= closeMin) break;
+                
+                const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                const displayTime = formatTime(hour, minute);
+                
                 const timeSlot = document.createElement('div');
                 timeSlot.className = 'time-slot';
-                
-                const timeString = formatTime(hour, minute);
-                timeSlot.textContent = timeString;
-                timeSlot.dataset.time = `${hour}:${minute.toString().padStart(2, '0')}`;
+                timeSlot.textContent = displayTime;
+                timeSlot.dataset.time = timeString;
 
-                // For now, all slots are available (will be updated with backend)
-                timeSlot.addEventListener('click', () => selectTime(timeString, timeSlot));
+                const isAvailable = isTimeSlotAvailable(dateStr, timeString, totals.duration);
+                const endTime = getBookingEndTime(timeString, totals.duration);
+                const endMinutes = timeToMinutes(endTime);
+                const closeMinutes = timeToMinutes(dayHours.close);
+                const fitsInBusinessHours = endMinutes <= closeMinutes;
+                
+                if (!isAvailable || !fitsInBusinessHours) {
+                    timeSlot.classList.add('unavailable');
+                } else {
+                    timeSlot.addEventListener('click', () => selectTime(displayTime, timeSlot));
+                }
                 
                 timeGrid.appendChild(timeSlot);
             }
@@ -342,12 +415,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function selectTime(timeString, element) {
-        // Remove previous selection
         document.querySelectorAll('.time-slot.selected').forEach(el => {
             el.classList.remove('selected');
         });
 
-        // Add selection to clicked element
         element.classList.add('selected');
         selectedTime = timeString;
 
@@ -422,7 +493,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const hasDate = selectedDate !== null;
         const hasTime = selectedTime !== null;
         
-        // Use the validation functions from form-validation.js if available
         const hasRequiredInfo = window.areRequiredFieldsFilled ? window.areRequiredFieldsFilled() : areRequiredFieldsFilledFallback();
         const isFormValid = window.validateBookingForm ? window.validateBookingForm() : validateBookingFormFallback();
         
@@ -431,7 +501,6 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmBtn.disabled = !isValid;
     }
 
-    // Fallback validation functions in case form-validation.js isn't loaded yet
     function areRequiredFieldsFilledFallback() {
         const firstName = document.getElementById('first-name').value.trim();
         const lastName = document.getElementById('last-name').value.trim();
@@ -441,66 +510,55 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function validateBookingFormFallback() {
-        // Basic validation fallback
         const email = document.getElementById('email').value.trim();
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return email === '' || emailRegex.test(email);
     }
 
-    function confirmBooking() {
+    async function confirmBooking() {
         if (confirmBtn.disabled) return;
 
-        // Collect all booking data
+        const selectedServicesArray = Array.from(selectedServices);
+        const serviceNames = selectedServicesArray.map(serviceId => services[serviceId].name);
+        const totals = calculateTotals();
+        
         const bookingData = {
-            services: Array.from(selectedServices).map(serviceId => ({
-                id: serviceId,
-                name: services[serviceId].name,
-                duration: services[serviceId].duration,
-                price: services[serviceId].price
-            })),
             date: selectedDate.toISOString().split('T')[0],
-            time: selectedTime,
-            customer: {
-                firstName: document.getElementById('first-name').value,
-                lastName: document.getElementById('last-name').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                notes: document.getElementById('notes').value
-            },
-            totals: calculateTotals()
+            time: document.querySelector('.time-slot.selected').dataset.time,
+            customer: `${document.getElementById('first-name').value} ${document.getElementById('last-name').value}`.trim(),
+            phone: document.getElementById('phone').value,
+            email: document.getElementById('email').value,
+            services: serviceNames,
+            duration: totals.duration,
+            price: totals.price,
+            status: 'confirmed',
+            notes: document.getElementById('notes').value
         };
 
-        // For now, just show confirmation (will be replaced with actual booking API)
-        showConfirmationMessage(bookingData);
-    }
+        try {
+            const response = await fetch('/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingData)
+            });
 
-    function showConfirmationMessage(bookingData) {
-        const serviceNames = bookingData.services.map(s => s.name).join(', ');
-        const message = `Booking confirmed!\n\nServices: ${serviceNames}\nDate: ${selectedDate.toLocaleDateString()}\nTime: ${selectedTime}\nTotal: $${bookingData.totals.price} (${bookingData.totals.duration} min)\n\nCustomer: ${bookingData.customer.firstName} ${bookingData.customer.lastName}\nEmail: ${bookingData.customer.email}\nPhone: ${bookingData.customer.phone}`;
-        
-        alert(message);
-        
-        // Reset form (optional)
-        // resetBookingForm();
-    }
-
-    function resetBookingForm() {
-        selectedServices.clear();
-        selectedDate = null;
-        selectedTime = null;
-        currentPackage = null;
-
-        serviceCheckboxes.forEach(cb => cb.checked = false);
-        bookingForm.reset();
-        
-        document.querySelectorAll('.calendar-day.selected, .time-slot.selected').forEach(el => {
-            el.classList.remove('selected');
-        });
-
-        timeSlots.style.display = 'none';
-        hidePackageSuggestion();
-        updateSummary();
-        updateCustomerSummary();
-        validateBooking();
+            if (response.ok) {
+                const newBooking = await response.json();
+                alert(`Booking confirmed! Your appointment ID is ${newBooking.id}\n\nServices: ${serviceNames.join(', ')}\nDate: ${selectedDate.toLocaleDateString()}\nTime: ${selectedTime}\nTotal: $${totals.price}`);
+                
+                // Update existing bookings for future availability checks
+                existingBookings.push(newBooking);
+                
+                // Optional: Reset form or redirect
+                // resetBookingForm();
+            } else {
+                throw new Error('Failed to create booking');
+            }
+        } catch (error) {
+            console.error('Error creating booking:', error);
+            alert('Sorry, there was an error creating your booking. Please try again.');
+        }
     }
 });

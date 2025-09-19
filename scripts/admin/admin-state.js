@@ -4,9 +4,39 @@
  * Handles business hours, bookings data, current section state, and calendar states
  */
 
-import { mockBookings } from './mockbookings.js';
+// API functions for data fetching
+async function fetchBookings() {
+    try {
+        const response = await fetch('/api/bookings');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+        return [];
+    }
+}
 
-// Business hours configuration
+async function fetchBusinessHours() {
+    try {
+        const response = await fetch('/api/business-hours');
+        const data = await response.json();
+        
+        // Convert array to object format expected by the app
+        const hours = {};
+        data.forEach(day => {
+            hours[day.day_name] = {
+                enabled: day.enabled,
+                open: day.open_time.substring(0, 5), // "09:00:00" -> "09:00"
+                close: day.close_time.substring(0, 5)
+            };
+        });
+        return hours;
+    } catch (error) {
+        console.error('Error fetching business hours:', error);
+        return businessHours; // fallback to default
+    }
+}
+
+// Business hours configuration - default values
 export let businessHours = {
     monday: { enabled: true, open: "09:00", close: "18:00" },
     tuesday: { enabled: true, open: "09:00", close: "18:00" },
@@ -18,7 +48,7 @@ export let businessHours = {
 };
 
 // Current state variables
-export let currentBookings = [...mockBookings];
+export let currentBookings = [];
 export let currentSection = 'dashboard';
 export let currentCalendarMonth = new Date().getMonth();
 export let currentCalendarYear = new Date().getFullYear();
@@ -32,6 +62,12 @@ export let addBookingCalendarMonth = new Date().getMonth();
 export let addBookingCalendarYear = new Date().getFullYear();
 export let selectedAddBookingDate = null;
 export let selectedAdminServices = new Set();
+
+// Initialize data from API
+export async function initializeData() {
+    currentBookings = await fetchBookings();
+    businessHours = await fetchBusinessHours();
+}
 
 // State setters
 export function setBusinessHours(newBusinessHours) {
@@ -86,35 +122,77 @@ export function setSelectedAdminServices(services) {
     selectedAdminServices = services;
 }
 
-// Add booking to current bookings
-export function addBooking(booking) {
-    currentBookings.push(booking);
-}
-
-// Remove booking from current bookings
-export function removeBooking(bookingId) {
-    currentBookings = currentBookings.filter(b => b.id !== bookingId);
-}
-
-// Load saved business hours
-export function loadBusinessHours() {
+// Add booking to current bookings and sync with API
+export async function addBooking(booking) {
     try {
-        const saved = localStorage.getItem('elite_barber_business_hours');
-        if (saved) {
-            businessHours = JSON.parse(saved);
+        const response = await fetch('/api/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(booking)
+        });
+        
+        if (response.ok) {
+            const newBooking = await response.json();
+            currentBookings.push(newBooking);
+            return newBooking;
+        } else {
+            throw new Error('Failed to add booking');
         }
     } catch (error) {
-        console.warn('Could not load saved business hours:', error);
+        console.error('Error adding booking:', error);
+        return null;
     }
 }
 
-// Save business hours to localStorage
-export function saveBusinessHoursToStorage() {
+// Remove booking from current bookings and sync with API
+export async function removeBooking(bookingId) {
     try {
-        localStorage.setItem('elite_barber_business_hours', JSON.stringify(businessHours));
-        return true;
+        const response = await fetch(`/api/booking/${bookingId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            currentBookings = currentBookings.filter(b => b.id !== bookingId);
+            return true;
+        } else {
+            throw new Error('Failed to delete booking');
+        }
     } catch (error) {
-        console.warn('Could not save business hours:', error);
+        console.error('Error deleting booking:', error);
         return false;
     }
+}
+
+// Save business hours to API
+export async function saveBusinessHoursToAPI() {
+    try {
+        const response = await fetch('/api/business-hours', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(businessHours)
+        });
+        
+        if (response.ok) {
+            return true;
+        } else {
+            throw new Error('Failed to save business hours');
+        }
+    } catch (error) {
+        console.error('Error saving business hours:', error);
+        return false;
+    }
+}
+
+// Legacy localStorage functions (kept for backward compatibility)
+export function loadBusinessHours() {
+    // Now loads from API during initializeData()
+}
+
+export function saveBusinessHoursToStorage() {
+    // Now saves to API via saveBusinessHoursToAPI()
+    return saveBusinessHoursToAPI();
 }

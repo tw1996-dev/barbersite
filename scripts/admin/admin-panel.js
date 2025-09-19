@@ -4,7 +4,7 @@
  * Handles initialization, module setup, and responsive updates
  */
 
-import { loadBusinessHours } from './admin-state.js';
+import { loadBusinessHours, initializeData } from './admin-state.js';
 import { setupNavigation, initializeNavigation } from './admin-navigation.js';
 import { setupDashboard } from './admin-dashboard.js';
 import { setupBookingsSection } from './admin-bookings.js';
@@ -16,7 +16,7 @@ import './admin-actions.js'; // Import for side effects (window functions)
 
 // Initialize admin panel when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    // Load saved business hours first
+    // Load saved business hours first (keeping legacy function call)
     loadBusinessHours();
     
     // Initialize all modules
@@ -31,7 +31,10 @@ window.initAdminPanel = function() {
     initializeAdminPanel();
 };
 
-function initializeAdminPanel() {
+async function initializeAdminPanel() {
+    // Load data from API
+    await initializeData();
+    
     // Setup all modules in order
     setupNavigation();
     setupDashboard();
