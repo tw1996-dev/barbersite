@@ -374,8 +374,9 @@ function setupFormValidation() {
         }
     });
 }
-
-function saveNewBooking() {
+async function saveNewBooking() {
+    // Refresh bookings to get latest data before conflict check
+    await refreshBookings();
     const form = {
         customer: document.getElementById('customer-name')?.value.trim(),
         phone: document.getElementById('customer-phone')?.value.trim(),

@@ -2,6 +2,9 @@
  * ADMIN STATE MANAGEMENT MODULE
  * Manages all global state variables and configuration for the admin panel
  * Handles business hours, bookings data, current section state, and calendar states
+ * 
+ * CHANGES: Added refreshBookings() function and updated CRUD operations to reload data
+ * after each operation to maintain sync between frontend and database
  */
 
 // API functions for data fetching
@@ -34,6 +37,20 @@ async function fetchBusinessHours() {
         console.error('Error fetching business hours:', error);
         return businessHours; // fallback to default
     }
+}
+
+// Refresh bookings from API - ensures frontend stays in sync with database
+export async function refreshBookings() {
+    try {
+        const response = await fetch('/api/bookings');
+        if (response.ok) {
+            currentBookings = await response.json();
+            return true;
+        }
+    } catch (error) {
+        console.error('Error refreshing bookings:', error);
+    }
+    return false;
 }
 
 // Business hours configuration - default values
@@ -122,7 +139,7 @@ export function setSelectedAdminServices(services) {
     selectedAdminServices = services;
 }
 
-// Add booking to current bookings and sync with API
+// Add booking to current bookings and sync with API - refreshes data after operation
 export async function addBooking(booking) {
     try {
         const response = await fetch('/api/bookings', {
@@ -135,7 +152,7 @@ export async function addBooking(booking) {
         
         if (response.ok) {
             const newBooking = await response.json();
-            currentBookings.push(newBooking);
+            await refreshBookings(); // Reload all bookings from API
             return newBooking;
         } else {
             throw new Error('Failed to add booking');
@@ -146,7 +163,7 @@ export async function addBooking(booking) {
     }
 }
 
-// Remove booking from current bookings and sync with API
+// Remove booking from current bookings and sync with API - refreshes data after operation
 export async function removeBooking(bookingId) {
     try {
         const response = await fetch(`/api/booking/${bookingId}`, {
@@ -154,7 +171,7 @@ export async function removeBooking(bookingId) {
         });
         
         if (response.ok) {
-            currentBookings = currentBookings.filter(b => b.id !== bookingId);
+            await refreshBookings(); // Reload all bookings from API
             return true;
         } else {
             throw new Error('Failed to delete booking');

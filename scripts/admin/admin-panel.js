@@ -2,9 +2,12 @@
  * ADMIN PANEL MAIN MODULE
  * Main entry point that coordinates all admin panel modules
  * Handles initialization, module setup, and responsive updates
+ * 
+ * CHANGES: Added auto-refresh mechanism every 30 seconds to keep data in sync
+ * with database changes from other sources (like client bookings)
  */
 
-import { loadBusinessHours, initializeData } from './admin-state.js';
+import { loadBusinessHours, initializeData, refreshBookings } from './admin-state.js';
 import { setupNavigation, initializeNavigation } from './admin-navigation.js';
 import { setupDashboard } from './admin-dashboard.js';
 import { setupBookingsSection } from './admin-bookings.js';
@@ -46,6 +49,28 @@ async function initializeAdminPanel() {
     
     // Initialize with dashboard as default
     initializeNavigation();
+    
+    // Add auto-refresh every 30 seconds to keep admin panel in sync
+    setInterval(async () => {
+        const success = await refreshBookings();
+        if (success) {
+            // Update current views if needed
+            const currentSection = getCurrentSection();
+            if (currentSection === 'dashboard') {
+                import('./admin-dashboard.js').then(module => {
+                    module.updateDashboard();
+                });
+            } else if (currentSection === 'calendar') {
+                import('./admin-calendar.js').then(module => {
+                    module.renderAdminCalendar();
+                });
+            } else if (currentSection === 'bookings') {
+                import('./admin-bookings.js').then(module => {
+                    module.updateBookingsSection();
+                });
+            }
+        }
+    }, 30000); // 30 seconds
 }
 
 function setupResponsiveHandlers() {
