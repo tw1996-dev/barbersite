@@ -55,7 +55,8 @@ export async function refreshBookings() {
     try {
         const response = await fetch('/api/bookings');
         if (response.ok) {
-            currentBookings = await response.json();
+            const rawBookings = await response.json();
+            currentBookings = normalizeBookingData(rawBookings);  
             return true;
         }
     } catch (error) {
