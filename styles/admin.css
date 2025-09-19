@@ -1255,30 +1255,21 @@ body {
 }
 
 /* Mobile specific overrides */
-@media (max-width: 940px) {
-    .mobile-bookings-container {
-        display: block;
-    }
-        .bookings-table-container {
-        display: none;
-    }
-     .admin-time-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-    }
-}
 
-/* @media (max-width: 640px) {
+
+@media (max-width: 940px) {
     .bookings-table-container {
         display: none;
     }
-    
+        .mobile-bookings-container {
+        display: block;
+    }
     
     .admin-time-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
-} */
+}
 
 /* Very small screens - Business Hours fix */
 @media (max-width: 400px) {
