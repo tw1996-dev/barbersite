@@ -144,27 +144,27 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`;
     }
 
-    // Refresh bookings from API - with improved error handling
-    async function refreshExistingBookings() {
-        try {
-            const response = await fetch('/api/bookings');
-            if (response.ok) {
-                const rawBookings = await response.json();
-                
-                // Only update if data actually changed to avoid unnecessary re-renders
-                if (JSON.stringify(rawBookings) !== JSON.stringify(existingBookings)) {
-                    const normalizedBookings = normalizeBookingData(rawBookings);
-                    existingBookings = normalizedBookings;
-                    console.log('Bookings updated:', rawBookings.length, 'total bookings');
-                    return true;
-                }
-                return false; // No changes
+// Refresh bookings from API - with improved error handling
+async function refreshExistingBookings() {
+    try {
+        const response = await fetch('/api/bookings');
+        if (response.ok) {
+            const rawBookings = await response.json();
+            
+            // Only update if data actually changed to avoid unnecessary re-renders
+            const normalizedBookings = normalizeBookingData(rawBookings);
+            if (JSON.stringify(normalizedBookings) !== JSON.stringify(existingBookings)) {
+                existingBookings = normalizedBookings;
+                console.log('Bookings updated:', rawBookings.length, 'total bookings');
+                return true;
             }
-        } catch (error) {
-            console.error('Error refreshing bookings:', error);
+            return false; // No changes
         }
-        return false;
+    } catch (error) {
+        console.error('Error refreshing bookings:', error);
     }
+    return false;
+}
 
     // Service Selection Logic
     function setupServiceSelection() {
@@ -482,6 +482,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 timeGrid.appendChild(timeSlot);
             }
         }
+        // Restore selected time slot after refresh
+if (selectedTime) {
+    const previouslySelected = document.querySelector(`[data-time="${selectedTime}"]`);
+    if (previouslySelected && !previouslySelected.classList.contains('unavailable')) {
+        previouslySelected.classList.add('selected');
+    }
+}
     }
     
     function formatTime(hour, minute) {
