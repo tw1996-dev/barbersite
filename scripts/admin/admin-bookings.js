@@ -47,14 +47,16 @@ function updateMobileAllBookingsView() {
         mobileContainer.className = 'mobile-bookings-container';
         
         const bookingsSection = document.getElementById('bookings-section');
-        const tableContainer = bookingsSection.querySelector('.bookings-table-container');
-        if (tableContainer) {
-            tableContainer.style.display = 'none';
-        }
         
         // Insert after filters
         const filtersDiv = bookingsSection.querySelector('.section-header');
         filtersDiv.parentNode.insertBefore(mobileContainer, filtersDiv.nextSibling);
+    }
+    
+    // Hide table container every time this function runs
+    const tableContainer = document.querySelector('.bookings-table-container');
+    if (tableContainer) {
+        tableContainer.style.display = 'none';
     }
     
     const filteredBookings = getFilteredBookings();
@@ -67,7 +69,7 @@ function updateMobileAllBookingsView() {
     }
     
     filteredBookings.forEach(booking => {
-        const card = createMobileBookingCard(booking, true); // true = include all actions
+        const card = createMobileBookingCard(booking, true);
         mobileContainer.appendChild(card);
     });
 }
