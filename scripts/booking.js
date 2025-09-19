@@ -6,6 +6,11 @@ function normalizeBookingData(bookings) {
     }));
 }
 
+function timeToMinutes(timeStr) {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    return hours * 60 + minutes;
+}
+
 // Booking System JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     // Service data
@@ -454,27 +459,30 @@ if (bookingsResponse.ok) {
                 timeSlot.textContent = displayTime;
                 timeSlot.dataset.time = timeString;
 
-                const isAvailable = isTimeSlotAvailable(dateStr, timeString, totals.duration);
-                const endTime = getBookingEndTime(timeString, totals.duration);
-                const endMinutes = timeToMinutes(endTime);
-                const closeMinutes = timeToMinutes(dayHours.close);
-                const fitsInBusinessHours = endMinutes <= closeMinutes;
-                
-                if (!isAvailable || !fitsInBusinessHours) {
-                    timeSlot.classList.add('unavailable');
-                    if (!fitsInBusinessHours) {
-                        timeSlot.title = 'Service would end after closing time';
-                    } else {
-                        timeSlot.title = 'Time slot unavailable due to existing booking';
-                    }
-                } else {
-                    timeSlot.addEventListener('click', () => selectTime(displayTime, timeSlot));
-                }
-                
-                timeGrid.appendChild(timeSlot);
-            }
-        }
+                const isAvailable = isTimeSlotAvailable(dateStr, timeString, totals.duration, currentBookings);
+const endTime = getBookingEndTime(timeString, totals.duration);
+const endMinutes = timeToMinutes(endTime);
+const closeMinutes = timeToMinutes(closeTime);
+const fitsInBusinessHours = endMinutes <= closeMinutes;
+
+// Check if slot is in the past (only for today)
+const now = new Date();
+const today = new Date().toISOString().split('T')[0];
+const isToday = dateStr === today;
+const isPastTime = isToday && timeToMinutes(timeString) <= timeToMinutes(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
+
+if (!isAvailable || !fitsInBusinessHours || isPastTime) {
+    timeSlot.classList.add('unavailable');
+    if (isPastTime) {
+        timeSlot.title = 'This time has already passed';
+    } else if (!fitsInBusinessHours) {
+        timeSlot.title = 'Service would end after closing time';
+    } else {
+        timeSlot.title = 'Time slot unavailable due to existing booking';
     }
+} else {
+    timeSlot.addEventListener('click', () => selectTime(displayTime, timeSlot));
+}
 
     function formatTime(hour, minute) {
         const period = hour >= 12 ? 'PM' : 'AM';
