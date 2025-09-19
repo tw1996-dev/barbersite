@@ -87,10 +87,10 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             // Load existing bookings
             const bookingsResponse = await fetch('/api/bookings');
-if (bookingsResponse.ok) {
-    const rawBookings = await bookingsResponse.json();
-    existingBookings = normalizeBookingData(rawBookings);
-}
+            if (bookingsResponse.ok) {
+                const rawBookings = await bookingsResponse.json();
+                existingBookings = normalizeBookingData(rawBookings);
+            }
 
             // Load business hours
             const hoursResponse = await fetch('/api/business-hours');
@@ -133,12 +133,6 @@ if (bookingsResponse.ok) {
         return true;
     }
 
-    // Helper functions for time calculations
-    function timeToMinutes(timeStr) {
-        const [hours, minutes] = timeStr.split(':').map(Number);
-        return hours * 60 + minutes;
-    }
-
     function getBookingEndTime(startTime, duration) {
         const [hours, minutes] = startTime.split(':').map(Number);
         const startMinutes = hours * 60 + minutes;
@@ -155,13 +149,13 @@ if (bookingsResponse.ok) {
         try {
             const response = await fetch('/api/bookings');
             if (response.ok) {
-                const newBookings = await response.json();
+                const rawBookings = await response.json();
                 
                 // Only update if data actually changed to avoid unnecessary re-renders
-                if (JSON.stringify(newBookings) !== JSON.stringify(existingBookings)) {
-                    const normalizedBookings = normalizeBookingData(newBookings);
+                if (JSON.stringify(rawBookings) !== JSON.stringify(existingBookings)) {
+                    const normalizedBookings = normalizeBookingData(rawBookings);
                     existingBookings = normalizedBookings;
-                    console.log('Bookings updated:', newBookings.length, 'total bookings');
+                    console.log('Bookings updated:', rawBookings.length, 'total bookings');
                     return true;
                 }
                 return false; // No changes
@@ -460,34 +454,36 @@ if (bookingsResponse.ok) {
                 timeSlot.textContent = displayTime;
                 timeSlot.dataset.time = timeString;
 
-const isAvailable = isTimeSlotAvailable(dateStr, timeString, totals.duration, existingBookings);
-const endTime = getBookingEndTime(timeString, totals.duration);
-const endMinutes = timeToMinutes(endTime);
-const closeMinutes = timeToMinutes(closeTime);
-const fitsInBusinessHours = endMinutes <= closeMinutes;
+                const isAvailable = isTimeSlotAvailable(dateStr, timeString, totals.duration);
+                const endTime = getBookingEndTime(timeString, totals.duration);
+                const endMinutes = timeToMinutes(endTime);
+                const closeMinutes = timeToMinutes(dayHours.close);
+                const fitsInBusinessHours = endMinutes <= closeMinutes;
 
-// Check if slot is in the past (only for today)
-const now = new Date();
-const today = new Date().toISOString().split('T')[0];
-const isToday = dateStr === today;
-const isPastTime = isToday && timeToMinutes(timeString) <= timeToMinutes(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
+                // Check if slot is in the past (only for today)
+                const now = new Date();
+                const today = new Date().toISOString().split('T')[0];
+                const isToday = dateStr === today;
+                const isPastTime = isToday && timeToMinutes(timeString) <= timeToMinutes(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
 
-if (!isAvailable || !fitsInBusinessHours || isPastTime) {
-    timeSlot.classList.add('unavailable');
-    if (isPastTime) {
-        timeSlot.title = 'This time has already passed';
-    } else if (!fitsInBusinessHours) {
-        timeSlot.title = 'Service would end after closing time';
-    } else {
-        timeSlot.title = 'Time slot unavailable due to existing booking';
-    }
-} else {
-    timeSlot.addEventListener('click', () => selectTime(displayTime, timeSlot));
-}
-timeGrid.appendChild(timeSlot);
+                if (!isAvailable || !fitsInBusinessHours || isPastTime) {
+                    timeSlot.classList.add('unavailable');
+                    if (isPastTime) {
+                        timeSlot.title = 'This time has already passed';
+                    } else if (!fitsInBusinessHours) {
+                        timeSlot.title = 'Service would end after closing time';
+                    } else {
+                        timeSlot.title = 'Time slot unavailable due to existing booking';
+                    }
+                } else {
+                    timeSlot.addEventListener('click', () => selectTime(displayTime, timeSlot));
+                }
+                
+                timeGrid.appendChild(timeSlot);
             }
         }
     }
+    
     function formatTime(hour, minute) {
         const period = hour >= 12 ? 'PM' : 'AM';
         const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
