@@ -1255,14 +1255,17 @@ body {
 }
 
 /* Mobile specific overrides */
+@media (max-width: 940px) {
+    .mobile-bookings-container {
+        display: block;
+    }
+}
+
 @media (max-width: 640px) {
     .bookings-table-container {
         display: none;
     }
     
-    .mobile-bookings-container {
-        display: block;
-    }
     
     .admin-time-grid {
         grid-template-columns: repeat(2, 1fr);
