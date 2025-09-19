@@ -438,7 +438,7 @@ async function saveNewBooking() {
         notes: form.notes || ''
     };
     
-    addBooking(newBooking);
+    await addBooking(newBooking);
     
     showNotification('Booking created successfully!', 'success');
     resetAddBookingForm();
