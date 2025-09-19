@@ -1255,7 +1255,7 @@ body {
 }
 
 /* Mobile specific overrides */
-@media (max-width: 640px) {
+@media (max-width: 930px) {
     .bookings-table-container {
         display: none;
     }
