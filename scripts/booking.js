@@ -523,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const totals = calculateTotals();
         
         const bookingData = {
-            date: selectedDate.toISOString().split('T')[0],
+            date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
             time: document.querySelector('.time-slot.selected').dataset.time,
             customer: `${document.getElementById('first-name').value} ${document.getElementById('last-name').value}`.trim(),
             phone: document.getElementById('phone').value,
