@@ -30,7 +30,7 @@ export function setupBookingsSection() {
 }
 
 export function updateBookingsSection() {
-    const isMobile = window.innerWidth <= 640;
+    const isMobile = window.innerWidth <= 870;
     
     if (isMobile) {
         updateMobileAllBookingsView();
