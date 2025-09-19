@@ -173,6 +173,12 @@ function updateBookingsTable() {
         tableContainer.style.display = 'block';
     }
     
+    const tableBody = document.querySelector('#all-bookings-table tbody');
+    if (!tableBody) {
+        console.error('Table body not found');
+        return;
+    }
+    
     const filteredBookings = getFilteredBookings();
     
     tableBody.innerHTML = '';
