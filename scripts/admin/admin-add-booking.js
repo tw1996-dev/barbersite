@@ -379,6 +379,7 @@ function setupFormValidation() {
 async function saveNewBooking() {
     // Refresh bookings to get latest data before conflict check
     await refreshBookings();
+    
     const form = {
         customer: document.getElementById('customer-name')?.value.trim(),
         phone: document.getElementById('customer-phone')?.value.trim(),
@@ -400,7 +401,7 @@ async function saveNewBooking() {
     const totalDuration = selectedServices.reduce((sum, checkbox) => 
         sum + parseInt(checkbox.getAttribute('data-duration')), 0);
     
-    // Final conflict check
+    // Final conflict check with fresh data from API
     if (!isTimeSlotAvailable(form.date, form.time, totalDuration, currentBookings)) {
         showNotification('This time slot conflicts with existing bookings. Please select another time.', 'error');
         return;

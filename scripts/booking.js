@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPackage = null;
     let existingBookings = [];
     let businessHours = {};
+    let bookingRefreshInterval;
 
     // DOM elements
     const serviceCheckboxes = document.querySelectorAll('input[name="services"]');
@@ -51,13 +52,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize
     init();
 
-    async function init() {
-        await loadInitialData();
-        setupServiceSelection();
-        setupCalendar();
-        setupForm();
-        updateSummary();
-    }
+  async function init() {
+    await loadInitialData();
+    setupServiceSelection();
+    setupCalendar();
+    setupForm();
+    updateSummary();
+    
+    // Start auto-refresh every 3 seconds
+    bookingRefreshInterval = setInterval(refreshExistingBookings, 3000);
+}
 
     // Load data from API
     async function loadInitialData() {
@@ -125,6 +129,25 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`;
     }
+
+// Refresh bookings from API
+async function refreshExistingBookings() {
+    try {
+        const response = await fetch('/api/bookings');
+        if (response.ok) {
+            existingBookings = await response.json();
+            
+            // Re-render time slots if date is selected
+            if (selectedDate) {
+                generateTimeSlots(selectedDate);
+            }
+            return true;
+        }
+    } catch (error) {
+        console.error('Error refreshing bookings:', error);
+    }
+    return false;
+}
 
     // Service Selection Logic
     function setupServiceSelection() {
@@ -515,50 +538,67 @@ document.addEventListener('DOMContentLoaded', function() {
         return email === '' || emailRegex.test(email);
     }
 
-    async function confirmBooking() {
-        if (confirmBtn.disabled) return;
+async function confirmBooking() {
+    if (confirmBtn.disabled) return;
 
-        const selectedServicesArray = Array.from(selectedServices);
-        const serviceNames = selectedServicesArray.map(serviceId => services[serviceId].name);
-        const totals = calculateTotals();
-        
-        const bookingData = {
-            date: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
-            time: document.querySelector('.time-slot.selected').dataset.time,
-            customer: `${document.getElementById('first-name').value} ${document.getElementById('last-name').value}`.trim(),
-            phone: document.getElementById('phone').value,
-            email: document.getElementById('email').value,
-            services: serviceNames,
-            duration: totals.duration,
-            price: totals.price,
-            status: 'confirmed',
-            notes: document.getElementById('notes').value
-        };
-
-        try {
-            const response = await fetch('/api/bookings', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(bookingData)
-            });
-
-            if (response.ok) {
-                const newBooking = await response.json();
-                alert(`Booking confirmed! Your appointment ID is ${newBooking.id}\n\nServices: ${serviceNames.join(', ')}\nDate: ${selectedDate.toLocaleDateString()}\nTime: ${selectedTime}\nTotal: $${totals.price}`);
-                
-                // Update existing bookings for future availability checks
-                existingBookings.push(newBooking);
-                
-                // Optional: Reset form or redirect
-                // resetBookingForm();
-            } else {
-                throw new Error('Failed to create booking');
-            }
-        } catch (error) {
-            console.error('Error creating booking:', error);
-            alert('Sorry, there was an error creating your booking. Please try again.');
-        }
+    // Refresh bookings before final validation
+    await refreshExistingBookings();
+    
+    // Final conflict check with fresh data
+    const totals = calculateTotals();
+    const timeSlotElement = document.querySelector('.time-slot.selected');
+    if (!timeSlotElement) {
+        alert('Please select a time slot.');
+        return;
     }
-});
+    
+    const selectedTimeSlot = timeSlotElement.dataset.time;
+    const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+    
+    if (!isTimeSlotAvailable(dateStr, selectedTimeSlot, totals.duration)) {
+        alert('Sorry, this time slot is no longer available. Please select another time.');
+        return;
+    }
+
+    const selectedServicesArray = Array.from(selectedServices);
+    const serviceNames = selectedServicesArray.map(serviceId => services[serviceId].name);
+
+    const bookingData = {
+        date: dateStr,
+        time: selectedTimeSlot,
+        customer: `${document.getElementById('first-name').value} ${document.getElementById('last-name').value}`.trim(),
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        services: serviceNames,
+        duration: totals.duration,
+        price: totals.price,
+        status: 'confirmed',
+        notes: document.getElementById('notes').value
+    };
+
+    try {
+        const response = await fetch('/api/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData)
+        });
+
+        if (response.ok) {
+            const newBooking = await response.json();
+            alert(`Booking confirmed! Your appointment ID is ${newBooking.id}\n\nServices: ${serviceNames.join(', ')}\nDate: ${selectedDate.toLocaleDateString()}\nTime: ${selectedTime}\nTotal: $${totals.price}`);
+            
+            // Update existing bookings for future availability checks
+            existingBookings.push(newBooking);
+            
+            // Optional: Reset form or redirect
+            // resetBookingForm();
+        } else {
+            throw new Error('Failed to create booking');
+        }
+    } catch (error) {
+        console.error('Error creating booking:', error);
+        alert('Sorry, there was an error creating your booking. Please try again.');
+    }
+}

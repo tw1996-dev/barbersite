@@ -7,6 +7,45 @@ const pool = new Pool({
   }
 });
 
+// Helper functions for server-side conflict detection
+function timeToMinutes(timeStr) {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+function getBookingEndTime(startTime, duration) {
+  const [hours, minutes] = startTime.split(':').map(Number);
+  const startMinutes = hours * 60 + minutes;
+  const endMinutes = startMinutes + duration;
+  
+  const endHours = Math.floor(endMinutes / 60);
+  const endMins = endMinutes % 60;
+  
+  return `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`;
+}
+
+function checkTimeSlotConflict(existingBookings, newDate, newTime, newDuration) {
+  const newEndTime = getBookingEndTime(newTime, newDuration);
+  const newStartMinutes = timeToMinutes(newTime);
+  const newEndMinutes = timeToMinutes(newEndTime);
+  
+  const dayBookings = existingBookings.filter(booking => 
+    booking.date === newDate && booking.status === 'confirmed'
+  );
+  
+  for (const booking of dayBookings) {
+    const existingStartMinutes = timeToMinutes(booking.time);
+    const existingEndTime = getBookingEndTime(booking.time, booking.duration);
+    const existingEndMinutes = timeToMinutes(existingEndTime);
+    
+    if (newStartMinutes < existingEndMinutes && newEndMinutes > existingStartMinutes) {
+      return true; // Conflict found
+    }
+  }
+  
+  return false; // No conflict
+}
+
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
@@ -21,6 +60,23 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const { date, time, customer, phone, email, services, duration, price, status, notes } = req.body;
+      
+      // Validation
+      if (!date || !time || !customer || !phone || !services || !duration || !price) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+      
+      // Get existing bookings for conflict check
+      const existingResult = await pool.query('SELECT * FROM bookings WHERE date = $1 AND status = $2', [date, 'confirmed']);
+      const existingBookings = existingResult.rows;
+      
+      // Server-side conflict check
+      if (checkTimeSlotConflict(existingBookings, date, time, duration)) {
+        return res.status(409).json({ 
+          error: 'Time slot conflict',
+          message: 'This time slot conflicts with an existing booking'
+        });
+      }
       
       const result = await pool.query(
         'INSERT INTO bookings (date, time, customer, phone, email, services, duration, price, status, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',

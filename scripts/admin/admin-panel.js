@@ -70,7 +70,7 @@ async function initializeAdminPanel() {
                 });
             }
         }
-    }, 30000); // 30 seconds
+    }, 10000); // 10 seconds
 }
 
 function setupResponsiveHandlers() {
