@@ -17,24 +17,6 @@ const loginAttempts = new Map();
  * Creates JWT token and stores session in database
  */
 export default async function handler(req, res) {
-  // DEBUG - sprawdź zmienne środowiskowe i request
-  console.log("LOGIN DEBUG:", {
-    method: req.method,
-    hasBody: !!req.body,
-    bodyKeys: req.body ? Object.keys(req.body) : [],
-    hasPassword: !!req.body?.password,
-    passwordLength: req.body?.password?.length || 0,
-    envVars: {
-      hasPasswordHash: !!process.env.ADMIN_PASSWORD_HASH,
-      passwordHashStart:
-        process.env.ADMIN_PASSWORD_HASH?.substring(0, 10) + "...",
-      hasJwtSecret: !!process.env.JWT_SECRET,
-      jwtSecretStart: process.env.JWT_SECRET?.substring(0, 10) + "...",
-      hasDbUrl: !!process.env.DATABASE_URL,
-      dbUrlStart: process.env.DATABASE_URL?.substring(0, 30) + "...",
-    },
-  });
-
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -44,8 +26,6 @@ export default async function handler(req, res) {
     const clientIP =
       req.headers["x-forwarded-for"] || req.connection.remoteAddress;
     const userAgent = req.headers["user-agent"] || "";
-
-    console.log("Login attempt for password:", password); // TEMPORARY DEBUG
 
     // Rate limiting - max 5 attempts per IP per 15 minutes
     const now = Date.now();
@@ -71,7 +51,6 @@ export default async function handler(req, res) {
     if (!password) {
       attempts.count++;
       loginAttempts.set(clientIP, attempts);
-      console.log("No password provided");
       return res.status(400).json({ error: "Password is required" });
     }
 
@@ -82,24 +61,17 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Server configuration error" });
     }
 
-    console.log("About to compare password with hash...");
-
     // Verify password using bcrypt
     const isPasswordValid = await bcrypt.compare(password, storedPasswordHash);
-
-    console.log("Password comparison result:", isPasswordValid);
 
     if (!isPasswordValid) {
       attempts.count++;
       loginAttempts.set(clientIP, attempts);
-      console.log("Invalid password");
       return res.status(401).json({ error: "Invalid password" });
     }
 
     // Password is correct - reset rate limiting
     loginAttempts.delete(clientIP);
-
-    console.log("Password valid, generating JWT...");
 
     // Generate JWT token
     const jwtSecret = process.env.JWT_SECRET;
@@ -117,8 +89,6 @@ export default async function handler(req, res) {
       { expiresIn: "8h" } // 8 hour session
     );
 
-    console.log("JWT generated, storing in database...");
-
     // Store session in database
     const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000); // 8 hours from now
 
@@ -127,8 +97,6 @@ export default async function handler(req, res) {
       [token, expiresAt, clientIP, userAgent]
     );
 
-    console.log("Session stored in database");
-
     // Set secure HTTP-only cookie
     res.setHeader(
       "Set-Cookie",
@@ -136,8 +104,6 @@ export default async function handler(req, res) {
         8 * 60 * 60
       }; Path=/`
     );
-
-    console.log("Login successful!");
 
     return res.status(200).json({
       success: true,
