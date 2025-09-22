@@ -26,7 +26,22 @@ export function setupDashboard() {
     const dashboardFilter = document.getElementById('dashboard-filter');
     if (dashboardFilter) {
         dashboardFilter.addEventListener('change', (e) => {
-            setCurrentDashboardFilter(e.target.value);
+            const selectedFilter = e.target.value;
+            setCurrentDashboardFilter(selectedFilter);
+            
+            // If current time filters are selected, switch to current month
+            if (['today', 'week', 'month'].includes(selectedFilter)) {
+                const now = new Date();
+                setCurrentDashboardMonth(now.getMonth());
+                setCurrentDashboardYear(now.getFullYear());
+                
+                // Update month selector
+                const monthSelect = document.getElementById('dashboard-month-filter');
+                if (monthSelect) {
+                    monthSelect.value = `${now.getFullYear()}-${now.getMonth()}`;
+                }
+            }
+            
             updateDashboard();
         });
     }
