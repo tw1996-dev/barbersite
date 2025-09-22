@@ -282,17 +282,17 @@ function updateAddBookingTimeSlots() {
             const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
             const displayTime = formatTime(timeString);
             
-            const isAvailable = isTimeSlotAvailable(selectedAddBookingDate, timeString, totalDuration, currentBookings);
-            const endTime = getBookingEndTime(timeString, totalDuration);
-            const endMinutes = timeToMinutes(endTime);
-            const closeMinutes = timeToMinutes(closeTime);
-            const fitsInBusinessHours = endMinutes <= closeMinutes;
+            // Check if slot is in the past (only for today)
+            const now = new Date();
+            const today = new Date().toISOString().split('T')[0];
+            const isToday = selectedAddBookingDate === today;
+            const isPastTime = isToday && timeToMinutes(timeString) <= timeToMinutes(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
             
             const timeSlot = document.createElement('div');
             timeSlot.className = 'admin-time-slot';
             timeSlot.textContent = displayTime;
             
-            if (!isAvailable || !fitsInBusinessHours) {
+            if (!isAvailable || !fitsInBusinessHours || isPastTime) {
                 timeSlot.classList.add('unavailable');
                 if (!fitsInBusinessHours) {
                     timeSlot.title = 'Service would end after closing time';
