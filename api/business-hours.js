@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { withAuth } from "./auth/auth-middleware.js";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -7,7 +8,7 @@ const pool = new Pool({
   },
 });
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method === "GET") {
     try {
       const result = await pool.query(
@@ -44,3 +45,5 @@ export default async function handler(req, res) {
 
   return res.status(405).json({ error: "Method not allowed" });
 }
+
+export default withAuth(handler);
