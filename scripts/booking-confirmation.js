@@ -89,7 +89,6 @@ function createConfirmationHTML(booking) {
                 </div>
                 
                 <div class="contact-info">
-                    <h3>Visit Us</h3>
                     <div class="contact-item">
                         <span class="contact-icon">📍</span>
                         <div class="contact-details">
