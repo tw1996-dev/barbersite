@@ -537,7 +537,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const endTime = getBookingEndTime(timeString, totals.duration);
         const endMinutes = timeToMinutes(endTime);
         const closeMinutes = timeToMinutes(dayHours.close);
-        const fitsInBusinessHours = endMinutes <= closeMinutes;
+        const overtimeBuffer = dayHours.overtime_buffer_minutes || 0;
+        const fitsInBusinessHours = endMinutes <= closeMinutes + overtimeBuffer;
 
         // Check if slot is in the past (only for today)
         const now = new Date();
