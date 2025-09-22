@@ -88,17 +88,17 @@ function createConfirmationHTML(booking) {
                     </div>
                 </div>
                 
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <span class="contact-icon">📍</span>
-                        <div class="contact-details">
-                            <span class="contact-text">123 Main Street<br>Downtown, NY 10001</span>
+                <div class="confirmation-contact-info">
+                    <div class="confirmation-contact-item">
+                       <span class="confirmation-contact-icon">📍</span>
+                        <div class="confirmation-contact-details">
+                            <span class="confirmation-contact-text">123 Main Street<br>Downtown, NY 10001</span>
                             <a href="https://maps.google.com/?q=123+Main+Street,+Downtown,+NY+10001" 
                                target="_blank" class="nav-button">Get Directions</a>
                         </div>
                     </div>
-                    <div class="contact-item">
-                        <span class="contact-icon">☎</span>
+                    <div class="confirmation-contact-item">
+                        <span class="confirmation-contact-icon">☎</span>
                         <div class="contact-details">
                             <span class="contact-text">+1 (234) 567-890</span>
                             <a href="tel:+1234567890" class="contact-button">Call Us</a>

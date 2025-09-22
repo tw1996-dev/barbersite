@@ -629,7 +629,7 @@ body {
     padding-top: 15px;
   }
 
-  ..contact-symbol {
+  .contact-symbol {
     margin-top: -3px;
   }
 }
@@ -1376,32 +1376,32 @@ body {
   font-weight: 700;
 }
 
-.contact-item {
+.confirmation-contact-item {
   display: flex;
   align-items: flex-start;
   margin-bottom: 16px;
   gap: 12px;
 }
 
-.contact-item:last-child {
+.confirmation-contact-item:last-child {
   margin-bottom: 0;
 }
 
-.contact-icon {
+.confirmation-contact-icon {
   font-size: 1.2rem;
   flex-shrink: 0;
   margin-top: 2px;
   color: #d4af37;
 }
 
-.contact-details {
+.confirmation-contact-details {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.contact-text {
+.confirmation-contact-text {
   font-family: "DM Sans", sans-serif;
   line-height: 1.4;
   color: #bbb;
@@ -1475,13 +1475,13 @@ body {
     margin-left: 0;
   }
 
-  .contact-item {
+  .confirmation-contact-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
 
-  .contact-details {
+  .confirmation-contact-details {
     width: 100%;
   }
 }
@@ -1517,13 +1517,13 @@ body {
   padding: 24px;
 }
 
-.contact-info {
+.confirmation-contact-info {
   margin-top: 30px;
   padding-top: 20px;
   border-top: 1px solid rgba(212, 175, 55, 0.2);
 }
 
-.contact-info h3 {
+.confirmation-contact-info h3 {
   font-family: "Oswald", sans-serif;
   font-size: 1.2rem;
   font-weight: 600;
@@ -1541,7 +1541,7 @@ body {
   margin: 0 auto;
 }
 
-.contact-item {
+.confirmation-contact-item {
   width: 100%;
 }
 
@@ -1571,12 +1571,12 @@ body {
 }
 
 /* Hide contact text and details - only show buttons */
-.contact-text,
-.contact-details {
+.confirmation-contact-text,
+.confirmation-contact-details {
   display: none;
 }
 
-.contact-icon {
+.confirmation-contact-icon {
   display: none;
 }
 
@@ -1591,8 +1591,8 @@ body {
   font-size: 1rem;
 }
 
-/* Contact Section Fix - Dopasowany do istniejącej struktury */
-.contact-info {
+/* Contact Section Fix -  */
+.confirmation-contact-info {
   margin-top: 30px;
   padding-top: 20px;
   border-top: 1px solid rgba(212, 175, 55, 0.2);
@@ -1602,29 +1602,29 @@ body {
   gap: 12px;
 }
 
-.contact-info h3 {
+.confirmation-contact-info h3 {
   display: none;
 }
 
-.contact-item {
+.confirmation-contact-item {
   display: flex;
   justify-content: center;
   width: 100%;
   max-width: 250px;
 }
 
-.contact-details {
+.confirmation-contact-details {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
 }
 
-.contact-text {
+.confirmation-contact-text {
   display: none;
 }
 
-.contact-icon {
+.confirmation-contact-icon {
   display: none;
 }
 
