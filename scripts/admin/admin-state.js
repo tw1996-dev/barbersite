@@ -126,8 +126,26 @@ export let addBookingCalendarYear = new Date().getFullYear();
 export let selectedAddBookingDate = null;
 export let selectedAdminServices = new Set();
 
-// Initialize data from API
+// Initialize data from API - only after authentication
 export async function initializeData() {
+  // Check if user is authenticated first
+  try {
+    const authResponse = await fetch("/api/auth/verify", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (!authResponse.ok) {
+      // User not authenticated - use default data
+      console.log("Not authenticated, using default data");
+      return;
+    }
+  } catch (error) {
+    console.log("Auth check failed, using default data");
+    return;
+  }
+
+  // User is authenticated - load data from API
   currentBookings = await fetchBookings();
   businessHours = await fetchBusinessHours();
 }
