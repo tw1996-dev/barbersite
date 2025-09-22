@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { withAuth } from "./auth/auth-middleware.js";
+import { requireAuth } from "./auth/auth-middleware.js";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -10,6 +10,7 @@ const pool = new Pool({
 
 async function handler(req, res) {
   if (req.method === "GET") {
+    // Public access - booking page needs business hours
     try {
       const result = await pool.query(
         "SELECT * FROM business_hours ORDER BY id"
@@ -21,6 +22,10 @@ async function handler(req, res) {
   }
 
   if (req.method === "PUT") {
+    // Protected access - only admin can update business hours
+    const authResult = await requireAuth(req, res);
+    if (authResult !== true) return; // Auth middleware already sent error response
+
     try {
       const updates = req.body;
 
@@ -46,4 +51,4 @@ async function handler(req, res) {
   return res.status(405).json({ error: "Method not allowed" });
 }
 
-export default withAuth(handler);
+export default handler;

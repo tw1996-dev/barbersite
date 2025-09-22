@@ -1,5 +1,4 @@
 import { Pool } from "pg";
-import { withAuth } from "./auth/auth-middleware.js";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -59,6 +58,7 @@ function checkTimeSlotConflict(
 
 async function handler(req, res) {
   if (req.method === "GET") {
+    // Public access for booking page to check available slots
     try {
       const result = await pool.query(
         "SELECT * FROM bookings ORDER BY date, time"
@@ -71,6 +71,7 @@ async function handler(req, res) {
   }
 
   if (req.method === "POST") {
+    // Public access for customers to create bookings
     try {
       const {
         date,
@@ -139,4 +140,5 @@ async function handler(req, res) {
   return res.status(405).json({ error: "Method not allowed" });
 }
 
-export default withAuth(handler);
+// Export without auth protection - public API for booking page
+export default handler;
