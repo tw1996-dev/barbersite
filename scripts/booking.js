@@ -764,15 +764,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (response.ok) {
         const newBooking = await response.json();
-        alert(
-          `Booking confirmed! Your appointment ID is ${
-            newBooking.id
-          }\n\nServices: ${serviceNames.join(
-            ", "
-          )}\nDate: ${selectedDate.toLocaleDateString()}\nTime: ${selectedTime}\nTotal: $${
-            totals.price
-          }`
+        // Save booking confirmation to localStorage
+        const bookingConfirmation = {
+          id: newBooking.id,
+          services: serviceNames,
+          date: selectedDate.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+          time: selectedTime,
+          totalPrice: totals.price,
+          customer: `${document.getElementById("first-name").value} ${
+            document.getElementById("last-name").value
+          }`.trim(),
+          phone: document.getElementById("phone").value,
+          email: document.getElementById("email").value,
+          timestamp: new Date().toISOString(),
+        };
+
+        localStorage.setItem(
+          "bookingConfirmation",
+          JSON.stringify(bookingConfirmation)
         );
+
+        // Redirect to booking page to show confirmation
+        window.location.href = "booking.html?confirmed=true";
 
         // Immediately refresh bookings to show new booking
         await refreshExistingBookings();
