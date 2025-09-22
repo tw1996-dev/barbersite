@@ -238,17 +238,6 @@
                 </div>
 
                 <div class="schedule-container">
-                    <div class="overtime-buffer-section">
-                        <h3>Overtime Buffer</h3>
-                        <p class="buffer-description">Allow appointments to extend beyond closing time by up to:</p>
-                        <div class="buffer-input-group">
-                            <input type="number" id="overtime-buffer" min="0" max="120" value="0" step="5">
-                            <span class="buffer-unit">minutes</span>
-                        </div>
-                        <p class="buffer-example">Example: With 30min buffer, last appointment can start at 17:30 even
-                            if closing at 18:00</p>
-                    </div>
-
                     <div class="schedule-card">
                         <h3>Weekly Schedule</h3>
                         <div class="schedule-grid">
@@ -302,6 +291,18 @@
                                 <input type="time" class="close-time" value="15:00" disabled>
                             </div>
                         </div>
+                    </div>
+
+
+                    <div class="overtime-buffer-section">
+                        <h3>Overtime Buffer</h3>
+                        <p class="buffer-description">Allow appointments to extend beyond closing time by up to:</p>
+                        <div class="buffer-input-group">
+                            <input type="number" id="overtime-buffer" min="0" max="120" value="0" step="5">
+                            <span class="buffer-unit">minutes</span>
+                        </div>
+                        <p class="buffer-example">Example: With 30min buffer, last appointment can start at 17:30 even
+                            if closing at 18:00</p>
                     </div>
 
                     <div class="schedule-presets">

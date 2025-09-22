@@ -1249,7 +1249,6 @@ body {
 
 @media (min-width: 1024px) {
   .schedule-container {
-    grid-template-columns: 2fr 1fr;
     gap: 32px;
   }
 
@@ -1419,6 +1418,7 @@ body {
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
+  max-width: fit-content;
 }
 
 .overtime-buffer-section h3 {
