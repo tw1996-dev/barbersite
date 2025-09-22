@@ -106,6 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
             enabled: day.enabled,
             open: day.open_time.substring(0, 5),
             close: day.close_time.substring(0, 5),
+            overtime_buffer_minutes: day.overtime_buffer_minutes || 0,
           };
         });
       }
