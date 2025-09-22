@@ -99,8 +99,8 @@ function createConfirmationHTML(booking) {
                     </div>
                     <div class="confirmation-contact-item">
                         <span class="confirmation-contact-icon">☎</span>
-                        <div class="contact-details">
-                            <span class="contact-text">+1 (234) 567-890</span>
+                       <div class="confirmation-contact-details">
+                            <span class="confirmation-contact-text">+1 (234) 567-890</span>
                             <a href="tel:+1234567890" class="contact-button">Call Us</a>
                         </div>
                     </div>
