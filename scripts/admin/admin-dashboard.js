@@ -31,23 +31,26 @@ export function setupDashboard() {
       const selectedFilter = e.target.value;
       setCurrentDashboardFilter(selectedFilter);
 
-      // Switch to current month if user selects current time filters AND we're not in current month
-      if (
-        ["today", "week", "month"].includes(selectedFilter) &&
-        !isCurrentMonthSelected()
-      ) {
-        const now = new Date();
-        setCurrentDashboardMonth(now.getMonth());
-        setCurrentDashboardYear(now.getFullYear());
+      // Small timeout to ensure dropdown interaction is complete before switching months
+      setTimeout(() => {
+        // Switch to current month if user selects current time filters AND we're not in current month
+        if (
+          ["today", "week", "month"].includes(selectedFilter) &&
+          !isCurrentMonthSelected()
+        ) {
+          const now = new Date();
+          setCurrentDashboardMonth(now.getMonth());
+          setCurrentDashboardYear(now.getFullYear());
 
-        // Update month selector
-        const monthSelect = document.getElementById("dashboard-month-filter");
-        if (monthSelect) {
-          monthSelect.value = `${now.getFullYear()}-${now.getMonth()}`;
+          // Update month selector
+          const monthSelect = document.getElementById("dashboard-month-filter");
+          if (monthSelect) {
+            monthSelect.value = `${now.getFullYear()}-${now.getMonth()}`;
+          }
         }
-      }
 
-      updateDashboard();
+        updateDashboard();
+      }, 150); // 150ms delay to ensure proper dropdown interaction
     });
   }
 
