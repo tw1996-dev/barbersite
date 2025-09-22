@@ -25,37 +25,17 @@ import {
 export function setupDashboard() {
   const dashboardFilter = document.getElementById("dashboard-filter");
 
-  // This function synchronizes the dashboard filters when a user clicks on time-based filters that should show current data but the month selector is set to a different month.
-  function syncFiltersOnClick() {
-    const dashboardFilter = document.getElementById("dashboard-filter");
-    const monthSelect = document.getElementById("dashboard-month-filter");
-
-    if (dashboardFilter && monthSelect) {
-      // Check if currently selected filter is "current time" but month is not current
-      const selectedFilter = dashboardFilter.value;
-      const isCurrentTimeFilter = ["today", "week", "month"].includes(
-        selectedFilter
-      );
-      const isCurrentMonth = isCurrentMonthSelected();
-
-      if (isCurrentTimeFilter && !isCurrentMonth) {
-        // Switch to current month
-        const now = new Date();
-        setCurrentDashboardMonth(now.getMonth());
-        setCurrentDashboardYear(now.getFullYear());
-        monthSelect.value = `${now.getFullYear()}-${now.getMonth()}`;
-        updateDashboard();
-      }
-    }
-  }
-
   if (dashboardFilter) {
+    // Change event listener - only triggers when filter value actually changes
     dashboardFilter.addEventListener("change", (e) => {
       const selectedFilter = e.target.value;
       setCurrentDashboardFilter(selectedFilter);
 
-      // If current time filters are selected, switch to current month
-      if (["today", "week", "month"].includes(selectedFilter)) {
+      // Switch to current month if user selects current time filters AND we're not in current month
+      if (
+        ["today", "week", "month"].includes(selectedFilter) &&
+        !isCurrentMonthSelected()
+      ) {
         const now = new Date();
         setCurrentDashboardMonth(now.getMonth());
         setCurrentDashboardYear(now.getFullYear());
@@ -69,8 +49,6 @@ export function setupDashboard() {
 
       updateDashboard();
     });
-
-    dashboardFilter.addEventListener("click", syncFiltersOnClick);
   }
 
   // Add month selector for dashboard
@@ -136,9 +114,9 @@ export function updateDashboard() {
 
   // Update revenue labels and visibility
   updateRevenueLabels(isCurrentMonth);
-  updateRevenueCardsVisibility();
+  updateRevenueCardsVisibility(isCurrentMonth);
 
-  // Update revenue data
+  // Update revenue data - always show selected month data if not current month
   if (isCurrentMonth) {
     updateCurrentMonthRevenue();
   } else {
@@ -209,7 +187,7 @@ function updateRevenueLabels(isCurrentMonth) {
   }
 }
 
-function updateRevenueCardsVisibility() {
+function updateRevenueCardsVisibility(isCurrentMonth) {
   const todayCard = document.querySelector(
     ".revenue-cards .revenue-card:nth-child(1)"
   );
@@ -225,14 +203,17 @@ function updateRevenueCardsVisibility() {
   if (weekCard) weekCard.classList.remove("hidden");
   if (monthCard) monthCard.classList.remove("hidden");
 
-  // Apply filter-based visibility
-  if (currentDashboardFilter === "week") {
-    if (todayCard) todayCard.classList.add("hidden");
-    if (monthCard) monthCard.classList.add("hidden");
-  } else if (currentDashboardFilter === "month") {
-    if (todayCard) todayCard.classList.add("hidden");
-    if (weekCard) weekCard.classList.add("hidden");
+  // Apply filter-based visibility ONLY for current month
+  if (isCurrentMonth) {
+    if (currentDashboardFilter === "week") {
+      if (todayCard) todayCard.classList.add("hidden");
+      if (monthCard) monthCard.classList.add("hidden");
+    } else if (currentDashboardFilter === "month") {
+      if (todayCard) todayCard.classList.add("hidden");
+      if (weekCard) weekCard.classList.add("hidden");
+    }
   }
+  // For non-current months, always show all three cards with averages/totals
 }
 
 function updateCurrentMonthRevenue() {
