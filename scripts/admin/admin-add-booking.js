@@ -156,7 +156,7 @@ export function renderAddBookingCalendar() {
     calendarGrid.innerHTML = '';
     
     // Add day headers
-    const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayHeaders = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     dayHeaders.forEach(day => {
         const dayHeader = document.createElement('div');
         dayHeader.className = 'calendar-day-header';
@@ -172,7 +172,7 @@ export function renderAddBookingCalendar() {
     });
     
     // Get calendar info
-    const firstDay = new Date(addBookingCalendarYear, addBookingCalendarMonth, 1).getDay();
+    const firstDay = (new Date(addBookingCalendarYear, addBookingCalendarMonth, 1).getDay() + 6) % 7;
     const daysInMonth = new Date(addBookingCalendarYear, addBookingCalendarMonth + 1, 0).getDate();
     const today = new Date();
     today.setHours(0, 0, 0, 0);

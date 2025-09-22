@@ -348,7 +348,7 @@ async function refreshExistingBookings() {
         
         calendarGrid.innerHTML = '';
 
-        const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const dayHeaders = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         dayHeaders.forEach(day => {
             const dayHeader = document.createElement('div');
             dayHeader.className = 'calendar-day-header';
@@ -356,7 +356,7 @@ async function refreshExistingBookings() {
             calendarGrid.appendChild(dayHeader);
         });
 
-        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const firstDay = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7;
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         const today = new Date();
         today.setHours(0, 0, 0, 0);
