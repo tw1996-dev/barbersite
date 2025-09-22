@@ -287,6 +287,12 @@ function updateAddBookingTimeSlots() {
             const today = new Date().toISOString().split('T')[0];
             const isToday = selectedAddBookingDate === today;
             const isPastTime = isToday && timeToMinutes(timeString) <= timeToMinutes(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
+
+            const isAvailable = isTimeSlotAvailable(selectedAddBookingDate, timeString, totalDuration, currentBookings);
+            const endTime = getBookingEndTime(timeString, totalDuration);
+            const endMinutes = timeToMinutes(endTime);
+            const closeMinutes = timeToMinutes(closeTime);
+            const fitsInBusinessHours = endMinutes <= closeMinutes;
             
             const timeSlot = document.createElement('div');
             timeSlot.className = 'admin-time-slot';
