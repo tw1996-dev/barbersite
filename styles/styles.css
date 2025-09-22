@@ -1279,19 +1279,19 @@ body {
 
 /* Booking Confirmation Banner */
 .booking-confirmation-banner {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+  border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 16px;
   margin-bottom: 30px;
   padding: 0;
-  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
   animation: slideInFromTop 0.5s ease-out;
   overflow: hidden;
 }
 
 .confirmation-content {
   position: relative;
-  color: white;
+  color: #1a1410;
 }
 
 .confirmation-header {
@@ -1299,8 +1299,8 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  background: rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(26, 20, 16, 0.1);
+  border-bottom: 1px solid rgba(26, 20, 16, 0.1);
 }
 
 .confirmation-header h2 {
@@ -1309,6 +1309,7 @@ body {
   font-weight: 600;
   margin: 0;
   flex: 1;
+  color: #1a1410;
 }
 
 .success-icon {
@@ -1320,7 +1321,7 @@ body {
 .close-confirmation {
   background: none;
   border: none;
-  color: white;
+  color: #1a1410;
   font-size: 1.8rem;
   cursor: pointer;
   padding: 4px 8px;
@@ -1330,23 +1331,11 @@ body {
 }
 
 .close-confirmation:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(26, 20, 16, 0.1);
 }
 
 .confirmation-details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
   padding: 24px;
-}
-
-.booking-info h3,
-.contact-info h3 {
-  font-family: "Oswald", sans-serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: rgba(255, 255, 255, 0.9);
 }
 
 .detail-row {
@@ -1355,7 +1344,7 @@ body {
   align-items: center;
   margin-bottom: 12px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(26, 20, 16, 0.1);
 }
 
 .detail-row:last-child {
@@ -1366,7 +1355,7 @@ body {
 .detail-label {
   font-family: "DM Sans", sans-serif;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(26, 20, 16, 0.8);
   font-size: 0.9rem;
 }
 
@@ -1376,65 +1365,13 @@ body {
   text-align: right;
   flex: 1;
   margin-left: 16px;
+  color: #1a1410;
 }
 
 .detail-value.price {
   font-size: 1.2rem;
-  color: #f0f9ff;
-}
-
-.contact-item {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 16px;
-  gap: 12px;
-}
-
-.contact-item:last-child {
-  margin-bottom: 0;
-}
-
-.contact-icon {
-  font-size: 1.2rem;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.contact-details {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.contact-text {
-  font-family: "DM Sans", sans-serif;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.9rem;
-}
-
-.nav-button,
-.contact-button {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  text-decoration: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  display: inline-block;
-  font-family: "DM Sans", sans-serif;
-}
-
-.nav-button:hover,
-.contact-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: #1a1410;
+  font-weight: 700;
 }
 
 /* Animation */
@@ -1465,8 +1402,6 @@ body {
   }
 
   .confirmation-details {
-    grid-template-columns: 1fr;
-    gap: 24px;
     padding: 20px;
   }
 
@@ -1479,16 +1414,6 @@ body {
   .detail-value {
     text-align: left;
     margin-left: 0;
-  }
-
-  .contact-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .contact-details {
-    width: 100%;
   }
 }
 
@@ -1508,11 +1433,5 @@ body {
 
   .confirmation-details {
     padding: 16px;
-  }
-
-  .nav-button,
-  .contact-button {
-    width: 100%;
-    padding: 10px 16px;
   }
 }
