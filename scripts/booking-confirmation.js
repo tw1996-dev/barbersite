@@ -1,3 +1,5 @@
+import { addToCalendar, downloadIcsFile } from "./calendar.js";
+
 /**
  * BOOKING CONFIRMATION MODULE
  * Handles display of booking confirmation after successful reservation
@@ -88,15 +90,29 @@ function createConfirmationHTML(booking) {
                     </div>
                 </div>
                 
-<div class="email-confirmation-info">
-        <h4>📧 Email Confirmation Sent</h4>
-        <p>A confirmation email has been sent to your email address with all appointment details.</p>
-        <p><small><strong>Note:</strong> Please check your spam/junk folder if you don't see the email in your inbox.</small></p>
-    </div>
+                <div class="email-confirmation-info">
+                    <h4>📧 Email Confirmation Sent</h4>
+                    <p>A confirmation email has been sent to your email address with all appointment details.</p>
+                    <p><small><strong>Note:</strong> Please check your spam/junk folder if you don't see the email in your inbox.</small></p>
+                </div>
 
                 <div class="confirmation-contact-info">
                     <div class="confirmation-contact-item">
-                       <span class="confirmation-contact-icon">📍</span>
+                        <div class="confirmation-contact-details">
+                            <button onclick="addToCalendar({
+                                date: '${booking.date}',
+                                time: '${booking.time}',
+                                services: ${JSON.stringify(
+                                  booking.services
+                                ).replace(/"/g, "&quot;")},
+                                duration: ${booking.duration || 60},
+                                totalPrice: ${booking.totalPrice},
+                                id: ${booking.id}
+                            })" class="nav-button">📅 Add to Calendar</button>
+                        </div>
+                    </div>
+                    <div class="confirmation-contact-item">
+                        <span class="confirmation-contact-icon">📍</span>
                         <div class="confirmation-contact-details">
                             <span class="confirmation-contact-text">123 Main Street<br>Downtown, NY 10001</span>
                             <a href="https://maps.google.com/?q=123+Main+Street,+Downtown,+NY+10001" 
@@ -105,7 +121,7 @@ function createConfirmationHTML(booking) {
                     </div>
                     <div class="confirmation-contact-item">
                         <span class="confirmation-contact-icon">☎</span>
-                       <div class="confirmation-contact-details">
+                        <div class="confirmation-contact-details">
                             <span class="confirmation-contact-text">+1 (234) 567-890</span>
                             <a href="tel:+1234567890" class="contact-button">Call Us</a>
                         </div>
@@ -132,3 +148,6 @@ window.closeConfirmation = function () {
     }, 300);
   }
 };
+
+window.addToCalendar = addToCalendar;
+window.downloadIcsFile = downloadIcsFile;
