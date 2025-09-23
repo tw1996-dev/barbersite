@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { Resend } from "resend";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -6,6 +7,8 @@ const pool = new Pool({
     rejectUnauthorized: false,
   },
 });
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Helper functions for server-side conflict detection
 function timeToMinutes(timeStr) {
@@ -54,6 +57,31 @@ function checkTimeSlotConflict(
   }
 
   return false; // No conflict
+}
+
+// Send simple confirmation email
+async function sendEmail(booking) {
+  try {
+    await resend.emails.send({
+      from: "Elite Barber Studio <onboarding@resend.dev>",
+      to: [booking.email],
+      subject: `Booking Confirmation - ${booking.date}`,
+      html: `
+        <h2>Booking Confirmed!</h2>
+        <p>Hello ${booking.customer},</p>
+        <p><strong>Date:</strong> ${booking.date}<br>
+        <strong>Time:</strong> ${booking.time}<br>
+        <strong>Services:</strong> ${booking.services.join(", ")}<br>
+        <strong>Total:</strong> $${booking.price}</p>
+        <p>Address: 123 Main Street, Downtown, NY 10001<br>
+        Phone: +1 (234) 567-890</p>
+      `,
+    });
+    return true;
+  } catch (error) {
+    console.error("Email error:", error);
+    return false;
+  }
 }
 
 async function handler(req, res) {
@@ -129,6 +157,9 @@ async function handler(req, res) {
           notes || "",
         ]
       );
+
+      // Send confirmation email
+      await sendEmail(result.rows[0]);
 
       return res.status(201).json(result.rows[0]);
     } catch (error) {
