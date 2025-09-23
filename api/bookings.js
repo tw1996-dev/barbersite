@@ -62,6 +62,65 @@ function checkTimeSlotConflict(
 // Send simple confirmation email
 async function sendEmail(booking) {
   try {
+    // Calculate end time
+    const [hours, minutes] = booking.time.split(":").map(Number);
+    const totalMinutes = hours * 60 + minutes + booking.duration;
+    const endHours = Math.floor(totalMinutes / 60);
+    const endMins = totalMinutes % 60;
+    const endTime = `${endHours.toString().padStart(2, "0")}:${endMins
+      .toString()
+      .padStart(2, "0")}`;
+
+    // Format for calendar URLs
+    const startDateTime =
+      booking.date.replace(/-/g, "") +
+      "T" +
+      booking.time.replace(":", "") +
+      "00";
+    const endDateTime =
+      booking.date.replace(/-/g, "") + "T" + endTime.replace(":", "") + "00";
+
+    // Google Calendar URL
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+      "Appointment at Elite Barber Studio"
+    )}&dates=${startDateTime}/${endDateTime}&details=${encodeURIComponent(
+      `Services: ${booking.services.join(", ")}\nDuration: ${
+        booking.duration
+      } minutes\nTotal: $${
+        booking.price
+      }\n\nPlease arrive 5 minutes early.\n\nElite Barber Studio\n123 Main Street, Downtown, NY 10001\nPhone: +1 (234) 567-890`
+    )}&location=${encodeURIComponent(
+      "Elite Barber Studio, 123 Main Street, Downtown, NY 10001"
+    )}`;
+
+    // ICS file data URL
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Elite Barber Studio//Booking System//EN
+BEGIN:VEVENT
+UID:${booking.id || Date.now()}@elitebarberstudio.com
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z
+DTSTART:${startDateTime}
+DTEND:${endDateTime}
+SUMMARY:Appointment at Elite Barber Studio
+DESCRIPTION:Services: ${booking.services.join(", ")}\\nDuration: ${
+      booking.duration
+    } minutes\\nTotal: $${
+      booking.price
+    }\\n\\nPlease arrive 5 minutes early.\\n\\nElite Barber Studio\\n123 Main Street\\, Downtown\\, NY 10001\\nPhone: +1 (234) 567-890
+LOCATION:Elite Barber Studio\\, 123 Main Street\\, Downtown\\, NY 10001
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Reminder: Appointment at Elite Barber Studio tomorrow
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+END:VCALENDAR`;
+
+    const icsDataUrl = `data:text/calendar;charset=utf8,${encodeURIComponent(
+      icsContent
+    )}`;
+
     await resend.emails.send({
       from: "Elite Barber Studio <onboarding@resend.dev>",
       to: [booking.email],
@@ -70,11 +129,20 @@ async function sendEmail(booking) {
         <h2>Booking Confirmed!</h2>
         <p>Hello ${booking.customer},</p>
         <p><strong>Date:</strong> ${booking.date}<br>
-        <strong>Time:</strong> ${booking.time}<br>
+        <strong>Time:</strong> ${booking.time} - ${endTime}<br>
         <strong>Services:</strong> ${booking.services.join(", ")}<br>
+        <strong>Duration:</strong> ${booking.duration} minutes<br>
         <strong>Total:</strong> $${booking.price}</p>
         <p>Address: 123 Main Street, Downtown, NY 10001<br>
         Phone: +1 (234) 567-890</p>
+        
+        <div style="text-align: center; margin: 20px 0;">
+          <a href="${googleCalendarUrl}" style="display: inline-block; background: #4285f4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Add to Google Calendar</a>
+          <a href="${icsDataUrl}" download="elite-barber-appointment.ics" style="display: inline-block; background: #34a853; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📲 Add to Calendar (.ics)</a>
+        </div>
+        
+        <p><strong>Please arrive 5 minutes before your appointment time.</strong></p>
+        <p>If you need to reschedule or cancel, please call us at +1 (234) 567-890.</p>
       `,
     });
     return true;
