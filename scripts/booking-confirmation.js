@@ -88,6 +88,12 @@ function createConfirmationHTML(booking) {
                     </div>
                 </div>
                 
+<div class="email-confirmation-info">
+        <h4>📧 Email Confirmation Sent</h4>
+        <p>A confirmation email has been sent to your email address with all appointment details.</p>
+        <p><small><strong>Note:</strong> Please check your spam/junk folder if you don't see the email in your inbox.</small></p>
+    </div>
+
                 <div class="confirmation-contact-info">
                     <div class="confirmation-contact-item">
                        <span class="confirmation-contact-icon">📍</span>
