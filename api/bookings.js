@@ -72,13 +72,17 @@ async function sendEmail(booking) {
       .padStart(2, "0")}`;
 
     // Format for calendar URLs
+    const bookingDate =
+      booking.date instanceof Date
+        ? booking.date.toISOString().split("T")[0]
+        : booking.date;
+    const bookingTime =
+      booking.time.length > 5 ? booking.time.substring(0, 5) : booking.time;
+
     const startDateTime =
-      booking.date.replace(/-/g, "") +
-      "T" +
-      booking.time.replace(":", "") +
-      "00";
+      bookingDate.replace(/-/g, "") + "T" + bookingTime.replace(":", "") + "00";
     const endDateTime =
-      booking.date.replace(/-/g, "") + "T" + endTime.replace(":", "") + "00";
+      bookingDate.replace(/-/g, "") + "T" + endTime.replace(":", "") + "00";
 
     // Google Calendar URL
     const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
@@ -128,8 +132,8 @@ END:VCALENDAR`;
       html: `
         <h2>Booking Confirmed!</h2>
         <p>Hello ${booking.customer},</p>
-        <p><strong>Date:</strong> ${booking.date}<br>
-        <strong>Time:</strong> ${booking.time} - ${endTime}<br>
+        <strong>Date:</strong> ${bookingDate}<br>
+        <strong>Time:</strong> ${bookingTime} - ${endTime}<br>
         <strong>Services:</strong> ${booking.services.join(", ")}<br>
         <strong>Duration:</strong> ${booking.duration} minutes<br>
         <strong>Total:</strong> $${booking.price}</p>
