@@ -140,72 +140,23 @@ END:VCALENDAR`;
         <p>Address: 123 Main Street, Downtown, NY 10001<br>
         Phone: +1 (234) 567-890</p>
         
-       <div style="text-align: center; margin: 20px 0;">
-  <a href="#" onclick="openGoogleCalendar(event)" style="display: inline-block; background: #4285f4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold; cursor: pointer;">📅 Add to Google Calendar</a>
-  <a href="#" onclick="openIcsCalendar(event)" style="display: inline-block; background: #34a853; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold; cursor: pointer;">📲 Add to Calendar</a>
+      <div style="text-align: center; margin: 20px 0;">
+  <a href="intent://calendar.google.com/calendar/event?action=TEMPLATE&text=${encodeURIComponent(
+    "Appointment at Elite Barber Studio"
+  )}&dates=${startDateTime}/${endDateTime}&details=${encodeURIComponent(
+        `Services: ${booking.services.join(", ")}\nDuration: ${
+          booking.duration
+        } minutes\nTotal: $${
+          booking.price
+        }\n\nElite Barber Studio\n123 Main Street, Downtown, NY 10001\nPhone: +1 (234) 567-890`
+      )}&location=${encodeURIComponent(
+        "Elite Barber Studio, 123 Main Street, Downtown, NY 10001"
+      )}#Intent;scheme=https;package=com.google.android.calendar;S.browser_fallback_url=https%3A//calendar.google.com/calendar/render%3Faction%3DTEMPLATE%26text%3D${encodeURIComponent(
+        "Appointment at Elite Barber Studio"
+      )}%26dates%3D${startDateTime}%2F${endDateTime};end" style="display: inline-block; background: #4285f4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Add to Google Calendar</a>
+  <a href="${icsDataUrl}" download="elite-barber-appointment.ics" style="display: inline-block; background: #34a853; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📲 Add to Calendar (.ics)</a>
 </div>
 
-<script>
-const calendarData = {
-  startDateTime: '${startDateTime}',
-  endDateTime: '${endDateTime}',
-  title: encodeURIComponent('Appointment at Elite Barber Studio'),
-  details: encodeURIComponent('Services: ${booking.services.join(
-    ", "
-  )}\\nDuration: ${booking.duration} minutes\\nTotal: $${
-        booking.price
-      }\\n\\nElite Barber Studio\\n123 Main Street, Downtown, NY 10001\\nPhone: +1 (234) 567-890'),
-  location: encodeURIComponent('Elite Barber Studio, 123 Main Street, Downtown, NY 10001'),
-  icsData: '${icsDataUrl}'
-};
-
-function openGoogleCalendar(event) {
-  event.preventDefault();
-  const isAndroid = /Android/i.test(navigator.userAgent);
-  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  
-  if (isIOS) {
-    // iOS: Try Google Calendar app
-    window.location.href = 'googlecalendar://calendar.google.com/calendar/event?action=TEMPLATE&text=' + calendarData.title + '&dates=' + calendarData.startDateTime + '/' + calendarData.endDateTime + '&details=' + calendarData.details + '&location=' + calendarData.location;
-    setTimeout(() => {
-      window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + calendarData.title + '&dates=' + calendarData.startDateTime + '/' + calendarData.endDateTime + '&details=' + calendarData.details + '&location=' + calendarData.location, '_blank');
-    }, 1000);
-  } else if (isAndroid) {
-    // Android: Google Calendar app intent
-    window.location.href = 'intent://calendar.google.com/calendar/event?action=TEMPLATE&text=' + calendarData.title + '&dates=' + calendarData.startDateTime + '/' + calendarData.endDateTime + '&details=' + calendarData.details + '&location=' + calendarData.location + '#Intent;scheme=https;package=com.google.android.calendar;end';
-    setTimeout(() => {
-      window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + calendarData.title + '&dates=' + calendarData.startDateTime + '/' + calendarData.endDateTime + '&details=' + calendarData.details + '&location=' + calendarData.location, '_blank');
-    }, 1000);
-  } else {
-    // Desktop: Browser
-    window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + calendarData.title + '&dates=' + calendarData.startDateTime + '/' + calendarData.endDateTime + '&details=' + calendarData.details + '&location=' + calendarData.location, '_blank');
-  }
-}
-
-function openIcsCalendar(event) {
-  event.preventDefault();
-  const isAndroid = /Android/i.test(navigator.userAgent);
-  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  
-  if (isIOS) {
-    // iOS: Try to open native Calendar app with .ics
-    window.location.href = calendarData.icsData;
-  } else if (isAndroid) {
-    // Android: Try calendar intent first, fallback to download
-    try {
-      window.location.href = 'intent://view?data=' + encodeURIComponent(calendarData.icsData) + '#Intent;type=text/calendar;end';
-      setTimeout(() => {
-        window.location.href = calendarData.icsData;
-      }, 1000);
-    } catch(e) {
-      window.location.href = calendarData.icsData;
-    }
-  } else {
-    // Desktop: Direct download
-    window.location.href = calendarData.icsData;
-  }
-}
-</script>
         
         <p><strong>Please arrive 5 minutes before your appointment time.</strong></p>
         <p>If you need to reschedule or cancel, please call us at +1 (234) 567-890.</p>
