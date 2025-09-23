@@ -141,7 +141,7 @@ END:VCALENDAR`;
         Phone: +1 (234) 567-890</p>
         
       <div style="text-align: center; margin: 20px 0;">
-  <a href="intent://calendar.google.com/calendar/event?action=TEMPLATE&text=${encodeURIComponent(
+  <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
     "Appointment at Elite Barber Studio"
   )}&dates=${startDateTime}/${endDateTime}&details=${encodeURIComponent(
         `Services: ${booking.services.join(", ")}\nDuration: ${
@@ -151,9 +151,7 @@ END:VCALENDAR`;
         }\n\nElite Barber Studio\n123 Main Street, Downtown, NY 10001\nPhone: +1 (234) 567-890`
       )}&location=${encodeURIComponent(
         "Elite Barber Studio, 123 Main Street, Downtown, NY 10001"
-      )}#Intent;scheme=https;package=com.google.android.calendar;S.browser_fallback_url=https%3A//calendar.google.com/calendar/render%3Faction%3DTEMPLATE%26text%3D${encodeURIComponent(
-        "Appointment at Elite Barber Studio"
-      )}%26dates%3D${startDateTime}%2F${endDateTime};end" style="display: inline-block; background: #4285f4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Add to Google Calendar</a>
+      )}" style="display: inline-block; background: #4285f4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Add to Google Calendar</a>
   <a href="${icsDataUrl}" download="elite-barber-appointment.ics" style="display: inline-block; background: #34a853; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📲 Add to Calendar (.ics)</a>
 </div>
 
