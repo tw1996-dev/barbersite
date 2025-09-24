@@ -127,7 +127,7 @@ END:VCALENDAR`;
     )}`;
 
     await resend.emails.send({
-      from: "Elite Barber Studio <onboarding@resend.dev>",
+      from: "Elite Barber Studio <booking@100kcalcost.com>",
       to: [booking.email],
       subject: `Booking Confirmation - ${booking.date}`,
       html: `
