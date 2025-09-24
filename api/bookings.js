@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import { Resend } from "resend";
+import { requireAuth } from "./auth/auth-middleware.js";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -169,8 +170,12 @@ END:VCALENDAR`;
 
 async function handler(req, res) {
   if (req.method === "GET") {
-    // Public access for booking page to check available slots
+    // Protected endpoint - require admin authentication
+    const authResult = await requireAuth(req, res);
+    if (authResult !== true) return; // Auth middleware handles error response
+
     try {
+      // Admin access - return all booking data
       const result = await pool.query(
         "SELECT * FROM bookings ORDER BY date, time"
       );

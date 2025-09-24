@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function loadInitialData() {
     try {
       // Load existing bookings
-      const bookingsResponse = await fetch("/api/bookings");
+      const bookingsResponse = await fetch("/api/availability");
       if (bookingsResponse.ok) {
         const rawBookings = await bookingsResponse.json();
         existingBookings = normalizeBookingData(rawBookings);
@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Refresh bookings from API - with improved error handling
   async function refreshExistingBookings() {
     try {
-      const response = await fetch("/api/bookings");
+      const response = await fetch("/api/availability");
       if (response.ok) {
         const rawBookings = await response.json();
 
