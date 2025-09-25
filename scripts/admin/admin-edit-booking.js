@@ -258,18 +258,18 @@ async function handleEditSave() {
     customer: document.getElementById("customer-name")?.value.trim(),
     phone: document.getElementById("customer-phone")?.value.trim(),
     email: document.getElementById("customer-email")?.value.trim(),
-    date:
-      document.querySelector(".admin-calendar-day.selected")?.dataset.date ||
-      selectedAddBookingDate,
+    date: document.querySelector(".admin-calendar-day.selected")?.dataset.date,
     time: document.getElementById("booking-time")?.value,
     notes: document.getElementById("admin-notes")?.value.trim(),
   };
 
-  // Collect selected services using VALUE attribute (not data-service)
+  // Collect selected services
   const selectedServices = Array.from(
     document.querySelectorAll('input[name="admin-services"]:checked')
   );
-  const services = selectedServices.map((checkbox) => checkbox.value); // Use value, not data-service
+  const services = selectedServices.map((checkbox) =>
+    checkbox.getAttribute("data-service")
+  );
 
   // Calculate totals
   const totalDuration = selectedServices.reduce(
