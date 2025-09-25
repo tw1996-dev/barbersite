@@ -13,10 +13,7 @@ import {
   refreshBookings,
 } from "./admin-state.js";
 import { showSection } from "./admin-navigation.js";
-import {
-  renderAddBookingCalendar,
-  updateAdminBookingSummary,
-} from "./admin-add-booking.js";
+import { renderAddBookingCalendar } from "./admin-add-booking.js";
 import { updateDashboard } from "./admin-dashboard.js";
 import { updateBookingsSection } from "./admin-bookings.js";
 import { renderAdminCalendar } from "./admin-calendar.js";
@@ -153,8 +150,8 @@ function populateForm(booking) {
   // Populate services using existing change handlers
   populateServices(booking.services);
 
-  // Update summary using existing function
-  updateAdminBookingSummary();
+  // Update summary using local implementation
+  updateBookingSummary();
 }
 
 // Populate service checkboxes and trigger change events
@@ -263,7 +260,25 @@ async function handleEditSave() {
   }
 }
 
-// Collect form data - centralized data collection
+// Update booking summary - local implementation since not exported from add-booking
+function updateBookingSummary() {
+  const checkboxes = document.querySelectorAll(
+    'input[name="admin-services"]:checked'
+  );
+  let totalDuration = 0;
+  let totalPrice = 0;
+
+  checkboxes.forEach((checkbox) => {
+    totalDuration += parseInt(checkbox.getAttribute("data-duration"));
+    totalPrice += parseInt(checkbox.getAttribute("data-price"));
+  });
+
+  const durationEl = document.getElementById("admin-total-duration");
+  const priceEl = document.getElementById("admin-total-price");
+
+  if (durationEl) durationEl.textContent = `${totalDuration} min`;
+  if (priceEl) priceEl.textContent = `${totalPrice}`;
+}
 function collectFormData() {
   const selectedDate =
     setSelectedAddBookingDate ||
