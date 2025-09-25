@@ -1467,3 +1467,62 @@ body {
   font-size: 0.8rem;
   font-style: italic;
 }
+
+/* Enhanced Day Overview Modal Styles */
+.day-overview-booking {
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.day-overview-booking:last-child {
+  border-bottom: none;
+}
+
+.day-overview-booking.gap-info {
+  justify-content: center;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.booking-info-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.booking-actions-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.booking-actions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Mobile responsive adjustments for day overview */
+@media (max-width: 480px) {
+  .day-overview-booking {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .booking-actions-section {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .booking-actions {
+    justify-content: flex-start;
+  }
+}

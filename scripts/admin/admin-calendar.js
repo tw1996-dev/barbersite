@@ -155,6 +155,7 @@ export function renderAdminCalendar() {
   }
 }
 
+// Show detailed day overview with booking management actions
 function showDayBookings(date, bookings) {
   const formattedDate = formatFullDate(date);
 
@@ -177,7 +178,7 @@ function showDayBookings(date, bookings) {
 
       content += `
                 <li class="day-overview-booking">
-                    <div>
+                    <div class="booking-info-section">
                         <div class="booking-time-range">${timeRange}</div>
                         <div class="booking-customer-name">${
                           booking.customer
@@ -186,7 +187,20 @@ function showDayBookings(date, bookings) {
                           ", "
                         )}</div>
                     </div>
-                    <div class="booking-price-info">$${booking.price}</div>
+                    <div class="booking-actions-section">
+                        <div class="booking-price-info">$${booking.price}</div>
+                        <div class="booking-actions">
+                            <button class="action-btn view-btn" onclick="viewBooking(${
+                              booking.id
+                            })">View</button>
+                            <button class="action-btn edit-btn" onclick="editBooking(${
+                              booking.id
+                            })">Edit</button>
+                            <button class="action-btn delete-btn" onclick="deleteBooking(${
+                              booking.id
+                            })">Delete</button>
+                        </div>
+                    </div>
                 </li>
             `;
 
@@ -197,7 +211,7 @@ function showDayBookings(date, bookings) {
           timeToMinutes(nextBooking.time) - timeToMinutes(endTime);
         if (gapMinutes > 0) {
           content += `
-                        <li class="day-overview-booking">
+                        <li class="day-overview-booking gap-info">
                             <div class="booking-gap-info">⏳ ${gapMinutes} minute break</div>
                         </li>
                     `;
