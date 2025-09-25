@@ -20,6 +20,7 @@ import { setupScheduleSection } from "./admin-schedule.js";
 import { setupAddBookingSection } from "./admin-add-booking.js";
 import { setupModal } from "./admin-modal.js";
 import "./admin-actions.js"; // Import for side effects (window functions)
+import { setupBookingsEnhancements } from "./admin-bookings-enhanced.js";
 
 // Initialize admin panel when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {

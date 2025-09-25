@@ -1526,3 +1526,93 @@ body {
     justify-content: flex-start;
   }
 }
+
+/* Enhanced Bookings Search Panel */
+.search-panel {
+  background: rgba(26, 31, 46, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.search-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.search-field input {
+  width: 100%;
+  background: rgba(15, 20, 25, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e8eaed;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.search-field input:focus {
+  outline: none;
+  border-color: #4a9eff;
+}
+
+.clear-search-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.clear-search-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.search-results-counter {
+  margin-top: 12px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* Sortable column headers */
+[data-sort] {
+  position: relative;
+  user-select: none;
+}
+
+[data-sort]:hover {
+  color: #4a9eff;
+}
+
+[data-sort]::after {
+  content: "↕";
+  position: absolute;
+  right: 4px;
+  opacity: 0.5;
+  font-size: 0.8rem;
+}
+
+[data-sort].sort-asc::after {
+  content: "↑";
+  opacity: 1;
+  color: #4a9eff;
+}
+
+[data-sort].sort-desc::after {
+  content: "↓";
+  opacity: 1;
+  color: #4a9eff;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .search-fields {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
