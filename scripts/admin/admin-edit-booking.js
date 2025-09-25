@@ -153,9 +153,7 @@ function populateEditForm(booking) {
   if (booking.services && booking.services.length > 0) {
     booking.services.forEach((serviceName) => {
       // Look for checkbox by value attribute, not data-service
-      const checkbox = document.querySelector(
-        `input[name="admin-services"][value="${serviceName}"]`
-      );
+      cconst checkbox = document.querySelector(`input[name="admin-services"][value="${serviceName}"]`);
       if (checkbox) {
         checkbox.checked = true;
         // Trigger change event to update conflicts and summary
@@ -267,9 +265,8 @@ async function handleEditSave() {
   const selectedServices = Array.from(
     document.querySelectorAll('input[name="admin-services"]:checked')
   );
-  const services = selectedServices.map((checkbox) =>
-    checkbox.getAttribute("data-service")
-  );
+  const services = selectedServices.map(checkbox => checkbox.value);
+
 
   // Calculate totals
   const totalDuration = selectedServices.reduce(
