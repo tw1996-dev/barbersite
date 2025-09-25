@@ -41,7 +41,6 @@ async function handler(req, res) {
   }
 
   if (req.method === "PUT") {
-    // Update existing booking
     try {
       const {
         customer,
@@ -71,11 +70,11 @@ async function handler(req, res) {
 
       const result = await pool.query(
         `UPDATE bookings 
-   SET customer = $1, phone = $2, email = $3, date = $4, 
-       time = $5, services = $6, duration = $7, price = $8, 
-       notes = $9, status = $10
-   WHERE id = $11 
-   RETURNING *`,
+         SET customer = $1, phone = $2, email = $3, date = $4, 
+             time = $5, services = $6, duration = $7, price = $8, 
+             notes = $9, status = $10
+         WHERE id = $11 
+         RETURNING *`,
         [
           customer,
           phone,
@@ -95,24 +94,7 @@ async function handler(req, res) {
         return res.status(404).json({ error: "Booking not found" });
       }
 
-      // Transform the returned data to match frontend expectations
-      const updatedBooking = {
-        id: result.rows[0].id,
-        customer: result.rows[0].customer_name,
-        phone: result.rows[0].phone,
-        email: result.rows[0].email,
-        date: result.rows[0].booking_date.toISOString().split("T")[0],
-        time: result.rows[0].booking_time.substring(0, 5),
-        services: JSON.parse(result.rows[0].services),
-        duration: result.rows[0].duration,
-        price: result.rows[0].price,
-        notes: result.rows[0].notes,
-        status: result.rows[0].status,
-        createdAt: result.rows[0].created_at,
-        updatedAt: result.rows[0].updated_at,
-      };
-
-      return res.status(200).json(updatedBooking);
+      return res.status(200).json(result.rows[0]);
     } catch (error) {
       console.error("Error updating booking:", error);
       return res.status(500).json({ error: "Database error" });
