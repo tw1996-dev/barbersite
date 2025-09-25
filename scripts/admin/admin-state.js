@@ -277,3 +277,7 @@ export function saveBusinessHoursToStorage() {
   // Now saves to API via saveBusinessHoursToAPI()
   return saveBusinessHoursToAPI();
 }
+
+export let isEditMode = false;
+export let editingBookingId = null;
+export let previousSection = null;

@@ -20,6 +20,7 @@ import { showModal } from "./admin-modal.js";
 import { updateDashboard } from "./admin-dashboard.js";
 import { updateBookingsSection } from "./admin-bookings.js";
 import { renderAdminCalendar } from "./admin-calendar.js";
+import { startEditBooking } from "./admin-edit-booking.js";
 
 // Global booking actions exposed to window for HTML onclick handlers
 window.viewBooking = function (bookingId) {
@@ -61,12 +62,13 @@ window.viewBooking = function (bookingId) {
 
 window.editBooking = function (bookingId) {
   const booking = currentBookings.find((b) => b.id === bookingId);
-  if (!booking) return;
+  if (!booking) {
+    showNotification("Booking not found!", "error");
+    return;
+  }
 
-  showNotification(
-    "Edit functionality will be implemented in the next version.",
-    "info"
-  );
+  // Use the new edit booking functionality
+  startEditBooking(bookingId);
 };
 
 window.deleteBooking = function (bookingId) {
