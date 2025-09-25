@@ -25,8 +25,14 @@ export function setupCalendar() {
   const prevBtn = document.getElementById("prev-month-cal");
   const nextBtn = document.getElementById("next-month-cal");
 
+  // Remove any existing listeners by cloning buttons
   if (prevBtn) {
-    prevBtn.addEventListener("click", () => {
+    const newPrevBtn = prevBtn.cloneNode(true);
+    prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+
+    // Add single event listener to new button
+    const cleanPrevBtn = document.getElementById("prev-month-cal");
+    cleanPrevBtn.addEventListener("click", () => {
       let newMonth = currentCalendarMonth - 1;
       let newYear = currentCalendarYear;
       if (newMonth < 0) {
@@ -40,7 +46,12 @@ export function setupCalendar() {
   }
 
   if (nextBtn) {
-    nextBtn.addEventListener("click", () => {
+    const newNextBtn = nextBtn.cloneNode(true);
+    nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+
+    // Add single event listener to new button
+    const cleanNextBtn = document.getElementById("next-month-cal");
+    cleanNextBtn.addEventListener("click", () => {
       let newMonth = currentCalendarMonth + 1;
       let newYear = currentCalendarYear;
       if (newMonth > 11) {
