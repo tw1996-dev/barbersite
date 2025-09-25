@@ -1,41 +1,57 @@
 /**
  * ADMIN EDIT BOOKING MODULE
- * Handles booking editing functionality without modifying existing code
- * Provides edit mode for the Add Booking form with pre-populated data
+ * Lightweight edit functionality that leverages existing Add Booking infrastructure
+ * Follows DRY principle by reusing existing functions where possible
  */
 
 import {
   currentBookings,
   currentSection,
-  setCurrentSection,
   setSelectedAddBookingDate,
-  setSelectedAdminServices,
   setAddBookingCalendarMonth,
   setAddBookingCalendarYear,
   refreshBookings,
 } from "./admin-state.js";
 import { showSection } from "./admin-navigation.js";
-import { renderAddBookingCalendar } from "./admin-add-booking.js";
+import {
+  renderAddBookingCalendar,
+  updateAdminBookingSummary,
+} from "./admin-add-booking.js";
 import { updateDashboard } from "./admin-dashboard.js";
 import { updateBookingsSection } from "./admin-bookings.js";
 import { renderAdminCalendar } from "./admin-calendar.js";
 import { showNotification } from "./admin-utils.js";
 
-// Edit mode state - isolated from main application state
+// Edit mode state - minimal state management
 let isEditMode = false;
 let editingBookingId = null;
 let previousSection = null;
-let editingBookingData = null;
+let originalEventHandlers = new Map(); // Store original handlers for cleanup
 
-// Update booking via API - similar pattern to addBooking but with PUT
+// Service name mapping for database to UI conversion
+const SERVICE_MAPPING = {
+  "Premium Haircut": "premium-haircut",
+  "Beard Trim & Style": "beard-trim",
+  "Hot Towel Shave": "hot-towel-shave",
+  "Head Shave": "head-shave",
+  "Mustache Trim": "mustache-trim",
+  "Haircut + Beard Package": "haircut-beard-package",
+};
+
+// Update booking via API - matches addBooking pattern with proper error handling
 async function updateBooking(bookingId, bookingData) {
   try {
+    const formattedData = {
+      ...bookingData,
+      services: JSON.stringify(bookingData.services), // Format for database storage
+    };
+
     const response = await fetch(`/api/booking/${bookingId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(bookingData),
+      body: JSON.stringify(formattedData),
     });
 
     if (response.ok) {
@@ -43,7 +59,8 @@ async function updateBooking(bookingId, bookingData) {
       await refreshBookings(); // Reload all bookings from API to sync
       return updatedBooking;
     } else {
-      throw new Error("Failed to update booking");
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Failed to update booking");
     }
   } catch (error) {
     console.error("Error updating booking:", error);
@@ -51,7 +68,7 @@ async function updateBooking(bookingId, bookingData) {
   }
 }
 
-// Start edit booking process - main entry point called from admin-actions.js
+// Start edit booking process - main entry point
 export function startEditBooking(bookingId) {
   const booking = currentBookings.find((b) => b.id === bookingId);
   if (!booking) {
@@ -62,56 +79,44 @@ export function startEditBooking(bookingId) {
   // Store edit state
   isEditMode = true;
   editingBookingId = bookingId;
-  previousSection = currentSection; // Remember where we came from
-  editingBookingData = { ...booking }; // Create copy of original data
+  previousSection = currentSection;
 
   // Switch to add-booking section
   showSection("add-booking");
 
-  // Wait for section to load then setup edit mode
-  setTimeout(() => {
-    setupEditMode(booking);
-  }, 100);
+  // Setup edit mode after section loads
+  setTimeout(() => setupEditMode(booking), 100);
 }
 
-// Setup the Add Booking form for edit mode
+// Setup edit mode - orchestrates all edit setup steps
 function setupEditMode(booking) {
-  // Change UI to edit mode
   updateUIForEditMode();
-
-  // Populate form with booking data
-  populateEditForm(booking);
-
-  // Setup calendar with booking date
-  setupEditCalendar(booking.date);
-
-  // Setup event handlers for edit mode
-  setupEditEventHandlers();
+  populateForm(booking);
+  setupCalendarAndTimeSlot(booking);
+  attachEditEventHandlers();
 }
 
-// Update UI elements for edit mode
+// Update UI for edit mode - minimal UI changes
 function updateUIForEditMode() {
-  // Change section title
   const sectionTitle = document.querySelector("#add-booking-section h2");
-  if (sectionTitle) {
-    sectionTitle.textContent = "Edit Booking";
-  }
-
-  // Change save button text and functionality
   const saveBtn = document.getElementById("save-booking-btn");
+  const resetBtn = document.getElementById("reset-form-btn");
+
+  if (sectionTitle) sectionTitle.textContent = "Edit Booking";
   if (saveBtn) {
     saveBtn.textContent = "Update Booking";
-    saveBtn.className = "save-btn edit-btn"; // Green styling
+    saveBtn.className = "save-btn edit-btn";
   }
-
-  // Change reset button to cancel
-  const resetBtn = document.getElementById("reset-form-btn");
   if (resetBtn) {
     resetBtn.textContent = "Cancel";
     resetBtn.className = "cancel-btn";
   }
 
-  // Add edit mode indicator
+  addEditModeIndicator();
+}
+
+// Add visual indicator for edit mode
+function addEditModeIndicator() {
   const formHeader = document.querySelector(
     "#add-booking-section .section-header"
   );
@@ -119,50 +124,52 @@ function updateUIForEditMode() {
     const indicator = document.createElement("div");
     indicator.id = "edit-mode-indicator";
     indicator.innerHTML = `
-            <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); 
-                        border-radius: 6px; padding: 8px 12px; margin-bottom: 16px; color: #3b82f6; 
-                        font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
-                <span>✏️</span>
-                <span>Editing Booking #${editingBookingId}</span>
-            </div>
-        `;
+      <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); 
+                  border-radius: 6px; padding: 8px 12px; margin-bottom: 16px; color: #3b82f6; 
+                  font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+        <span>✏️</span>
+        <span>Editing Booking #${editingBookingId}</span>
+      </div>
+    `;
     formHeader.appendChild(indicator);
   }
 }
 
-// Populate form fields with booking data
-function populateEditForm(booking) {
-  // Customer information
-  const customerName = document.getElementById("customer-name");
-  const customerPhone = document.getElementById("customer-phone");
-  const customerEmail = document.getElementById("customer-email");
-  const adminNotes = document.getElementById("admin-notes");
+// Populate form with booking data - streamlined approach
+function populateForm(booking) {
+  // Populate basic fields
+  const fields = {
+    "customer-name": booking.customer,
+    "customer-phone": booking.phone,
+    "customer-email": booking.email,
+    "admin-notes": booking.notes,
+  };
 
-  if (customerName) customerName.value = booking.customer || "";
-  if (customerPhone) customerPhone.value = booking.phone || "";
-  if (customerEmail) customerEmail.value = booking.email || "";
-  if (adminNotes) adminNotes.value = booking.notes || "";
+  Object.entries(fields).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element) element.value = value || "";
+  });
 
-  // Services - check the appropriate checkboxes using VALUE attribute with mapping
+  // Populate services using existing change handlers
+  populateServices(booking.services);
+
+  // Update summary using existing function
+  updateAdminBookingSummary();
+}
+
+// Populate service checkboxes and trigger change events
+function populateServices(services) {
+  // Clear all checkboxes first
   document
     .querySelectorAll('input[name="admin-services"]')
     .forEach((checkbox) => {
-      checkbox.checked = false; // Clear all first
+      checkbox.checked = false;
     });
 
-  if (booking.services && booking.services.length > 0) {
-    const serviceMapping = {
-      "Premium Haircut": "premium-haircut",
-      "Beard Trim & Style": "beard-trim",
-      "Hot Towel Shave": "hot-towel-shave",
-      "Head Shave": "head-shave",
-      "Mustache Trim": "mustache-trim",
-      "Haircut + Beard Package": "haircut-beard-package",
-    };
-
-    booking.services.forEach((serviceName) => {
-      // Use mapping to convert full name to checkbox value
-      const checkboxValue = serviceMapping[serviceName] || serviceName;
+  // Check appropriate services
+  if (services?.length > 0) {
+    services.forEach((serviceName) => {
+      const checkboxValue = SERVICE_MAPPING[serviceName] || serviceName;
       const checkbox = document.querySelector(
         `input[name="admin-services"][value="${checkboxValue}"]`
       );
@@ -173,151 +180,64 @@ function populateEditForm(booking) {
       }
     });
   }
-
-  // Update booking summary with selected services
-  updateBookingSummary();
 }
 
-// Setup calendar for edit mode with pre-selected date
-function setupEditCalendar(bookingDate) {
-  const date = new Date(bookingDate + "T00:00:00"); // Ensure proper date parsing
-  const month = date.getMonth();
-  const year = date.getFullYear();
+// Setup calendar and time slot selection - reuses existing functions
+function setupCalendarAndTimeSlot(booking) {
+  const date = new Date(booking.date + "T00:00:00");
 
-  // Set calendar to booking's month/year
-  setAddBookingCalendarMonth(month);
-  setAddBookingCalendarYear(year);
+  // Set calendar state
+  setAddBookingCalendarMonth(date.getMonth());
+  setAddBookingCalendarYear(date.getFullYear());
+  setSelectedAddBookingDate(booking.date);
 
-  // Set selected date
-  setSelectedAddBookingDate(bookingDate);
-
-  // Re-render calendar with new date
+  // Render calendar and select date/time
   renderAddBookingCalendar();
 
-  // After calendar renders, select the date and time slot
   setTimeout(() => {
-    // Select the calendar day
-    const calendarDays = document.querySelectorAll(".admin-calendar-day");
-    calendarDays.forEach((day) => {
-      if (day.dataset.date === bookingDate) {
-        day.click(); // This will trigger day selection and show time slots
-      }
-    });
-
-    // After day is selected, select the time slot
-    setTimeout(() => {
-      selectTimeSlotForEdit(editingBookingData.time);
-    }, 100);
+    selectCalendarDate(booking.date);
+    setTimeout(() => selectTimeSlot(booking.time), 100);
   }, 200);
 }
 
-// Select the time slot that matches the booking's time
-function selectTimeSlotForEdit(bookingTime) {
-  const timeSlots = document.querySelectorAll(".admin-time-slot");
-  timeSlots.forEach((slot) => {
-    if (slot.dataset.time === bookingTime) {
-      slot.click(); // This will trigger the existing selectTimeSlot function
-    }
-  });
-}
-
-// Update booking summary - reuse existing function
-function updateBookingSummary() {
-  const checkboxes = document.querySelectorAll(
-    'input[name="admin-services"]:checked'
+// Select calendar date - reuses existing click handler
+function selectCalendarDate(dateStr) {
+  const calendarDay = document.querySelector(
+    `.admin-calendar-day[data-date="${dateStr}"]`
   );
-  let totalDuration = 0;
-  let totalPrice = 0;
-
-  checkboxes.forEach((checkbox) => {
-    totalDuration += parseInt(checkbox.getAttribute("data-duration"));
-    totalPrice += parseInt(checkbox.getAttribute("data-price"));
-  });
-
-  const durationEl = document.getElementById("admin-total-duration");
-  const priceEl = document.getElementById("admin-total-price");
-
-  if (durationEl) durationEl.textContent = `${totalDuration} min`;
-  if (priceEl) priceEl.textContent = `$${totalPrice}`;
+  if (calendarDay) calendarDay.click();
 }
 
-// Setup event handlers specific to edit mode
-function setupEditEventHandlers() {
+// Select time slot - reuses existing click handler
+function selectTimeSlot(time) {
+  const timeSlot = document.querySelector(
+    `.admin-time-slot[data-time="${time}"]`
+  );
+  if (timeSlot) timeSlot.click();
+}
+
+// Attach edit-specific event handlers - cleaner approach than cloning
+function attachEditEventHandlers() {
   const saveBtn = document.getElementById("save-booking-btn");
   const resetBtn = document.getElementById("reset-form-btn");
 
+  // Store original handlers for cleanup
   if (saveBtn) {
-    // Remove existing event listeners and add edit-specific one
-    saveBtn.replaceWith(saveBtn.cloneNode(true));
-    const newSaveBtn = document.getElementById("save-booking-btn");
-    newSaveBtn.addEventListener("click", handleEditSave);
+    originalEventHandlers.set("save", saveBtn.onclick);
+    saveBtn.onclick = handleEditSave;
   }
-
   if (resetBtn) {
-    // Remove existing event listeners and add cancel-specific one
-    resetBtn.replaceWith(resetBtn.cloneNode(true));
-    const newResetBtn = document.getElementById("reset-form-btn");
-    newResetBtn.addEventListener("click", handleEditCancel);
+    originalEventHandlers.set("reset", resetBtn.onclick);
+    resetBtn.onclick = handleEditCancel;
   }
 }
 
 // Handle saving edited booking
 async function handleEditSave() {
-  // Get date from multiple sources as fallback
-  const selectedDate =
-    selectedAddBookingDate ||
-    document.querySelector(".admin-calendar-day.selected")?.dataset?.date ||
-    editingBookingData?.date;
+  const formData = collectFormData();
+  if (!validateFormData(formData)) return;
 
-  // Collect form data
-  const formData = {
-    customer: document.getElementById("customer-name")?.value.trim(),
-    phone: document.getElementById("customer-phone")?.value.trim(),
-    email: document.getElementById("customer-email")?.value.trim(),
-    date: selectedDate,
-    time: document.getElementById("booking-time")?.value,
-    notes: document.getElementById("admin-notes")?.value.trim(),
-  };
-
-  // Collect selected services
-  const selectedServices = Array.from(
-    document.querySelectorAll('input[name="admin-services"]:checked')
-  );
-  const services = selectedServices.map((checkbox) => checkbox.value);
-
-  // Calculate totals
-  const totalDuration = selectedServices.reduce(
-    (sum, checkbox) => sum + parseInt(checkbox.getAttribute("data-duration")),
-    0
-  );
-  const totalPrice = selectedServices.reduce(
-    (sum, checkbox) => sum + parseInt(checkbox.getAttribute("data-price")),
-    0
-  );
-
-  // Validation
-  if (
-    !formData.customer ||
-    !formData.phone ||
-    !formData.date ||
-    !formData.time ||
-    services.length === 0
-  ) {
-    showNotification(
-      "Please fill in all required fields and select at least one service.",
-      "error"
-    );
-    return;
-  }
-
-  // Prepare booking data for API
-  const bookingData = {
-    ...formData,
-    services: services,
-    duration: totalDuration,
-    price: totalPrice,
-    status: "confirmed", // Keep existing status or default to confirmed
-  };
+  const bookingData = prepareBookingData(formData);
 
   // Show loading state
   const saveBtn = document.getElementById("save-booking-btn");
@@ -326,7 +246,6 @@ async function handleEditSave() {
   saveBtn.disabled = true;
 
   try {
-    // Update booking via API
     const result = await updateBooking(editingBookingId, bookingData);
 
     if (result) {
@@ -339,10 +258,74 @@ async function handleEditSave() {
     console.error("Error updating booking:", error);
     showNotification("An error occurred while updating the booking.", "error");
   } finally {
-    // Restore button state
     saveBtn.textContent = originalText;
     saveBtn.disabled = false;
   }
+}
+
+// Collect form data - centralized data collection
+function collectFormData() {
+  const selectedDate =
+    setSelectedAddBookingDate ||
+    document.querySelector(".admin-calendar-day.selected")?.dataset?.date;
+
+  const selectedServices = Array.from(
+    document.querySelectorAll('input[name="admin-services"]:checked')
+  );
+
+  return {
+    customer: document.getElementById("customer-name")?.value.trim(),
+    phone: document.getElementById("customer-phone")?.value.trim(),
+    email: document.getElementById("customer-email")?.value.trim(),
+    date: selectedDate,
+    time: document.getElementById("booking-time")?.value,
+    notes: document.getElementById("admin-notes")?.value.trim(),
+    selectedServices,
+    services: selectedServices.map((checkbox) => checkbox.value),
+  };
+}
+
+// Validate form data - centralized validation
+function validateFormData(formData) {
+  if (
+    !formData.customer ||
+    !formData.phone ||
+    !formData.date ||
+    !formData.time ||
+    formData.services.length === 0
+  ) {
+    showNotification(
+      "Please fill in all required fields and select at least one service.",
+      "error"
+    );
+    return false;
+  }
+  return true;
+}
+
+// Prepare booking data for API - centralized data preparation
+function prepareBookingData(formData) {
+  const totalDuration = formData.selectedServices.reduce(
+    (sum, checkbox) => sum + parseInt(checkbox.getAttribute("data-duration")),
+    0
+  );
+  const totalPrice = formData.selectedServices.reduce(
+    (sum, checkbox) => sum + parseInt(checkbox.getAttribute("data-price")),
+    0
+  );
+
+  return {
+    customer: formData.customer,
+    phone: formData.phone,
+    email: formData.email,
+    date: formData.date,
+    time: formData.time,
+    notes: formData.notes,
+    services: formData.services,
+    duration: totalDuration,
+    price: totalPrice,
+    status: "confirmed",
+  };
 }
 
 // Handle canceling edit mode
@@ -350,70 +333,81 @@ function handleEditCancel() {
   exitEditMode();
 }
 
-// Exit edit mode and return to previous section
+// Exit edit mode and cleanup - comprehensive cleanup
 function exitEditMode() {
   // Clear edit state
   isEditMode = false;
   editingBookingId = null;
-  editingBookingData = null;
 
-  // Remove edit mode indicator
-  const indicator = document.getElementById("edit-mode-indicator");
-  if (indicator) {
-    indicator.remove();
-  }
+  // Remove UI changes
+  removeEditModeIndicator();
+  resetUIToNormalState();
+  restoreEventHandlers();
 
-  // Reset UI to normal state
-  const sectionTitle = document.querySelector("#add-booking-section h2");
-  if (sectionTitle) {
-    sectionTitle.textContent = "Add New Booking";
-  }
-
-  const saveBtn = document.getElementById("save-booking-btn");
-  if (saveBtn) {
-    saveBtn.textContent = "Create Booking";
-    saveBtn.className = "save-btn";
-  }
-
-  const resetBtn = document.getElementById("reset-form-btn");
-  if (resetBtn) {
-    resetBtn.textContent = "Reset Form";
-    resetBtn.className = "cancel-btn";
-  }
-
-  // Return to previous section and update views
+  // Return to previous section
   const targetSection = previousSection || "bookings";
   previousSection = null;
 
   showSection(targetSection);
 
-  // Update the target section with fresh data
-  setTimeout(() => {
-    switch (targetSection) {
-      case "dashboard":
-        updateDashboard();
-        break;
-      case "bookings":
-        updateBookingsSection();
-        break;
-      case "calendar":
-        renderAdminCalendar();
-        break;
-    }
-  }, 100);
+  // Update target section with fresh data
+  setTimeout(() => updateTargetSection(targetSection), 100);
 }
 
-// Check if currently in edit mode - can be used by other modules
+// Remove edit mode indicator
+function removeEditModeIndicator() {
+  const indicator = document.getElementById("edit-mode-indicator");
+  if (indicator) indicator.remove();
+}
+
+// Reset UI to normal state
+function resetUIToNormalState() {
+  const sectionTitle = document.querySelector("#add-booking-section h2");
+  const saveBtn = document.getElementById("save-booking-btn");
+  const resetBtn = document.getElementById("reset-form-btn");
+
+  if (sectionTitle) sectionTitle.textContent = "Add New Booking";
+  if (saveBtn) {
+    saveBtn.textContent = "Create Booking";
+    saveBtn.className = "save-btn";
+  }
+  if (resetBtn) {
+    resetBtn.textContent = "Reset Form";
+    resetBtn.className = "cancel-btn";
+  }
+}
+
+// Restore original event handlers - proper cleanup
+function restoreEventHandlers() {
+  const saveBtn = document.getElementById("save-booking-btn");
+  const resetBtn = document.getElementById("reset-form-btn");
+
+  if (saveBtn) saveBtn.onclick = originalEventHandlers.get("save") || null;
+  if (resetBtn) resetBtn.onclick = originalEventHandlers.get("reset") || null;
+
+  originalEventHandlers.clear();
+}
+
+// Update target section after exiting edit mode
+function updateTargetSection(targetSection) {
+  switch (targetSection) {
+    case "dashboard":
+      updateDashboard();
+      break;
+    case "bookings":
+      updateBookingsSection();
+      break;
+    case "calendar":
+      renderAdminCalendar();
+      break;
+  }
+}
+
+// Public API for other modules
 export function isInEditMode() {
   return isEditMode;
 }
 
-// Get current editing booking ID - can be used by other modules
 export function getEditingBookingId() {
   return editingBookingId;
-}
-
-// Debug support - expose for console access
-if (typeof window !== "undefined") {
-  window.populateEditForm = populateEditForm;
 }
