@@ -71,11 +71,11 @@ async function handler(req, res) {
 
       const result = await pool.query(
         `UPDATE bookings 
-         SET customer_name = $1, phone = $2, email = $3, booking_date = $4, 
-             booking_time = $5, services = $6, duration = $7, price = $8, 
-             notes = $9, status = $10, updated_at = NOW()
-         WHERE id = $11 
-         RETURNING *`,
+   SET customer = $1, phone = $2, email = $3, date = $4, 
+       time = $5, services = $6, duration = $7, price = $8, 
+       notes = $9, status = $10
+   WHERE id = $11 
+   RETURNING *`,
         [
           customer,
           phone,
