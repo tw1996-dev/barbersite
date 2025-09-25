@@ -7,6 +7,7 @@
 import {
   currentBookings,
   currentSection,
+  selectedAddBookingDate,
   setSelectedAddBookingDate,
   setAddBookingCalendarMonth,
   setAddBookingCalendarYear,
@@ -273,7 +274,7 @@ function updateBookingSummary() {
 // Collect form data
 function collectFormData() {
   const selectedDate =
-    setSelectedAddBookingDate ||
+    selectedAddBookingDate ||
     document.querySelector(".admin-calendar-day.selected")?.dataset?.date;
 
   const selectedServices = Array.from(
