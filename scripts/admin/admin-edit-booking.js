@@ -143,7 +143,7 @@ function populateEditForm(booking) {
   if (customerEmail) customerEmail.value = booking.email || "";
   if (adminNotes) adminNotes.value = booking.notes || "";
 
-  // Services - check the appropriate checkboxes
+  // Services - check the appropriate checkboxes using VALUE attribute (not data-service)
   document
     .querySelectorAll('input[name="admin-services"]')
     .forEach((checkbox) => {
@@ -152,13 +152,14 @@ function populateEditForm(booking) {
 
   if (booking.services && booking.services.length > 0) {
     booking.services.forEach((serviceName) => {
+      // Look for checkbox by value attribute, not data-service
       const checkbox = document.querySelector(
-        `input[name="admin-services"][data-service="${serviceName}"]`
+        `input[name="admin-services"][value="${serviceName}"]`
       );
       if (checkbox) {
         checkbox.checked = true;
         // Trigger change event to update conflicts and summary
-        checkbox.dispatchEvent(new Event("change"));
+        checkbox.dispatchEvent(new Event("change", { bubbles: true }));
       }
     });
   }
@@ -183,9 +184,20 @@ function setupEditCalendar(bookingDate) {
   // Re-render calendar with new date
   renderAddBookingCalendar();
 
-  // After calendar renders, select the time slot
+  // After calendar renders, select the date and time slot
   setTimeout(() => {
-    selectTimeSlotForEdit(editingBookingData.time);
+    // Select the calendar day
+    const calendarDays = document.querySelectorAll(".admin-calendar-day");
+    calendarDays.forEach((day) => {
+      if (day.dataset.date === bookingDate) {
+        day.click(); // This will trigger day selection and show time slots
+      }
+    });
+
+    // After day is selected, select the time slot
+    setTimeout(() => {
+      selectTimeSlotForEdit(editingBookingData.time);
+    }, 100);
   }, 200);
 }
 
@@ -246,18 +258,18 @@ async function handleEditSave() {
     customer: document.getElementById("customer-name")?.value.trim(),
     phone: document.getElementById("customer-phone")?.value.trim(),
     email: document.getElementById("customer-email")?.value.trim(),
-    date: document.querySelector(".admin-calendar-day.selected")?.dataset.date,
+    date:
+      document.querySelector(".admin-calendar-day.selected")?.dataset.date ||
+      selectedAddBookingDate,
     time: document.getElementById("booking-time")?.value,
     notes: document.getElementById("admin-notes")?.value.trim(),
   };
 
-  // Collect selected services
+  // Collect selected services using VALUE attribute (not data-service)
   const selectedServices = Array.from(
     document.querySelectorAll('input[name="admin-services"]:checked')
   );
-  const services = selectedServices.map((checkbox) =>
-    checkbox.getAttribute("data-service")
-  );
+  const services = selectedServices.map((checkbox) => checkbox.value); // Use value, not data-service
 
   // Calculate totals
   const totalDuration = selectedServices.reduce(
