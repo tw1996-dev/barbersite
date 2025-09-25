@@ -27,24 +27,28 @@ export function setupCalendar() {
 
   if (prevBtn) {
     prevBtn.addEventListener("click", () => {
-      if (currentCalendarMonth === 0) {
-        setCurrentCalendarMonth(11);
-        setCurrentCalendarYear(currentCalendarYear - 1);
-      } else {
-        setCurrentCalendarMonth(currentCalendarMonth - 1);
+      let newMonth = currentCalendarMonth - 1;
+      let newYear = currentCalendarYear;
+      if (newMonth < 0) {
+        newMonth = 11;
+        newYear--;
       }
+      setCurrentCalendarMonth(newMonth);
+      setCurrentCalendarYear(newYear);
       renderAdminCalendar();
     });
   }
 
   if (nextBtn) {
     nextBtn.addEventListener("click", () => {
-      if (currentCalendarMonth === 11) {
-        setCurrentCalendarMonth(0);
-        setCurrentCalendarYear(currentCalendarYear + 1);
-      } else {
-        setCurrentCalendarMonth(currentCalendarMonth + 1);
+      let newMonth = currentCalendarMonth + 1;
+      let newYear = currentCalendarYear;
+      if (newMonth > 11) {
+        newMonth = 0;
+        newYear++;
       }
+      setCurrentCalendarMonth(newMonth);
+      setCurrentCalendarYear(newYear);
       renderAdminCalendar();
     });
   }
