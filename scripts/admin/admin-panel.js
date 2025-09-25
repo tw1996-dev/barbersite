@@ -49,6 +49,9 @@ async function initializeAdminPanel() {
   setupAddBookingSection();
   setupModal();
 
+  // Initialize enhanced bookings BEFORE navigation initialization
+  setupBookingsEnhancements();
+
   // Initialize with dashboard as default
   initializeNavigation();
 
@@ -75,9 +78,10 @@ async function initializeAdminPanel() {
           module.renderAdminCalendar();
         });
       } else if (currentSection === "bookings") {
-        import("./admin-bookings.js").then((module) => {
-          module.updateBookingsSection();
-        });
+        // Call enhanced function directly since it's already overridden
+        if (window.updateBookingsSection) {
+          window.updateBookingsSection();
+        }
       }
     }
   }, 10000);
@@ -94,10 +98,10 @@ function setupResponsiveHandlers() {
         module.updateDashboard();
       });
     } else if (currentSection === "bookings") {
-      // Dynamically import and call bookings update
-      import("./admin-bookings.js").then((module) => {
-        module.updateBookingsSection();
-      });
+      // Call enhanced function directly since it's already overridden
+      if (window.updateBookingsSection) {
+        window.updateBookingsSection();
+      }
     }
   }
 
