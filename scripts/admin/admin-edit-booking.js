@@ -23,8 +23,8 @@ import { showNotification } from "./admin-utils.js";
 let isEditMode = false;
 let editingBookingId = null;
 let previousSection = null;
-let editingBookingData = null; // Store original booking data
-let originalEventHandlers = new Map(); // Store original handlers for cleanup
+let editingBookingData = null;
+let originalEventHandlers = new Map();
 
 // Service name mapping for database to UI conversion
 const SERVICE_MAPPING = {
@@ -36,44 +36,30 @@ const SERVICE_MAPPING = {
   "Haircut + Beard Package": "haircut-beard-package",
 };
 
-// Update booking via API - matches addBooking pattern with proper error handling
+// Update booking via API - fixed double JSON.stringify issue
 async function updateBooking(bookingId, bookingData) {
   try {
-    console.log(`Updating booking ID: ${bookingId}`);
-    console.log("Booking data being sent:", bookingData);
-
-    const formattedData = {
-      ...bookingData,
-      services: JSON.stringify(bookingData.services), // Format for database storage
-    };
-
-    console.log("Formatted data for API:", formattedData);
-
     const response = await fetch(`/api/booking/${bookingId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formattedData),
+      body: JSON.stringify(bookingData), // Direct stringify - services already array
     });
-
-    console.log("API Response status:", response.status);
 
     if (response.ok) {
       const updatedBooking = await response.json();
-      console.log("Successfully updated booking:", updatedBooking);
       await refreshBookings(); // Reload all bookings from API to sync
       return updatedBooking;
     } else {
       const errorData = await response.json().catch(() => ({}));
-      console.error("API Error:", errorData);
       throw new Error(
         errorData.error || `Failed to update booking (${response.status})`
       );
     }
   } catch (error) {
     console.error("Error updating booking:", error);
-    throw error; // Re-throw to handle in calling function
+    throw error;
   }
 }
 
@@ -99,9 +85,7 @@ export function startEditBooking(bookingId) {
 
 // Setup edit mode - orchestrates all edit setup steps
 function setupEditMode(booking) {
-  // Store booking data for reference
   editingBookingData = { ...booking };
-
   updateUIForEditMode();
   populateForm(booking);
   setupCalendarAndTimeSlot(booking);
@@ -149,7 +133,6 @@ function addEditModeIndicator() {
 
 // Populate form with booking data - streamlined approach
 function populateForm(booking) {
-  // Populate basic fields
   const fields = {
     "customer-name": booking.customer,
     "customer-phone": booking.phone,
@@ -162,23 +145,18 @@ function populateForm(booking) {
     if (element) element.value = value || "";
   });
 
-  // Populate services using existing change handlers
   populateServices(booking.services);
-
-  // Update summary using local implementation
   updateBookingSummary();
 }
 
 // Populate service checkboxes and trigger change events
 function populateServices(services) {
-  // Clear all checkboxes first
   document
     .querySelectorAll('input[name="admin-services"]')
     .forEach((checkbox) => {
       checkbox.checked = false;
     });
 
-  // Check appropriate services
   if (services?.length > 0) {
     services.forEach((serviceName) => {
       const checkboxValue = SERVICE_MAPPING[serviceName] || serviceName;
@@ -187,7 +165,6 @@ function populateServices(services) {
       );
       if (checkbox) {
         checkbox.checked = true;
-        // Trigger change event to update conflicts and summary
         checkbox.dispatchEvent(new Event("change", { bubbles: true }));
       }
     });
@@ -198,12 +175,10 @@ function populateServices(services) {
 function setupCalendarAndTimeSlot(booking) {
   const date = new Date(booking.date + "T00:00:00");
 
-  // Set calendar state
   setAddBookingCalendarMonth(date.getMonth());
   setAddBookingCalendarYear(date.getFullYear());
   setSelectedAddBookingDate(booking.date);
 
-  // Render calendar and select date/time
   renderAddBookingCalendar();
 
   setTimeout(() => {
@@ -228,12 +203,11 @@ function selectTimeSlot(time) {
   if (timeSlot) timeSlot.click();
 }
 
-// Attach edit-specific event handlers - cleaner approach than cloning
+// Attach edit-specific event handlers
 function attachEditEventHandlers() {
   const saveBtn = document.getElementById("save-booking-btn");
   const resetBtn = document.getElementById("reset-form-btn");
 
-  // Store original handlers for cleanup
   if (saveBtn) {
     originalEventHandlers.set("save", saveBtn.onclick);
     saveBtn.onclick = handleEditSave;
@@ -251,14 +225,12 @@ async function handleEditSave() {
 
   const bookingData = prepareBookingData(formData);
 
-  // Show loading state
   const saveBtn = document.getElementById("save-booking-btn");
   const originalText = saveBtn.textContent;
   saveBtn.textContent = "Updating...";
   saveBtn.disabled = true;
 
   try {
-    console.log(`Attempting to update booking ID: ${editingBookingId}`);
     const result = await updateBooking(editingBookingId, bookingData);
 
     if (result) {
@@ -269,13 +241,9 @@ async function handleEditSave() {
     }
   } catch (error) {
     console.error("Error in handleEditSave:", error);
-
-    // Show specific error message from API if available
     const errorMessage =
       error.message || "An error occurred while updating the booking.";
     showNotification(errorMessage, "error");
-
-    // Don't exit edit mode on error so user can try again
   } finally {
     saveBtn.textContent = originalText;
     saveBtn.disabled = false;
@@ -301,6 +269,8 @@ function updateBookingSummary() {
   if (durationEl) durationEl.textContent = `${totalDuration} min`;
   if (priceEl) priceEl.textContent = `${totalPrice}`;
 }
+
+// Collect form data
 function collectFormData() {
   const selectedDate =
     setSelectedAddBookingDate ||
@@ -334,8 +304,6 @@ function validateFormData(formData) {
     missingFields.push("Services");
 
   if (missingFields.length > 0) {
-    console.log("Validation failed. Missing fields:", missingFields);
-    console.log("Current form data:", formData);
     showNotification(
       `Missing required fields: ${missingFields.join(", ")}`,
       "error"
@@ -345,7 +313,7 @@ function validateFormData(formData) {
   return true;
 }
 
-// Prepare booking data for API - centralized data preparation with debug
+// Prepare booking data for API - centralized data preparation
 function prepareBookingData(formData) {
   const totalDuration = formData.selectedServices.reduce(
     (sum, checkbox) => sum + parseInt(checkbox.getAttribute("data-duration")),
@@ -356,21 +324,18 @@ function prepareBookingData(formData) {
     0
   );
 
-  const bookingData = {
+  return {
     customer: formData.customer,
     phone: formData.phone,
     email: formData.email || "",
     date: formData.date,
     time: formData.time,
     notes: formData.notes || "",
-    services: formData.services,
+    services: formData.services, // Keep as array - API will handle JSON.stringify
     duration: totalDuration,
     price: totalPrice,
     status: "confirmed",
   };
-
-  console.log("Prepared booking data:", bookingData);
-  return bookingData;
 }
 
 // Handle canceling edit mode
@@ -380,22 +345,18 @@ function handleEditCancel() {
 
 // Exit edit mode and cleanup - comprehensive cleanup
 function exitEditMode() {
-  // Clear edit state
   isEditMode = false;
   editingBookingId = null;
 
-  // Remove UI changes
   removeEditModeIndicator();
   resetUIToNormalState();
   restoreEventHandlers();
 
-  // Return to previous section
   const targetSection = previousSection || "bookings";
   previousSection = null;
 
   showSection(targetSection);
 
-  // Update target section with fresh data
   setTimeout(() => updateTargetSection(targetSection), 100);
 }
 
