@@ -282,6 +282,16 @@ export let isEditMode = false;
 export let editingBookingId = null;
 export let previousSection = null;
 
+// Export selectedAddBookingDate to window for edit mode access
+if (typeof window !== "undefined") {
+  Object.defineProperty(window, "selectedAddBookingDate", {
+    get: () => selectedAddBookingDate,
+    set: (value) => {
+      selectedAddBookingDate = value;
+    },
+  });
+}
+
 // Debug support - expose currentBookings to window
 if (typeof window !== "undefined") {
   window.currentBookings = currentBookings;

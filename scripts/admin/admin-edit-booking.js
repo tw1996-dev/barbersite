@@ -263,12 +263,18 @@ function setupEditEventHandlers() {
 
 // Handle saving edited booking
 async function handleEditSave() {
+  // Get date from multiple sources as fallback
+  const selectedDate =
+    selectedAddBookingDate ||
+    document.querySelector(".admin-calendar-day.selected")?.dataset?.date ||
+    editingBookingData?.date;
+
   // Collect form data
   const formData = {
     customer: document.getElementById("customer-name")?.value.trim(),
     phone: document.getElementById("customer-phone")?.value.trim(),
     email: document.getElementById("customer-email")?.value.trim(),
-    date: document.querySelector(".admin-calendar-day.selected")?.dataset.date,
+    date: selectedDate,
     time: document.getElementById("booking-time")?.value,
     notes: document.getElementById("admin-notes")?.value.trim(),
   };
