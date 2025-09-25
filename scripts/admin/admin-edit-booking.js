@@ -331,9 +331,7 @@ async function handleEditSave() {
 
 // Handle canceling edit mode
 function handleEditCancel() {
-  if (confirm("Are you sure you want to cancel? Any changes will be lost.")) {
-    exitEditMode();
-  }
+  exitEditMode();
 }
 
 // Exit edit mode and return to previous section

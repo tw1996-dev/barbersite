@@ -437,14 +437,17 @@ function updateDesktopTable(filteredBookings) {
       <td><span class="status-badge status-${booking.status}">${
       booking.status
     }</span></td>
-      <td>
-        <button class="btn-edit" onclick="editBooking(${
-          booking.id
-        })">Edit</button>
-        <button class="btn-delete" onclick="deleteBooking(${
-          booking.id
-        })">Delete</button>
-      </td>
+     <td>
+  <button class="action-btn view-btn" onclick="viewBooking(${
+    booking.id
+  })">View</button>
+  <button class="action-btn edit-btn" onclick="editBooking(${
+    booking.id
+  })">Edit</button>
+  <button class="action-btn delete-btn" onclick="deleteBooking(${
+    booking.id
+  })">Delete</button>
+</td>
     `;
 
     tableBody.appendChild(row);
