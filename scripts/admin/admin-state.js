@@ -281,3 +281,8 @@ export function saveBusinessHoursToStorage() {
 export let isEditMode = false;
 export let editingBookingId = null;
 export let previousSection = null;
+
+// Debug support - expose currentBookings to window
+if (typeof window !== "undefined") {
+  window.currentBookings = currentBookings;
+}

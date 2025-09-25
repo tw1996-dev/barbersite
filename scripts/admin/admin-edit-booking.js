@@ -143,7 +143,7 @@ function populateEditForm(booking) {
   if (customerEmail) customerEmail.value = booking.email || "";
   if (adminNotes) adminNotes.value = booking.notes || "";
 
-  // Services - check the appropriate checkboxes using VALUE attribute (not data-service)
+  // Services - check the appropriate checkboxes using VALUE attribute with mapping
   document
     .querySelectorAll('input[name="admin-services"]')
     .forEach((checkbox) => {
@@ -151,10 +151,20 @@ function populateEditForm(booking) {
     });
 
   if (booking.services && booking.services.length > 0) {
+    const serviceMapping = {
+      "Premium Haircut": "premium-haircut",
+      "Beard Trim & Style": "beard-trim",
+      "Hot Towel Shave": "hot-towel-shave",
+      "Head Shave": "head-shave",
+      "Mustache Trim": "mustache-trim",
+      "Haircut + Beard Package": "haircut-beard-package",
+    };
+
     booking.services.forEach((serviceName) => {
-      // Look for checkbox by value attribute, not data-service
+      // Use mapping to convert full name to checkbox value
+      const checkboxValue = serviceMapping[serviceName] || serviceName;
       const checkbox = document.querySelector(
-        `input[name="admin-services"][value="${serviceName}"]`
+        `input[name="admin-services"][value="${checkboxValue}"]`
       );
       if (checkbox) {
         checkbox.checked = true;
@@ -395,4 +405,9 @@ export function isInEditMode() {
 // Get current editing booking ID - can be used by other modules
 export function getEditingBookingId() {
   return editingBookingId;
+}
+
+// Debug support - expose for console access
+if (typeof window !== "undefined") {
+  window.populateEditForm = populateEditForm;
 }
