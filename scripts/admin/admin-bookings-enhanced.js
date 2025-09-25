@@ -1,45 +1,45 @@
 /**
  * ADMIN BOOKINGS ENHANCED MODULE
  * Extends admin-bookings.js with search functionality and column sorting
- * Provides real-time search across ID, Customer, Phone fields and sortable columns
+ * Imports all original functions and adds search/sort capabilities
  */
 
+// Import everything from original bookings module
+import * as OriginalBookings from "./admin-bookings.js";
 import { currentBookings } from "./admin-state.js";
 import {
   getBookingEndTime,
   formatTimeRange,
   formatDate,
+  getWeekStart,
+  getWeekEnd,
 } from "./admin-utils.js";
 
-// Enhanced bookings state
-let searchFilters = {
-  id: "",
-  customer: "",
-  phone: "",
-};
+// Enhanced state
+let searchFilters = { id: "", customer: "", phone: "" };
+let sortState = { column: null, direction: "asc" };
 
-let sortState = {
-  column: null,
-  direction: "asc", // 'asc' or 'desc'
-};
-
-// Initialize enhanced bookings functionality
+// Setup enhanced bookings - extends original functionality
 export function setupBookingsEnhancements() {
+  // First setup original bookings functionality
+  OriginalBookings.setupBookingsSection();
+
+  // Then add our enhancements
   setupSearchPanel();
   setupColumnSorting();
 
-  // Override the original updateBookingsSection when enhanced features are active
+  // Override only the update function with enhanced version
   window.updateBookingsSection = updateEnhancedBookingsSection;
 }
 
-// Setup real-time search panel functionality
+// Setup search panel functionality
 function setupSearchPanel() {
   const searchId = document.getElementById("search-id");
   const searchCustomer = document.getElementById("search-customer");
   const searchPhone = document.getElementById("search-phone");
   const clearSearchBtn = document.getElementById("clear-search");
 
-  // Debounced search function to avoid excessive filtering
+  // Debounced search to avoid excessive filtering
   const debouncedSearch = debounce(() => {
     updateEnhancedBookingsSection();
   }, 300);
@@ -88,13 +88,11 @@ function setupColumnSorting() {
   });
 }
 
-// Handle column sorting logic
+// Handle column sorting
 function handleColumnSort(column) {
   if (sortState.column === column) {
-    // Toggle direction if same column
     sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
   } else {
-    // New column, default to ascending
     sortState.column = column;
     sortState.direction = "asc";
   }
@@ -103,14 +101,12 @@ function handleColumnSort(column) {
   updateEnhancedBookingsSection();
 }
 
-// Update visual sort indicators in table headers
+// Update visual sort indicators
 function updateSortIndicators() {
-  // Clear all existing indicators
   document.querySelectorAll("[data-sort]").forEach((header) => {
     header.classList.remove("sort-asc", "sort-desc");
   });
 
-  // Add indicator to current sorted column
   if (sortState.column) {
     const activeHeader = document.querySelector(
       `[data-sort="${sortState.column}"]`
@@ -121,7 +117,7 @@ function updateSortIndicators() {
   }
 }
 
-// Enhanced filtering function that combines original filters with search and sorting
+// Enhanced filtering that combines original filters with search and sorting
 function getEnhancedFilteredBookings() {
   const statusFilter = document.getElementById("status-filter")?.value || "all";
   const dateFilter = document.getElementById("date-filter")?.value || "all";
@@ -230,7 +226,7 @@ function getEnhancedFilteredBookings() {
       return 0;
     });
   } else {
-    // Default sort by date and time if no column sort is active
+    // Default sort by date and time
     filteredBookings.sort((a, b) => {
       const dateA = new Date(`${a.date}T${a.time}`);
       const dateB = new Date(`${b.date}T${b.time}`);
@@ -241,21 +237,22 @@ function getEnhancedFilteredBookings() {
   return filteredBookings;
 }
 
-// Enhanced update function that replaces the original
+// Main enhanced update function
 function updateEnhancedBookingsSection() {
   const isMobile = window.innerWidth <= 870;
+  const filteredBookings = getEnhancedFilteredBookings();
 
   if (isMobile) {
-    updateEnhancedMobileView();
+    updateMobileView(filteredBookings);
   } else {
-    updateEnhancedDesktopTable();
+    updateDesktopTable(filteredBookings);
   }
 
-  updateSearchResultsCounter();
+  updateSearchResultsCounter(filteredBookings);
 }
 
-// Enhanced mobile view update
-function updateEnhancedMobileView() {
+// Update mobile view with filtered bookings
+function updateMobileView(filteredBookings) {
   let mobileContainer = document.querySelector(
     "#bookings-section .mobile-bookings-container"
   );
@@ -265,18 +262,19 @@ function updateEnhancedMobileView() {
 
     const bookingsSection = document.getElementById("bookings-section");
     const searchPanel = bookingsSection.querySelector(".search-panel");
-    searchPanel.parentNode.insertBefore(
-      mobileContainer,
-      searchPanel.nextSibling
-    );
+    if (searchPanel) {
+      searchPanel.parentNode.insertBefore(
+        mobileContainer,
+        searchPanel.nextSibling
+      );
+    }
   }
 
+  // Hide table on mobile
   const tableContainer = document.querySelector(".bookings-table-container");
   if (tableContainer) {
     tableContainer.style.display = "none";
   }
-
-  const filteredBookings = getEnhancedFilteredBookings();
 
   mobileContainer.innerHTML = "";
 
@@ -286,19 +284,57 @@ function updateEnhancedMobileView() {
     return;
   }
 
+  // Create mobile cards using original structure
   filteredBookings.forEach((booking) => {
-    const card = createMobileBookingCard(booking);
+    const card = document.createElement("div");
+    card.className = "booking-card";
+
+    const endTime = getBookingEndTime(booking.time, booking.duration);
+    const timeRange = formatTimeRange(booking.time, endTime);
+
+    card.innerHTML = `
+            <div class="booking-card-header">
+                <div class="booking-customer">${booking.customer}</div>
+                <div class="booking-datetime">
+                    ${formatDate(booking.date)}<br>
+                    ${timeRange}
+                </div>
+            </div>
+            <div class="booking-services">${booking.services.join(", ")}</div>
+            <div class="booking-card-footer">
+                <div class="booking-price">
+                    <span class="status-badge status-${booking.status}">${
+      booking.status
+    }</span>
+                    $${booking.price}
+                </div>
+                <div class="booking-actions">
+                    <button class="action-btn view-btn" onclick="viewBooking(${
+                      booking.id
+                    })">View</button>
+                    <button class="action-btn edit-btn" onclick="editBooking(${
+                      booking.id
+                    })">Edit</button>
+                    <button class="action-btn delete-btn" onclick="deleteBooking(${
+                      booking.id
+                    })">Delete</button>
+                </div>
+            </div>
+        `;
+
     mobileContainer.appendChild(card);
   });
 }
 
-// Enhanced desktop table update
-function updateEnhancedDesktopTable() {
+// Update desktop table with filtered bookings
+function updateDesktopTable(filteredBookings) {
+  // Hide mobile container on desktop
   const mobileContainer = document.querySelector(".mobile-bookings-container");
   if (mobileContainer) {
     mobileContainer.style.display = "none";
   }
 
+  // Show table container
   const tableContainer = document.querySelector(".bookings-table-container");
   if (tableContainer) {
     tableContainer.style.display = "block";
@@ -306,52 +342,39 @@ function updateEnhancedDesktopTable() {
 
   const tableBody = document.querySelector("#all-bookings-table tbody");
   if (!tableBody) {
-    console.error("Table body not found");
+    console.error("Enhanced bookings: Table body not found");
     return;
   }
 
-  const filteredBookings = getEnhancedFilteredBookings();
-
   tableBody.innerHTML = "";
-
-  filteredBookings.forEach((booking) => {
-    const row = createBookingRow(booking);
-    tableBody.appendChild(row);
-  });
 
   if (filteredBookings.length === 0) {
     const row = document.createElement("tr");
     row.innerHTML =
       '<td colspan="10" style="text-align: center; color: #64748b; padding: 20px;">No bookings found</td>';
     tableBody.appendChild(row);
+    return;
   }
-}
 
-// Create mobile booking card (reused from original)
-function createMobileBookingCard(booking) {
-  const card = document.createElement("div");
-  card.className = "booking-card";
+  // Create table rows
+  filteredBookings.forEach((booking) => {
+    const row = document.createElement("tr");
+    const endTime = getBookingEndTime(booking.time, booking.duration);
+    const timeRange = formatTimeRange(booking.time, endTime);
 
-  const endTime = getBookingEndTime(booking.time, booking.duration);
-  const timeRange = formatTimeRange(booking.time, endTime);
-
-  card.innerHTML = `
-        <div class="booking-card-header">
-            <div class="booking-customer">${booking.customer}</div>
-            <div class="booking-datetime">
-                ${formatDate(booking.date)}<br>
-                ${timeRange}
-            </div>
-        </div>
-        <div class="booking-services">${booking.services.join(", ")}</div>
-        <div class="booking-card-footer">
-            <div class="booking-price">
-                <span class="status-badge status-${booking.status}">${
-    booking.status
-  }</span>
-                $${booking.price}
-            </div>
-            <div class="booking-actions">
+    row.innerHTML = `
+            <td>${booking.id}</td>
+            <td>${formatDate(booking.date)}</td>
+            <td>${timeRange}</td>
+            <td>${booking.customer}</td>
+            <td>${booking.phone}</td>
+            <td>${booking.services.join(", ")}</td>
+            <td>${booking.duration} min</td>
+            <td>$${booking.price}</td>
+            <td><span class="status-badge status-${booking.status}">${
+      booking.status
+    }</span></td>
+            <td>
                 <button class="action-btn view-btn" onclick="viewBooking(${
                   booking.id
                 })">View</button>
@@ -361,56 +384,20 @@ function createMobileBookingCard(booking) {
                 <button class="action-btn delete-btn" onclick="deleteBooking(${
                   booking.id
                 })">Delete</button>
-            </div>
-        </div>
-    `;
+            </td>
+        `;
 
-  return card;
-}
-
-// Create desktop booking row (reused from original)
-function createBookingRow(booking) {
-  const row = document.createElement("tr");
-
-  const endTime = getBookingEndTime(booking.time, booking.duration);
-  const timeRange = formatTimeRange(booking.time, endTime);
-
-  row.innerHTML = `
-        <td>${booking.id}</td>
-        <td>${formatDate(booking.date)}</td>
-        <td>${timeRange}</td>
-        <td>${booking.customer}</td>
-        <td>${booking.phone}</td>
-        <td>${booking.services.join(", ")}</td>
-        <td>${booking.duration} min</td>
-        <td>$${booking.price}</td>
-        <td><span class="status-badge status-${booking.status}">${
-    booking.status
-  }</span></td>
-        <td>
-            <button class="action-btn view-btn" onclick="viewBooking(${
-              booking.id
-            })">View</button>
-            <button class="action-btn edit-btn" onclick="editBooking(${
-              booking.id
-            })">Edit</button>
-            <button class="action-btn delete-btn" onclick="deleteBooking(${
-              booking.id
-            })">Delete</button>
-        </td>
-    `;
-
-  return row;
+    tableBody.appendChild(row);
+  });
 }
 
 // Update search results counter
-function updateSearchResultsCounter() {
+function updateSearchResultsCounter(filteredBookings) {
   const counter = document.getElementById("search-results-counter");
   if (counter) {
     const totalBookings = currentBookings.length;
-    const filteredBookings = getEnhancedFilteredBookings();
 
-    if (hasActiveSearchFilters() || sortState.column) {
+    if (hasActiveFilters()) {
       counter.textContent = `Showing ${filteredBookings.length} of ${totalBookings} bookings`;
       counter.style.display = "block";
     } else {
@@ -419,14 +406,20 @@ function updateSearchResultsCounter() {
   }
 }
 
-// Check if any search filters are active
-function hasActiveSearchFilters() {
-  return searchFilters.id || searchFilters.customer || searchFilters.phone;
+// Check if any filters are active
+function hasActiveFilters() {
+  return (
+    searchFilters.id ||
+    searchFilters.customer ||
+    searchFilters.phone ||
+    sortState.column
+  );
 }
 
 // Clear all search inputs
 function clearAllSearches() {
   searchFilters = { id: "", customer: "", phone: "" };
+  sortState = { column: null, direction: "asc" };
 
   const searchId = document.getElementById("search-id");
   const searchCustomer = document.getElementById("search-customer");
@@ -435,9 +428,14 @@ function clearAllSearches() {
   if (searchId) searchId.value = "";
   if (searchCustomer) searchCustomer.value = "";
   if (searchPhone) searchPhone.value = "";
+
+  // Clear sort indicators
+  document.querySelectorAll("[data-sort]").forEach((header) => {
+    header.classList.remove("sort-asc", "sort-desc");
+  });
 }
 
-// Utility functions
+// Utility function for debouncing
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -448,18 +446,4 @@ function debounce(func, wait) {
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
   };
-}
-
-function getWeekStart(date) {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day;
-  return new Date(d.setDate(diff));
-}
-
-function getWeekEnd(date) {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day + 6;
-  return new Date(d.setDate(diff));
 }
