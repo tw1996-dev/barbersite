@@ -306,18 +306,18 @@ function applySorting(bookings) {
 }
 
 // Main enhanced update function - handles both mobile and desktop views
-// function updateEnhancedBookingsSection() {
-//   const isMobile = window.innerWidth <= 890;
-//   const filteredBookings = getEnhancedFilteredBookings();
+function updateEnhancedBookingsSection() {
+  const isMobile = window.innerWidth <= 890;
+  const filteredBookings = getEnhancedFilteredBookings();
 
-//   if (isMobile) {
-//     updateMobileView(filteredBookings);
-//   } else {
-//     updateDesktopTable(filteredBookings);
-//   }
+  if (isMobile) {
+    updateMobileView(filteredBookings);
+  } else {
+    updateDesktopTable(filteredBookings);
+  }
 
-//   updateSearchResultsCounter(filteredBookings);
-// }
+  updateSearchResultsCounter(filteredBookings);
+}
 
 // Update mobile view with filtered and sorted bookings
 // function updateMobileView(filteredBookings) {
