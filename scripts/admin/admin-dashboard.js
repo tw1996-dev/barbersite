@@ -440,7 +440,7 @@ function findNextAppointment() {
 
 function updateRecentBookingsTable() {
   // Check if we should show mobile or desktop view
-  const isMobile = window.innerWidth <= 870;
+  const isMobile = window.innerWidth <= 890;
 
   if (isMobile) {
     updateMobileBookingsView();

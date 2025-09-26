@@ -307,7 +307,7 @@ function applySorting(bookings) {
 
 // Main enhanced update function - handles both mobile and desktop views
 function updateEnhancedBookingsSection() {
-  const isMobile = window.innerWidth <= 870;
+  const isMobile = window.innerWidth <= 890;
   const filteredBookings = getEnhancedFilteredBookings();
 
   if (isMobile) {
