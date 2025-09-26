@@ -346,50 +346,28 @@ function handleEditCancel() {
 
 // Exit edit mode and cleanup - comprehensive cleanup
 function exitEditMode() {
+  // Save current state to localStorage for restoration after reload
+  const currentState = {
+    section: previousSection || "bookings",
+    calendarMonth: addBookingCalendarMonth,
+    calendarYear: addBookingCalendarYear,
+    editedBookingDate: editingBookingData ? editingBookingData.date : null,
+    timestamp: Date.now(),
+  };
+
+  localStorage.setItem("adminPanelState", JSON.stringify(currentState));
+
   // Clear edit mode state
   isEditMode = false;
   editingBookingId = null;
 
-  // Reset UI to normal state
-  removeEditModeIndicator();
-  resetUIToNormalState();
-  restoreEventHandlers();
+  // Show success message before reload
+  showNotification("Booking updated successfully! Refreshing...", "success");
 
-  // Return to previous section
-  const targetSection = previousSection || "bookings";
-  previousSection = null;
-
-  showSection(targetSection);
-
+  // Reload page after short delay
   setTimeout(() => {
-    // Update the target section with fresh data
-    updateTargetSection(targetSection);
-
-    // Check if Day Overview modal is currently open
-    const modal = document.querySelector(".modal.active, .admin-modal.active");
-    if (modal && modal.querySelector("h4")) {
-      const dateText = modal.querySelector("h4").textContent;
-
-      // If modal shows a date, refresh it with updated booking data
-      if (dateText && dateText.includes("2025")) {
-        const dateMatch = dateText.match(/\w+ \d{1,2}, \d{4}/);
-        if (dateMatch) {
-          // Close the current modal
-          modal.remove();
-
-          // Reopen modal with fresh data by clicking the calendar day
-          setTimeout(() => {
-            const selectedDay = document.querySelector(
-              ".admin-calendar-day.selected"
-            );
-            if (selectedDay) {
-              selectedDay.click(); // This will trigger showDayBookings with updated data
-            }
-          }, 100);
-        }
-      }
-    }
-  }, 100);
+    window.location.reload();
+  }, 1000);
 }
 
 // Remove edit mode indicator

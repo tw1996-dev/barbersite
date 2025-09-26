@@ -118,3 +118,32 @@ function getCurrentSection() {
   const activeSection = document.querySelector(".admin-section.active");
   return activeSection ? activeSection.id.replace("-section", "") : "dashboard";
 }
+
+// Restore previous state after page reload (add this after page loads)
+window.addEventListener("DOMContentLoaded", () => {
+  const savedState = localStorage.getItem("adminPanelState");
+  if (savedState) {
+    const state = JSON.parse(savedState);
+
+    // Only restore if timestamp is recent (within 10 seconds)
+    if (Date.now() - state.timestamp < 10000) {
+      // Restore section
+      showSection(state.section);
+
+      // If it was calendar section and we have a date, reopen day overview
+      if (state.section === "calendar" && state.editedBookingDate) {
+        setTimeout(() => {
+          const calendarDay = document.querySelector(
+            `[data-date="${state.editedBookingDate}"]`
+          );
+          if (calendarDay) {
+            calendarDay.click();
+          }
+        }, 500);
+      }
+    }
+
+    // Clear saved state
+    localStorage.removeItem("adminPanelState");
+  }
+});
