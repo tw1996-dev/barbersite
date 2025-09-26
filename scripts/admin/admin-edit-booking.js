@@ -73,9 +73,9 @@ export function startEditBooking(bookingId) {
   }
 
   // Close Day Overview modal if open
-  const modal = document.querySelector("#booking-modal");
-  if (modal) {
-    modal.remove();
+  const closeBtn = document.querySelector("#modal-close-btn");
+  if (closeBtn) {
+    closeBtn.click(); // Użyj normalnej logiki zamykania
   }
 
   // Store edit state
