@@ -72,6 +72,12 @@ export function startEditBooking(bookingId) {
     return;
   }
 
+  // Close Day Overview modal if open
+  const modal = document.querySelector(".modal.active, .admin-modal.active");
+  if (modal) {
+    modal.remove();
+  }
+
   // Store edit state
   isEditMode = true;
   editingBookingId = bookingId;
