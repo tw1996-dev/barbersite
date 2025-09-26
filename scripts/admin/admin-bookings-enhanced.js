@@ -322,6 +322,11 @@ function updateEnhancedBookingsSection() {
 // Update mobile view with filtered and sorted bookings
 function updateMobileView(filteredBookings) {
   const container = document.querySelector(".bookings-table-container");
+
+  if (!container) {
+    return;
+  }
+
   const isMobile = window.innerWidth <= 890;
 
   if (isMobile) {
