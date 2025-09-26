@@ -306,43 +306,43 @@ function applySorting(bookings) {
 }
 
 // Main enhanced update function - handles both mobile and desktop views
-function updateEnhancedBookingsSection() {
-  const isMobile = window.innerWidth <= 890;
-  const filteredBookings = getEnhancedFilteredBookings();
+// function updateEnhancedBookingsSection() {
+//   const isMobile = window.innerWidth <= 890;
+//   const filteredBookings = getEnhancedFilteredBookings();
 
-  if (isMobile) {
-    updateMobileView(filteredBookings);
-  } else {
-    updateDesktopTable(filteredBookings);
-  }
+//   if (isMobile) {
+//     updateMobileView(filteredBookings);
+//   } else {
+//     updateDesktopTable(filteredBookings);
+//   }
 
-  updateSearchResultsCounter(filteredBookings);
-}
+//   updateSearchResultsCounter(filteredBookings);
+// }
 
 // Update mobile view with filtered and sorted bookings
-function updateMobileView(filteredBookings) {
-  const container = document.querySelector(".bookings-table-container");
+// function updateMobileView(filteredBookings) {
+//   const container = document.querySelector(".bookings-table-container");
 
-  if (!container) {
-    return;
-  }
+//   if (!container) {
+//     return;
+//   }
 
-  const isMobile = window.innerWidth <= 890;
+//   const isMobile = window.innerWidth <= 890;
 
-  if (isMobile) {
-    container.classList.remove("bookings-table-container");
-    container.classList.add("mobile-bookings-container");
-  } else {
-    container.classList.add("bookings-table-container");
-    container.classList.remove("mobile-bookings-container");
-  }
+//   if (isMobile) {
+//     container.classList.remove("bookings-table-container");
+//     container.classList.add("mobile-bookings-container");
+//   } else {
+//     container.classList.add("bookings-table-container");
+//     container.classList.remove("mobile-bookings-container");
+//   }
 
-  container.innerHTML = "";
-  filteredBookings.forEach((booking) => {
-    const card = createMobileBookingCard(booking);
-    container.appendChild(card);
-  });
-}
+//   container.innerHTML = "";
+//   filteredBookings.forEach((booking) => {
+//     const card = createMobileBookingCard(booking);
+//     container.appendChild(card);
+//   });
+// }
 
 // Hide table on mobile
 // const tableContainer = document.querySelector(".bookings-table-container");
