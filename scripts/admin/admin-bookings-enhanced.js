@@ -305,17 +305,12 @@ function applySorting(bookings) {
   });
 }
 
-// Main enhanced update function - handles both mobile and desktop views
+// Update bookings section with filtered and sorted data
 function updateEnhancedBookingsSection() {
-  const isMobile = window.innerWidth <= 890;
   const filteredBookings = getEnhancedFilteredBookings();
 
-  if (isMobile) {
-    updateMobileView(filteredBookings);
-  } else {
-    updateDesktopTable(filteredBookings);
-  }
-
+  // Always render data to table - CSS will handle responsive display
+  updateDesktopTable(filteredBookings);
   updateSearchResultsCounter(filteredBookings);
 }
 
