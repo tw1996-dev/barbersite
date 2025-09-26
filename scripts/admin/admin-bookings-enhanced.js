@@ -360,41 +360,41 @@ function updateMobileView(filteredBookings) {
 }
 
 // Create mobile booking card - uses same structure as original
-function createMobileBookingCard(booking) {
-  const card = document.createElement("div");
-  card.className = "booking-card";
+// function createMobileBookingCard(booking) {
+//   const card = document.createElement("div");
+//   card.className = "booking-card";
 
-  const endTime = getBookingEndTime(booking.time, booking.duration);
-  const timeRange = formatTimeRange(booking.time, endTime);
+//   const endTime = getBookingEndTime(booking.time, booking.duration);
+//   const timeRange = formatTimeRange(booking.time, endTime);
 
-  card.innerHTML = `
-    <div class="booking-header">
-      <div class="booking-id">#${booking.id}</div>
-      <div class="booking-status status-${booking.status}">${
-    booking.status
-  }</div>
-    </div>
-    <div class="booking-customer">${booking.customer}</div>
-    <div class="booking-details">
-      <div class="booking-date">${formatDate(booking.date)}</div>
-      <div class="booking-time">${timeRange}</div>
-    </div>
-    <div class="booking-service">${booking.services}</div>
-    <div class="booking-footer">
-      <div class="booking-price">$${booking.price}</div>
-      <div class="booking-actions">
-        <button class="btn-edit" onclick="editBooking(${
-          booking.id
-        })">Edit</button>
-        <button class="btn-delete" onclick="deleteBooking(${
-          booking.id
-        })">Delete</button>
-      </div>
-    </div>
-  `;
+//   card.innerHTML = `
+//     <div class="booking-header">
+//       <div class="booking-id">#${booking.id}</div>
+//       <div class="booking-status status-${booking.status}">${
+//     booking.status
+//   }</div>
+//     </div>
+//     <div class="booking-customer">${booking.customer}</div>
+//     <div class="booking-details">
+//       <div class="booking-date">${formatDate(booking.date)}</div>
+//       <div class="booking-time">${timeRange}</div>
+//     </div>
+//     <div class="booking-service">${booking.services}</div>
+//     <div class="booking-footer">
+//       <div class="booking-price">$${booking.price}</div>
+//       <div class="booking-actions">
+//         <button class="btn-edit" onclick="editBooking(${
+//           booking.id
+//         })">Edit</button>
+//         <button class="btn-delete" onclick="deleteBooking(${
+//           booking.id
+//         })">Delete</button>
+//       </div>
+//     </div>
+//   `;
 
-  return card;
-}
+//   return card;
+// }
 
 // Update desktop table with filtered and sorted bookings
 function updateDesktopTable(filteredBookings) {
