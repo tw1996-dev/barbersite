@@ -556,14 +556,10 @@ async function saveNewBooking() {
   );
 
   // Final conflict check with fresh data from API
+  const editingId = getEditingBookingIdFromDOM();
   if (
-    !isTimeSlotAvailable(
-      form.date,
-      form.time,
-      totalDuration,
-      currentBookings,
-      getEditingBookingIdFromDOM()
-    )
+    !editingId && // only check collision if not editing
+    !isTimeSlotAvailable(form.date, form.time, totalDuration, currentBookings)
   ) {
     showNotification(
       "This time slot conflicts with existing bookings. Please select another time.",
