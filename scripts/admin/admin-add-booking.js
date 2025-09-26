@@ -33,6 +33,16 @@ import { renderAdminCalendar } from "./admin-calendar.js";
 import { isInEditMode } from "./admin-edit-booking.js";
 import { getEditingBookingId } from "./admin-edit-booking.js";
 
+// Helper function to get editing booking ID from DOM indicator
+function getEditingBookingIdFromDOM() {
+  const editIndicator = document.getElementById("edit-mode-indicator");
+  if (editIndicator) {
+    const idMatch = editIndicator.textContent.match(/\d+/);
+    return idMatch ? parseInt(idMatch[0]) : null;
+  }
+  return null;
+}
+
 export function setupAddBookingSection() {
   const serviceCheckboxes = document.querySelectorAll(
     'input[name="admin-services"]'
@@ -547,7 +557,13 @@ async function saveNewBooking() {
 
   // Final conflict check with fresh data from API
   if (
-    !isTimeSlotAvailable(form.date, form.time, totalDuration, currentBookings)
+    !isTimeSlotAvailable(
+      form.date,
+      form.time,
+      totalDuration,
+      currentBookings,
+      getEditingBookingIdFromDOM()
+    )
   ) {
     showNotification(
       "This time slot conflicts with existing bookings. Please select another time.",
