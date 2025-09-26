@@ -87,4 +87,30 @@ window.deleteBooking = function (bookingId) {
     if (currentSection === "calendar") renderAdminCalendar();
   }
 };
-//
+
+window.deleteBooking = function (bookingId) {
+  if (
+    confirm(
+      "Are you sure you want to delete this booking? This action cannot be undone."
+    )
+  ) {
+    // Save state before delete if on calendar
+    if (currentSection === "calendar") {
+      const booking = currentBookings.find((b) => b.id === bookingId);
+      if (booking) {
+        const state = {
+          section: "calendar",
+          editedBookingDate: booking.date,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem("adminPanelState", JSON.stringify(state));
+      }
+    }
+
+    removeBooking(bookingId);
+    showNotification("Booking deleted successfully!", "success");
+
+    // Reload page to refresh everything
+    setTimeout(() => window.location.reload(), 1000);
+  }
+};
