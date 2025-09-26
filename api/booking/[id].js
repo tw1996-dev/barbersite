@@ -21,6 +21,7 @@ async function handler(req, res) {
       }
       return res.status(200).json(result.rows[0]);
     } catch (error) {
+      console.error("GET booking error:", error);
       return res.status(500).json({ error: "Database error" });
     }
   }
@@ -36,6 +37,7 @@ async function handler(req, res) {
       }
       return res.status(200).json({ message: "Booking deleted" });
     } catch (error) {
+      console.error("DELETE booking error:", error);
       return res.status(500).json({ error: "Database error" });
     }
   }
@@ -55,6 +57,13 @@ async function handler(req, res) {
         status,
       } = req.body;
 
+      // DEBUG: Log received data
+      console.log("=== PUT BOOKING DEBUG ===");
+      console.log("Booking ID:", id);
+      console.log("Received body:", req.body);
+      console.log("Services type:", typeof services);
+      console.log("Services value:", services);
+
       // Validation
       if (
         !customer ||
@@ -65,9 +74,11 @@ async function handler(req, res) {
         !duration ||
         price === undefined
       ) {
+        console.log("Validation failed - missing fields");
         return res.status(400).json({ error: "Missing required fields" });
       }
 
+      console.log("Starting UPDATE query...");
       const result = await pool.query(
         `UPDATE bookings 
          SET customer = $1, phone = $2, email = $3, date = $4, 
@@ -81,7 +92,7 @@ async function handler(req, res) {
           email,
           date,
           time,
-          JSON.stringify(services),
+          Array.isArray(services) ? JSON.stringify(services) : services,
           duration,
           price,
           notes,
@@ -90,14 +101,28 @@ async function handler(req, res) {
         ]
       );
 
+      console.log("UPDATE successful, rows affected:", result.rows.length);
+      console.log("UPDATE result:", result.rows[0]);
+
       if (result.rows.length === 0) {
+        console.log("No booking found with ID:", id);
         return res.status(404).json({ error: "Booking not found" });
       }
 
+      console.log("Returning updated booking");
       return res.status(200).json(result.rows[0]);
     } catch (error) {
+      console.error("=== PUT BOOKING ERROR ===");
       console.error("Error updating booking:", error);
-      return res.status(500).json({ error: "Database error" });
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+      console.error("PostgreSQL error code:", error.code);
+      console.error("PostgreSQL error detail:", error.detail);
+      return res.status(500).json({
+        error: "Database error",
+        details: error.message,
+        code: error.code,
+      });
     }
   }
 
