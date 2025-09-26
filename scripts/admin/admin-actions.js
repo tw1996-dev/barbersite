@@ -82,7 +82,7 @@ window.deleteBooking = function (bookingId) {
     // Close Day Overview modal if open
     const closeBtn = document.querySelector("#modal-close-btn");
     if (closeBtn) {
-      closeBtn.click(); // Użyj normalnej logiki zamykania
+      closeBtn.click();
     }
 
     showNotification("Booking deleted successfully!", "success");

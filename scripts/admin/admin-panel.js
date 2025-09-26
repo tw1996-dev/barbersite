@@ -85,7 +85,7 @@ async function initializeAdminPanel() {
         }
       }
     }
-  }, 10000);
+  }, 1000);
 }
 
 function setupResponsiveHandlers() {
