@@ -128,35 +128,49 @@ function getCurrentSection() {
 
 function restoreAdminState() {
   const savedState = localStorage.getItem("adminPanelState");
+  console.log("Saved state from localStorage:", savedState);
+
   if (savedState) {
     try {
       const state = JSON.parse(savedState);
+      console.log("Parsed state:", state);
+      console.log("Time difference:", Date.now() - state.timestamp);
 
       // Only restore if timestamp is recent (within 5 seconds)
       if (Date.now() - state.timestamp < 5000) {
-        // Navigate to previous section
-        showSection(state.section);
+        console.log("Attempting to restore section:", state.section);
 
-        // If was on calendar and had edited booking, reopen day view
+        // Check if showSection exists
+        if (typeof showSection === "function") {
+          showSection(state.section);
+          console.log("showSection called successfully");
+        } else {
+          console.log("showSection is not available");
+        }
+
+        // If user was viewing calendar day overview, reopen it automatically
         if (state.section === "calendar" && state.editedBookingDate) {
+          console.log("Restoring calendar day:", state.editedBookingDate);
           setTimeout(() => {
             const calendarDay = document.querySelector(
               `[data-date="${state.editedBookingDate}"]`
             );
+            console.log("Calendar day element found:", !!calendarDay);
             if (calendarDay) {
               calendarDay.click();
             }
           }, 1000);
         }
+      } else {
+        console.log("State too old, not restoring");
       }
     } catch (e) {
-      console.log("Failed to restore admin state");
+      console.log("Failed to restore admin state:", e.message);
+      console.log("Raw localStorage value:", savedState);
     }
 
-    // Clean up
     localStorage.removeItem("adminPanelState");
+  } else {
+    console.log("No saved state found");
   }
 }
-
-// Call after everything is initialized
-setTimeout(restoreAdminState, 1000);
