@@ -346,28 +346,19 @@ function handleEditCancel() {
 
 // Exit edit mode and cleanup - comprehensive cleanup
 function exitEditMode() {
-  // Save current state to localStorage for restoration after reload
-  const currentState = {
-    section: previousSection || "bookings",
-    calendarMonth: addBookingCalendarMonth,
-    calendarYear: addBookingCalendarYear,
-    editedBookingDate: editingBookingData ? editingBookingData.date : null,
-    timestamp: Date.now(),
-  };
-
-  localStorage.setItem("adminPanelState", JSON.stringify(currentState));
-
-  // Clear edit mode state
   isEditMode = false;
   editingBookingId = null;
 
-  // Show success message before reload
-  showNotification("Booking updated successfully! Refreshing...", "success");
+  removeEditModeIndicator();
+  resetUIToNormalState();
+  restoreEventHandlers();
 
-  // Reload page after short delay
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000);
+  const targetSection = previousSection || "bookings";
+  previousSection = null;
+
+  showSection(targetSection);
+
+  setTimeout(() => updateTargetSection(targetSection), 100);
 }
 
 // Remove edit mode indicator
