@@ -321,43 +321,44 @@ function updateEnhancedBookingsSection() {
 
 // Update mobile view with filtered and sorted bookings
 function updateMobileView(filteredBookings) {
-  let mobileContainer = document.querySelector(
-    "#bookings-section .mobile-bookings-container"
-  );
-  if (!mobileContainer) {
-    mobileContainer = document.createElement("div");
-    mobileContainer.className = "mobile-bookings-container";
+  const container = document.querySelector(".bookings-table-container");
+  const isMobile = window.innerWidth <= 890;
 
-    const bookingsSection = document.getElementById("bookings-section");
-    const searchPanel = bookingsSection.querySelector(".search-panel");
-    if (searchPanel) {
-      searchPanel.parentNode.insertBefore(
-        mobileContainer,
-        searchPanel.nextSibling
-      );
-    }
+  if (isMobile) {
+    container.classList.remove("bookings-table-container");
+    container.classList.add("mobile-bookings-container");
+  } else {
+    container.classList.add("bookings-table-container");
+    container.classList.remove("mobile-bookings-container");
   }
 
-  // Hide table on mobile
-  const tableContainer = document.querySelector(".bookings-table-container");
-  if (tableContainer) {
-    tableContainer.style.display = "none";
-  }
-
-  mobileContainer.innerHTML = "";
-
-  if (filteredBookings.length === 0) {
-    mobileContainer.innerHTML =
-      '<p style="text-align: center; color: #64748b; padding: 20px;">No bookings found</p>';
-    return;
-  }
-
-  // Create mobile cards using original structure from admin-bookings.js
+  container.innerHTML = "";
   filteredBookings.forEach((booking) => {
     const card = createMobileBookingCard(booking);
-    mobileContainer.appendChild(card);
+    container.appendChild(card);
   });
 }
+
+// Hide table on mobile
+// const tableContainer = document.querySelector(".bookings-table-container");
+// if (tableContainer) {
+//   tableContainer.style.display = "none";
+// }
+
+// mobileContainer.innerHTML = "";
+
+// if (filteredBookings.length === 0) {
+//   mobileContainer.innerHTML =
+//     '<p style="text-align: center; color: #64748b; padding: 20px;">No bookings found</p>';
+//   return;
+// }
+
+// Create mobile cards using original structure from admin-bookings.js
+//   filteredBookings.forEach((booking) => {
+//     const card = createMobileBookingCard(booking);
+//     mobileContainer.appendChild(card);
+//   });
+// }
 
 // Create mobile booking card - uses same structure as original
 // function createMobileBookingCard(booking) {
