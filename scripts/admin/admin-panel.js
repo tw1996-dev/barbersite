@@ -23,45 +23,6 @@ import "./admin-actions.js"; // Import for side effects (window functions)
 import { setupBookingsEnhancements } from "./admin-bookings-enhanced.js";
 import "./admin-edit-booking.js";
 
-// Restore admin panel state after page reload
-function restoreAdminState() {
-  const savedState = localStorage.getItem("adminPanelState");
-  if (savedState) {
-    try {
-      const state = JSON.parse(savedState);
-
-      // Only restore if timestamp is recent (within 5 seconds)
-      if (Date.now() - state.timestamp < 5000) {
-        // Wait for page to fully load
-        setTimeout(() => {
-          // Navigate to previous section
-          showSection(state.section);
-
-          // If was on calendar and had edited booking, reopen day view
-          if (state.section === "calendar" && state.editedBookingDate) {
-            setTimeout(() => {
-              const calendarDay = document.querySelector(
-                `[data-date="${state.editedBookingDate}"]`
-              );
-              if (calendarDay) {
-                calendarDay.click();
-              }
-            }, 1000);
-          }
-        }, 500);
-      }
-    } catch (e) {
-      console.log("Failed to restore admin state");
-    }
-
-    // Clean up
-    localStorage.removeItem("adminPanelState");
-  }
-}
-
-// Call restore function when page loads
-document.addEventListener("DOMContentLoaded", restoreAdminState);
-
 // Initialize admin panel when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
   // Load saved business hours first (keeping legacy function call)
@@ -157,3 +118,45 @@ function getCurrentSection() {
   const activeSection = document.querySelector(".admin-section.active");
   return activeSection ? activeSection.id.replace("-section", "") : "dashboard";
 }
+
+/**
+ * Restores admin panel state after page reload
+ * This function handles the restoration of the admin panel's previous state
+ * when the page is reloaded after booking operations (edit/delete).
+ * It ensures users return to the same section and view they were in before.
+ */
+
+function restoreAdminState() {
+  const savedState = localStorage.getItem("adminPanelState");
+  if (savedState) {
+    try {
+      const state = JSON.parse(savedState);
+
+      // Only restore if timestamp is recent (within 5 seconds)
+      if (Date.now() - state.timestamp < 5000) {
+        // Navigate to previous section
+        showSection(state.section);
+
+        // If was on calendar and had edited booking, reopen day view
+        if (state.section === "calendar" && state.editedBookingDate) {
+          setTimeout(() => {
+            const calendarDay = document.querySelector(
+              `[data-date="${state.editedBookingDate}"]`
+            );
+            if (calendarDay) {
+              calendarDay.click();
+            }
+          }, 1000);
+        }
+      }
+    } catch (e) {
+      console.log("Failed to restore admin state");
+    }
+
+    // Clean up
+    localStorage.removeItem("adminPanelState");
+  }
+}
+
+// Call after everything is initialized
+setTimeout(restoreAdminState, 1000);
