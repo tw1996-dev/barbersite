@@ -346,34 +346,45 @@ function handleEditCancel() {
 
 // Exit edit mode and cleanup - comprehensive cleanup
 function exitEditMode() {
+  // Clear edit mode state
   isEditMode = false;
   editingBookingId = null;
 
+  // Reset UI to normal state
   removeEditModeIndicator();
   resetUIToNormalState();
   restoreEventHandlers();
 
+  // Return to previous section
   const targetSection = previousSection || "bookings";
   previousSection = null;
 
   showSection(targetSection);
 
   setTimeout(() => {
+    // Update the target section with fresh data
     updateTargetSection(targetSection);
 
-    // Refresh Day Overview modal if it's open
+    // Check if Day Overview modal is currently open
     const modal = document.querySelector(".modal.active, .admin-modal.active");
     if (modal && modal.querySelector("h4")) {
       const dateText = modal.querySelector("h4").textContent;
-      // Re-trigger day overview for the same date
+
+      // If modal shows a date, refresh it with updated booking data
       if (dateText && dateText.includes("2025")) {
         const dateMatch = dateText.match(/\w+ \d{1,2}, \d{4}/);
         if (dateMatch) {
-          // Close and reopen modal with fresh data
+          // Close the current modal
           modal.remove();
-          // Trigger click on the same calendar day to reopen
+
+          // Reopen modal with fresh data by clicking the calendar day
           setTimeout(() => {
-            document.querySelector(".admin-calendar-day.selected")?.click();
+            const selectedDay = document.querySelector(
+              ".admin-calendar-day.selected"
+            );
+            if (selectedDay) {
+              selectedDay.click(); // This will trigger showDayBookings with updated data
+            }
           }, 100);
         }
       }
