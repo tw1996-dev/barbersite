@@ -87,20 +87,3 @@ window.deleteBooking = function (bookingId) {
     if (currentSection === "calendar") renderAdminCalendar();
   }
 };
-
-window.deleteBooking = function (bookingId) {
-  if (
-    confirm(
-      "Are you sure you want to delete this booking? This action cannot be undone."
-    )
-  ) {
-    removeBooking(bookingId);
-
-    showNotification("Booking deleted successfully!", "success");
-
-    // Update current view
-    if (currentSection === "bookings") updateBookingsSection();
-    if (currentSection === "dashboard") updateDashboard();
-    if (currentSection === "calendar") renderAdminCalendar();
-  }
-};
