@@ -92,7 +92,11 @@ async function handler(req, res) {
           email,
           date,
           time,
-          Array.isArray(services) ? JSON.stringify(services) : services,
+          Array.isArray(services)
+            ? services
+            : typeof services === "string"
+            ? JSON.parse(services)
+            : services,
           duration,
           price,
           notes,
