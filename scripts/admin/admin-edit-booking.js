@@ -358,7 +358,27 @@ function exitEditMode() {
 
   showSection(targetSection);
 
-  setTimeout(() => updateTargetSection(targetSection), 100);
+  setTimeout(() => {
+    updateTargetSection(targetSection);
+
+    // Refresh Day Overview modal if it's open
+    const modal = document.querySelector(".modal.active, .admin-modal.active");
+    if (modal && modal.querySelector("h4")) {
+      const dateText = modal.querySelector("h4").textContent;
+      // Re-trigger day overview for the same date
+      if (dateText && dateText.includes("2025")) {
+        const dateMatch = dateText.match(/\w+ \d{1,2}, \d{4}/);
+        if (dateMatch) {
+          // Close and reopen modal with fresh data
+          modal.remove();
+          // Trigger click on the same calendar day to reopen
+          setTimeout(() => {
+            document.querySelector(".admin-calendar-day.selected")?.click();
+          }, 100);
+        }
+      }
+    }
+  }, 100);
 }
 
 // Remove edit mode indicator
