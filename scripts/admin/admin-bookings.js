@@ -50,20 +50,22 @@ function updateMobileAllBookingsView() {
 
     const bookingsSection = document.getElementById("bookings-section");
 
-    // Insert after search panel instead of after filters
-    const searchPanel = bookingsSection.querySelector(".search-panel");
-    if (searchPanel) {
-      searchPanel.parentNode.insertBefore(mobileContainer, searchPanel.nextSibling);
-    } else {
-      // Fallback - insert after filters if search panel not found
-      const filtersDiv = bookingsSection.querySelector(".section-header");
-      filtersDiv.parentNode.insertBefore(mobileContainer, filtersDiv.nextSibling);
-    }
+    // Insert after filters
+    const filtersDiv = bookingsSection.querySelector(".section-header");
+    filtersDiv.parentNode.insertBefore(mobileContainer, filtersDiv.nextSibling);
+  }
 
-  // Hide table container every time this function runs
-  const tableContainer = document.querySelector(".bookings-table-container");
-  if (tableContainer) {
-    tableContainer.style.display = "none";
+  // Insert after search panel instead of after filters
+  const searchPanel = bookingsSection.querySelector(".search-panel");
+  if (searchPanel) {
+    searchPanel.parentNode.insertBefore(
+      mobileContainer,
+      searchPanel.nextSibling
+    );
+  } else {
+    // Fallback - insert after filters if search panel not found
+    const filtersDiv = bookingsSection.querySelector(".section-header");
+    filtersDiv.parentNode.insertBefore(mobileContainer, filtersDiv.nextSibling);
   }
 
   const filteredBookings = getFilteredBookings();
