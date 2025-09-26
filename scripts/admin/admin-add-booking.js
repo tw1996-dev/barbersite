@@ -31,6 +31,7 @@ import { updateDashboard } from "./admin-dashboard.js";
 import { updateBookingsSection } from "./admin-bookings.js";
 import { renderAdminCalendar } from "./admin-calendar.js";
 import { isInEditMode } from "./admin-edit-booking.js";
+import { getEditingBookingId } from "./admin-edit-booking.js";
 
 export function setupAddBookingSection() {
   const serviceCheckboxes = document.querySelectorAll(
@@ -248,7 +249,8 @@ export function renderAddBookingCalendar() {
               dayDateStr,
               totalDuration,
               businessHours,
-              currentBookings
+              currentBookings,
+              getEditingBookingId()
             )
           : false;
 
@@ -398,7 +400,8 @@ function updateAddBookingTimeSlots() {
         selectedAddBookingDate,
         timeString,
         totalDuration,
-        currentBookings
+        currentBookings,
+        getEditingBookingId()
       );
       const endTime = getBookingEndTime(timeString, totalDuration);
       const endMinutes = timeToMinutes(endTime);

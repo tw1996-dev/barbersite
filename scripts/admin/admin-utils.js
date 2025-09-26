@@ -92,7 +92,8 @@ export function isTimeSlotAvailable(
   selectedDate,
   timeSlot,
   newDuration,
-  currentBookings
+  currentBookings,
+  excludeBookingId = null
 ) {
   if (!selectedDate || !timeSlot || !newDuration) return false;
 
@@ -102,7 +103,10 @@ export function isTimeSlotAvailable(
 
   // Check conflicts with existing bookings
   const dayBookings = currentBookings.filter(
-    (booking) => booking.date === selectedDate && booking.status === "confirmed"
+    (booking) =>
+      booking.date === selectedDate &&
+      booking.status === "confirmed" &&
+      booking.id !== excludeBookingId
   );
 
   for (const booking of dayBookings) {

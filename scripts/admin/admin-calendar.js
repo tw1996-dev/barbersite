@@ -20,6 +20,7 @@ import {
   checkDayAvailability,
 } from "./admin-utils.js";
 import { showModal } from "./admin-modal.js";
+import { getEditingBookingId } from "./admin-edit-booking.js";
 
 export function setupCalendar() {
   const prevBtn = document.getElementById("prev-month-cal");
@@ -136,7 +137,8 @@ export function renderAdminCalendar() {
       dayDateStr,
       45,
       businessHours,
-      currentBookings
+      currentBookings,
+      getEditingBookingId()
     );
 
     if (dayBookings.length === 0) {
