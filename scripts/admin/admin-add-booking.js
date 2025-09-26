@@ -518,6 +518,9 @@ function setupFormValidation() {
   });
 }
 async function saveNewBooking() {
+  // Block in edit mode
+  if (getEditingBookingIdFromDOM()) return;
+
   // Refresh bookings to get latest data before conflict check
   await refreshBookings();
 
