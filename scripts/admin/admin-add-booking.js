@@ -394,18 +394,18 @@ function updateAddBookingTimeSlots() {
       const displayTime = formatTime(timeString);
 
       // Check if slot is in the past (only for today)
-      const now = new Date();
-      const today = new Date().toISOString().split("T")[0];
-      const isToday = selectedAddBookingDate === today;
-      const isPastTime =
-        isToday &&
-        timeToMinutes(timeString) <=
-          timeToMinutes(
-            `${now.getHours().toString().padStart(2, "0")}:${now
-              .getMinutes()
-              .toString()
-              .padStart(2, "0")}`
-          );
+      // const now = new Date();
+      // const today = new Date().toISOString().split("T")[0];
+      // const isToday = selectedAddBookingDate === today;
+      // const isPastTime =
+      //   isToday &&
+      //   timeToMinutes(timeString) <=
+      //     timeToMinutes(
+      //       `${now.getHours().toString().padStart(2, "0")}:${now
+      //         .getMinutes()
+      //         .toString()
+      //         .padStart(2, "0")}`
+      //     );
 
       const isAvailable = isTimeSlotAvailable(
         selectedAddBookingDate,
@@ -424,7 +424,8 @@ function updateAddBookingTimeSlots() {
       timeSlot.textContent = displayTime;
       timeSlot.dataset.time = timeString;
 
-      if (!isAvailable || !fitsInBusinessHours || isPastTime) {
+      // if (!isAvailable || !fitsInBusinessHours || isPastTime) {
+      if (!isAvailable || !fitsInBusinessHours) {
         timeSlot.classList.add("unavailable");
         if (!fitsInBusinessHours) {
           timeSlot.title = "Service would end after closing time";
