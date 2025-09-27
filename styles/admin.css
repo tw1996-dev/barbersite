@@ -1598,7 +1598,7 @@ body {
 [data-sort]::after {
   content: "↕";
   position: absolute;
-  right: 4px;
+  right: 0px;
   opacity: 0.5;
   font-size: 0.8rem;
 }
