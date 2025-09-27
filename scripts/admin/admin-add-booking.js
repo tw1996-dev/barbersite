@@ -407,6 +407,18 @@ function updateAddBookingTimeSlots() {
       //         .padStart(2, "0")}`
       //     );
 
+/ Simplified past time check for today only
+const now = new Date();
+const today = new Date().toISOString().split("T")[0];
+const isToday = selectedAddBookingDate === today;
+
+// Extract hour and minute from timeString (format: "17:30")
+const [slotHour, slotMinute] = timeString.split(":").map(Number);
+const slotTotalMinutes = slotHour * 60 + slotMinute;
+const currentTotalMinutes = now.getHours() * 60 + now.getMinutes();
+
+const isPastTime = isToday && slotTotalMinutes < currentTotalMinutes;
+
       const isAvailable = isTimeSlotAvailable(
         selectedAddBookingDate,
         timeString,
