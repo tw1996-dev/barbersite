@@ -11,6 +11,7 @@ import {
   getBookingEndTime,
   formatTimeRange,
   formatDate,
+  isBookingPast,
 } from "./admin-utils.js";
 
 export function setupBookingsSection() {
@@ -91,9 +92,17 @@ function createMobileBookingCard(booking, includeAllActions = false) {
   const timeRange = formatTimeRange(booking.time, endTime);
 
   const actions = includeAllActions
-    ? `<button class="action-btn view-btn" onclick="viewBooking(${booking.id})">View</button>
-           <button class="action-btn edit-btn" onclick="editBooking(${booking.id})">Edit</button>
-           <button class="action-btn delete-btn" onclick="deleteBooking(${booking.id})">Delete</button>`
+    ? `<button class="action-btn view-btn" onclick="viewBooking(${
+        booking.id
+      })">View</button>
+           ${
+             isBookingPast(booking)
+               ? '<button class="action-btn edit-btn" disabled title="Cannot edit past bookings">Edit</button>'
+               : `<button class="action-btn edit-btn" onclick="editBooking(${booking.id})">Edit</button>`
+           }
+           <button class="action-btn delete-btn" onclick="deleteBooking(${
+             booking.id
+           })">Delete</button>`
     : `<button class="action-btn view-btn" onclick="viewBooking(${booking.id})">View</button>`;
 
   card.innerHTML = `
@@ -243,9 +252,17 @@ function createBookingRow(booking, includeActions = false) {
           includeActions
             ? `
             <td>
-                <button class="action-btn view-btn" onclick="viewBooking(${booking.id})">View</button>
-                <button class="action-btn edit-btn" onclick="editBooking(${booking.id})">Edit</button>
-                <button class="action-btn delete-btn" onclick="deleteBooking(${booking.id})">Delete</button>
+                <button class="action-btn view-btn" onclick="viewBooking(${
+                  booking.id
+                })">View</button>
+                ${
+                  isBookingPast(booking)
+                    ? '<button class="action-btn edit-btn" disabled title="Cannot edit past bookings">Edit</button>'
+                    : `<button class="action-btn edit-btn" onclick="editBooking(${booking.id})">Edit</button>`
+                }
+                <button class="action-btn delete-btn" onclick="deleteBooking(${
+                  booking.id
+                })">Delete</button>
             </td>
         `
             : ""

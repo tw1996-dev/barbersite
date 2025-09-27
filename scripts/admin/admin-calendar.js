@@ -18,6 +18,7 @@ import {
   formatFullDate,
   timeToMinutes,
   checkDayAvailability,
+  isBookingPast,
 } from "./admin-utils.js";
 import { showModal } from "./admin-modal.js";
 import { getEditingBookingId } from "./admin-edit-booking.js";
@@ -195,9 +196,11 @@ function showDayBookings(date, bookings) {
                             <button class="action-btn view-btn" onclick="viewBooking(${
                               booking.id
                             })">View</button>
-                            <button class="action-btn edit-btn" onclick="editBooking(${
-                              booking.id
-                            })">Edit</button>
+                            ${
+                              isBookingPast(booking)
+                                ? '<button class="action-btn edit-btn" disabled title="Cannot edit past bookings">Edit</button>'
+                                : `<button class="action-btn edit-btn" onclick="editBooking(${booking.id})">Edit</button>`
+                            }
                             <button class="action-btn delete-btn" onclick="deleteBooking(${
                               booking.id
                             })">Delete</button>

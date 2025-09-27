@@ -289,3 +289,25 @@ export function showNotification(message, type = "info") {
     }, 300);
   }, 4000);
 }
+
+/**
+ * Check if a booking appointment has already occurred in the past
+ * Used to determine if Edit button should be disabled in admin panel
+ * Compares booking end time (date + time + duration) with current time
+ *  - Booking object with date, time, and duration
+ *  - True if booking has finished, false if future/ongoing
+ */
+// Check if booking has already occurred (past date/time)
+export function isBookingPast(booking) {
+  const now = new Date();
+  const bookingDate = new Date(booking.date);
+  const [hours, minutes] = booking.time.split(":").map(Number);
+
+  // Set booking time
+  bookingDate.setHours(hours, minutes, 0, 0);
+
+  // Add duration to get end time
+  const endTime = new Date(bookingDate.getTime() + booking.duration * 60000);
+
+  return endTime < now;
+}
