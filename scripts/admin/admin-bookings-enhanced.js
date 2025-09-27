@@ -71,6 +71,19 @@ function setupSearchPanel() {
       updateEnhancedBookingsSection();
     });
   }
+  // Add responsive resize handler for mobile/desktop switching
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      // Check if we're in bookings section
+      const bookingsSection = document.getElementById("bookings-section");
+      if (bookingsSection && bookingsSection.classList.contains("active")) {
+        // Force re-render to handle mobile/desktop switch
+        updateEnhancedBookingsSection();
+      }
+    }, 100);
+  });
 }
 
 // Setup sortable column headers with click handlers
