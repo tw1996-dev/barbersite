@@ -332,7 +332,7 @@ function updateAddBookingTimeSlots() {
   //     timeGrid.appendChild(timeSlot);
   //   }
   //   return;
-  }
+  // }
 
   // Get selected services total duration
   const selectedServices = document.querySelectorAll(
