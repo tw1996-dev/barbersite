@@ -303,6 +303,7 @@ function selectAddBookingDate(dateStr, element) {
 }
 
 function updateAddBookingTimeSlots() {
+  refreshBookings();
   const timeSlotsContainer = document.getElementById("add-booking-time-slots");
   const timeGrid = document.getElementById("add-booking-time-grid");
 
