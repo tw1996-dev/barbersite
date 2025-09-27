@@ -310,28 +310,28 @@ function updateAddBookingTimeSlots() {
   if (!timeSlotsContainer || !timeGrid || !selectedAddBookingDate) return;
 
   // Check if editing past booking
-  const today = new Date().toISOString().split("T")[0];
-  const isEditMode = document.getElementById("edit-mode-indicator") !== null;
-  const isPastDate = selectedAddBookingDate < today;
+  // const today = new Date().toISOString().split("T")[0];
+  // const isEditMode = document.getElementById("edit-mode-indicator") !== null;
+  // const isPastDate = selectedAddBookingDate < today;
 
-  if (isEditMode && isPastDate) {
-    // For past bookings - show original time only
-    timeSlotsContainer.style.display = "block";
-    timeGrid.innerHTML = `
-      <p style="text-align: center; color: #94a3b8; font-style: italic; margin-bottom: 16px;">
-        Editing past booking - showing original time only
-      </p>
-    `;
+  // if (isEditMode && isPastDate) {
+  //   // For past bookings - show original time only
+  //   timeSlotsContainer.style.display = "block";
+  //   timeGrid.innerHTML = `
+  //     <p style="text-align: center; color: #94a3b8; font-style: italic; margin-bottom: 16px;">
+  //       Editing past booking - showing original time only
+  //     </p>
+  //   `;
 
-    const editingTime = document.getElementById("booking-time")?.value;
-    if (editingTime) {
-      const timeSlot = document.createElement("div");
-      timeSlot.className = "admin-time-slot selected";
-      timeSlot.textContent = formatTime(editingTime);
-      timeSlot.dataset.time = editingTime;
-      timeGrid.appendChild(timeSlot);
-    }
-    return;
+  //   const editingTime = document.getElementById("booking-time")?.value;
+  //   if (editingTime) {
+  //     const timeSlot = document.createElement("div");
+  //     timeSlot.className = "admin-time-slot selected";
+  //     timeSlot.textContent = formatTime(editingTime);
+  //     timeSlot.dataset.time = editingTime;
+  //     timeGrid.appendChild(timeSlot);
+  //   }
+  //   return;
   }
 
   // Get selected services total duration
