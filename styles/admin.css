@@ -1403,11 +1403,17 @@ body {
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 460px) {
   .calendar-container,
   .admin-calendar-container,
   .calendar-day-header {
     padding: 0;
+  }
+  .admin-main {
+    padding: 4px;
+  }
+  .section-header h2 {
+    padding: 6px;
   }
 }
 

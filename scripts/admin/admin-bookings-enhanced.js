@@ -314,64 +314,123 @@ function updateEnhancedBookingsSection() {
   updateSearchResultsCounter(filteredBookings);
 }
 
+/**
+ * Enhanced bookings section update with responsive mobile/desktop support
+ * Handles both table view (desktop) and card view (mobile) with intelligent filtering
+ */
+function updateEnhancedBookingsSection() {
+  const filteredBookings = getEnhancedFilteredBookings();
 
+  // Check if mobile or desktop view based on window width
+  const isMobile = window.innerWidth <= 890;
 
-// Update desktop table with filtered and sorted bookings
-function updateDesktopTable(filteredBookings) {
-  const tableContainer = document.querySelector(".bookings-table-container");
-  if (tableContainer) {
-    tableContainer.style.display = "block";
+  if (isMobile) {
+    updateEnhancedMobileBookingsView(filteredBookings);
+  } else {
+    updateDesktopTable(filteredBookings);
   }
 
-  const tableBody = document.querySelector("#all-bookings-table tbody");
-  if (!tableBody) return;
+  updateSearchResultsCounter(filteredBookings);
+}
 
-  tableBody.innerHTML = "";
+/**
+ * Update mobile booking cards view with filtered data
+ * Creates responsive card layout for mobile devices with search highlighting
+ */
+function updateEnhancedMobileBookingsView(filteredBookings) {
+  let mobileContainer = document.querySelector(
+    "#bookings-section .mobile-bookings-container"
+  );
+
+  // Create mobile container if it doesn't exist
+  if (!mobileContainer) {
+    mobileContainer = document.createElement("div");
+    mobileContainer.className = "mobile-bookings-container";
+
+    const bookingsSection = document.getElementById("bookings-section");
+
+    // Insert after search panel
+    const searchPanel = bookingsSection.querySelector(".search-panel");
+    if (searchPanel) {
+      searchPanel.parentNode.insertBefore(
+        mobileContainer,
+        searchPanel.nextSibling
+      );
+    } else {
+      // Fallback - insert after filters if search panel not found
+      const filtersDiv = bookingsSection.querySelector(".section-header");
+      filtersDiv.parentNode.insertBefore(
+        mobileContainer,
+        filtersDiv.nextSibling
+      );
+    }
+  }
+
+  // Hide desktop table container
+  const tableContainer = document.querySelector(".bookings-table-container");
+  if (tableContainer) {
+    tableContainer.style.display = "none";
+  }
+
+  // Show mobile container
+  mobileContainer.style.display = "block";
+  mobileContainer.innerHTML = "";
 
   if (filteredBookings.length === 0) {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td colspan="10" style="text-align: center; color: #64748b; padding: 20px;">
-        No bookings found
-      </td>
-    `;
-    tableBody.appendChild(row);
+    mobileContainer.innerHTML =
+      '<p style="text-align: center; color: #64748b; padding: 20px;">No bookings found</p>';
     return;
   }
 
-  // Create table rows
+  // Create mobile cards for each filtered booking
   filteredBookings.forEach((booking) => {
-    const row = document.createElement("tr");
-    const endTime = getBookingEndTime(booking.time, booking.duration);
-    const timeRange = formatTimeRange(booking.time, endTime);
-
-    row.innerHTML = `
-      <td>${booking.id}</td>
-      <td>${formatDate(booking.date)}</td>
-      <td>${timeRange}</td>
-      <td>${booking.customer}</td>
-      <td>${booking.phone}</td>
-      <td>${booking.services}</td>
-      <td>${booking.duration} min</td>
-      <td>$${booking.price}</td>
-      <td><span class="status-badge status-${booking.status}">${
-      booking.status
-    }</span></td>
-     <td>
-  <button class="action-btn view-btn" onclick="viewBooking(${
-    booking.id
-  })">View</button>
-  <button class="action-btn edit-btn" onclick="editBooking(${
-    booking.id
-  })">Edit</button>
-  <button class="action-btn delete-btn" onclick="deleteBooking(${
-    booking.id
-  })">Delete</button>
-</td>
-    `;
-
-    tableBody.appendChild(row);
+    const card = createEnhancedMobileBookingCard(booking);
+    mobileContainer.appendChild(card);
   });
+}
+
+/**
+ * Create enhanced mobile booking card with all booking details
+ * Includes customer info, services, price, status and action buttons
+ */
+function createEnhancedMobileBookingCard(booking) {
+  const card = document.createElement("div");
+  card.className = "booking-card";
+
+  const endTime = getBookingEndTime(booking.time, booking.duration);
+  const timeRange = formatTimeRange(booking.time, endTime);
+
+  card.innerHTML = `
+    <div class="booking-card-header">
+      <div class="booking-customer">${booking.customer}</div>
+      <div class="booking-datetime">
+        ${formatDate(booking.date)}<br>
+        ${timeRange}
+      </div>
+    </div>
+    <div class="booking-services">${booking.services.join(", ")}</div>
+    <div class="booking-card-footer">
+      <div class="booking-price">
+        <span class="status-badge status-${booking.status}">${
+    booking.status
+  }</span>
+        $${booking.price}
+      </div>
+      <div class="booking-actions">
+        <button class="action-btn view-btn" onclick="viewBooking(${
+          booking.id
+        })">View</button>
+        <button class="action-btn edit-btn" onclick="editBooking(${
+          booking.id
+        })">Edit</button>
+        <button class="action-btn delete-btn" onclick="deleteBooking(${
+          booking.id
+        })">Delete</button>
+      </div>
+    </div>
+  `;
+
+  return card;
 }
 
 // Update search results counter display

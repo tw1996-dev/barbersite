@@ -64,7 +64,7 @@ async function initializeAdminPanel() {
     module.updateDashboard();
   });
 
-  // Add auto-refresh every 30 seconds to keep admin panel in sync
+  // Add auto-refresh every 1 second to keep admin panel in sync
   setInterval(async () => {
     const success = await refreshBookings();
     if (success) {
