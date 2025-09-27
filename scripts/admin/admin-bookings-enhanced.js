@@ -305,15 +305,6 @@ function applySorting(bookings) {
   });
 }
 
-// Update bookings section with filtered and sorted data
-function updateEnhancedBookingsSection() {
-  const filteredBookings = getEnhancedFilteredBookings();
-
-  // Always render data to table - CSS will handle responsive display
-  updateDesktopTable(filteredBookings);
-  updateSearchResultsCounter(filteredBookings);
-}
-
 /**
  * Enhanced bookings section update with responsive mobile/desktop support
  * Handles both table view (desktop) and card view (mobile) with intelligent filtering
@@ -431,6 +422,64 @@ function createEnhancedMobileBookingCard(booking) {
   `;
 
   return card;
+}
+
+// Update desktop table with filtered and sorted bookings
+function updateDesktopTable(filteredBookings) {
+  const tableContainer = document.querySelector(".bookings-table-container");
+  if (tableContainer) {
+    tableContainer.style.display = "block";
+  }
+
+  const tableBody = document.querySelector("#all-bookings-table tbody");
+  if (!tableBody) return;
+
+  tableBody.innerHTML = "";
+
+  if (filteredBookings.length === 0) {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td colspan="10" style="text-align: center; color: #64748b; padding: 20px;">
+        No bookings found
+      </td>
+    `;
+    tableBody.appendChild(row);
+    return;
+  }
+
+  // Create table rows
+  filteredBookings.forEach((booking) => {
+    const row = document.createElement("tr");
+    const endTime = getBookingEndTime(booking.time, booking.duration);
+    const timeRange = formatTimeRange(booking.time, endTime);
+
+    row.innerHTML = `
+      <td>${booking.id}</td>
+      <td>${formatDate(booking.date)}</td>
+      <td>${timeRange}</td>
+      <td>${booking.customer}</td>
+      <td>${booking.phone}</td>
+      <td>${booking.services}</td>
+      <td>${booking.duration} min</td>
+      <td>$${booking.price}</td>
+      <td><span class="status-badge status-${booking.status}">${
+      booking.status
+    }</span></td>
+     <td>
+  <button class="action-btn view-btn" onclick="viewBooking(${
+    booking.id
+  })">View</button>
+  <button class="action-btn edit-btn" onclick="editBooking(${
+    booking.id
+  })">Edit</button>
+  <button class="action-btn delete-btn" onclick="deleteBooking(${
+    booking.id
+  })">Delete</button>
+</td>
+    `;
+
+    tableBody.appendChild(row);
+  });
 }
 
 // Update search results counter display
