@@ -437,7 +437,7 @@ function updateAddBookingTimeSlots() {
       timeSlot.dataset.time = timeString;
 
       // if (!isAvailable || !fitsInBusinessHours || isPastTime) {
-      if (!isAvailable || !fitsInBusinessHours) {
+      if (!isAvailable || !fitsInBusinessHours || isPastTime) {
         timeSlot.classList.add("unavailable");
         if (!fitsInBusinessHours) {
           timeSlot.title = "Service would end after closing time";
