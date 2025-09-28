@@ -102,42 +102,18 @@ async function sendEmail(booking) {
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Elite Barber Studio//Booking System//EN
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
-BEGIN:VTIMEZONE
-TZID:${Intl.DateTimeFormatter().resolvedOptions().timeZone}
-BEGIN:STANDARD
-DTSTART:20230101T000000
-TZNAME:${Intl.DateTimeFormatter().resolvedOptions().timeZone}
-TZOFFSETFROM:${new Date().getTimezoneOffset() > 0 ? "-" : "+"}${String(
-      Math.floor(Math.abs(new Date().getTimezoneOffset()) / 60)
-    ).padStart(2, "0")}${String(
-      Math.abs(new Date().getTimezoneOffset()) % 60
-    ).padStart(2, "0")}
-TZOFFSETTO:${new Date().getTimezoneOffset() > 0 ? "-" : "+"}${String(
-      Math.floor(Math.abs(new Date().getTimezoneOffset()) / 60)
-    ).padStart(2, "0")}${String(
-      Math.abs(new Date().getTimezoneOffset()) % 60
-    ).padStart(2, "0")}
-END:STANDARD
-END:VTIMEZONE
 BEGIN:VEVENT
 UID:${booking.id || Date.now()}@elitebarberstudio.com
 DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z
-DTSTART;TZID=${
-      Intl.DateTimeFormatter().resolvedOptions().timeZone
-    }:${startDateTime}
-DTEND;TZID=${Intl.DateTimeFormatter().resolvedOptions().timeZone}:${endDateTime}
+DTSTART:${startDateTime}Z
+DTEND:${endDateTime}Z
 SUMMARY:Appointment at Elite Barber Studio
-DESCRIPTION:Services: ${booking.services.join(", ")}\nDuration: ${
+DESCRIPTION:Services: ${booking.services.join(", ")}\\nDuration: ${
       booking.duration
-    } minutes\nTotal: $${
+    } minutes\\nTotal: $${
       booking.price
-    }\n\nPlease arrive 5 minutes early.\n\nElite Barber Studio\n123 Main Street, Downtown, NY 10001\nPhone: +1 (234) 567-890
+    }\\n\\nPlease arrive 5 minutes early.\\n\\nElite Barber Studio\\n123 Main Street, Downtown, NY 10001\\nPhone: +1 (234) 567-890
 LOCATION:Elite Barber Studio, 123 Main Street, Downtown, NY 10001
-STATUS:CONFIRMED
-SEQUENCE:0
-TRANSP:OPAQUE
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:Reminder: Appointment at Elite Barber Studio tomorrow
