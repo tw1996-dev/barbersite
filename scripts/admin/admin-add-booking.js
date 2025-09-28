@@ -114,7 +114,7 @@ function setupAddBookingCalendar() {
     ?.closest(".form-group");
   if (dateGroup) {
     dateGroup.innerHTML = `
-            <label>Select Date</label>
+             <span class="form-label">Select Date</span>
             <div class="admin-calendar-container">
                 <div class="admin-calendar-header">
                     <button type="button" id="prev-month-add" class="admin-calendar-nav">&lt;</button>

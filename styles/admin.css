@@ -1292,7 +1292,7 @@ body {
 }
 
 /* Very small screens - Business Hours fix */
-@media (max-width: 400px) {
+@media (max-width: 406px) {
   .login-card {
     padding: 24px;
   }
