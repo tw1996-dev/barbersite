@@ -1,0 +1,103 @@
+/* Booking Manager Specific Styles */
+
+/* Booking Actions Section */
+.booking-actions {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+/* Cancel Booking Button */
+.cancel-booking-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-family: "DM Sans", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.cancel-booking-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Cancel Modal */
+.cancel-modal {
+  display: none;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.cancel-modal-content {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.cancel-modal-text {
+  text-align: center;
+  color: #bbb;
+  margin-bottom: 20px;
+}
+
+.cancel-modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* Confirm Cancel Button */
+.confirm-cancel-btn {
+  background: rgba(239, 68, 68, 0.8);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.confirm-cancel-btn:hover {
+  background: rgba(239, 68, 68, 1);
+  transform: translateY(-1px);
+}
+
+/* Keep Booking Button */
+.keep-booking-btn {
+  background: rgba(212, 175, 55, 0.2);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.keep-booking-btn:hover {
+  background: rgba(212, 175, 55, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media screen and (max-width: 480px) {
+  .cancel-modal-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .confirm-cancel-btn,
+  .keep-booking-btn {
+    width: 100%;
+  }
+}
