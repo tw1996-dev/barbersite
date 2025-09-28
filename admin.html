@@ -264,57 +264,76 @@
                         <h3>Weekly Schedule</h3>
                         <div class="schedule-grid">
                             <div class="day-schedule" data-day="monday">
-                                <label>Monday</label>
-                                <input type="checkbox" class="day-enabled" name="monday-enabled" checked>
-                                <input type="time" class="open-time" name="monday-open" value="09:00">
+                                <label for="monday-enabled">Monday</label>
+                                <input type="checkbox" class="day-enabled" name="monday-enabled" id="monday-enabled"
+                                    checked>
+                                <input type="time" class="open-time" name="monday-open" id="monday-open" value="09:00"
+                                    aria-label="Monday opening time">
                                 <span>to</span>
-                                <input type="time" class="close-time" name="monday-close" value="18:00">
+                                <input type="time" class="close-time" name="monday-close" id="monday-close"
+                                    value="18:00" aria-label="Monday closing time">
                             </div>
                             <div class="day-schedule" data-day="tuesday">
-                                <label>Tuesday</label>
-                                <input type="checkbox" class="day-enabled" name="tuesday-enabled" checked>
-                                <input type="time" class="open-time" name="tuesday-open" value="09:00">
+                                <label for="tuesday-enabled">Tuesday</label>
+                                <input type="checkbox" class="day-enabled" name="tuesday-enabled" id="tuesday-enabled"
+                                    checked>
+                                <input type="time" class="open-time" name="tuesday-open" id="tuesday-open" value="09:00"
+                                    aria-label="Tuesday opening time">
                                 <span>to</span>
-                                <input type="time" class="close-time" name="tuesday-close" value="18:00">
+                                <input type="time" class="close-time" name="tuesday-close" id="tuesday-close"
+                                    value="18:00" aria-label="Tuesday closing time">
                             </div>
                             <div class="day-schedule" data-day="wednesday">
-                                <label>Wednesday</label>
-                                <input type="checkbox" class="day-enabled" name="wednesday-enabled" checked>
-                                <input type="time" class="open-time" name="wednesday-open" value="09:00">
+                                <label for="wednesday-enabled">Wednesday</label>
+                                <input type="checkbox" class="day-enabled" name="wednesday-enabled"
+                                    id="wednesday-enabled" checked>
+                                <input type="time" class="open-time" name="wednesday-open" id="wednesday-open"
+                                    value="09:00" aria-label="Wednesday opening time">
                                 <span>to</span>
-                                <input type="time" class="close-time" name="wednesday-close" value="18:00">
+                                <input type="time" class="close-time" name="wednesday-close" id="wednesday-close"
+                                    value="18:00" aria-label="Wednesday closing time">
                             </div>
                             <div class="day-schedule" data-day="thursday">
-                                <label>Thursday</label>
-                                <input type="checkbox" class="day-enabled" name="thursday-enabled" checked>
-                                <input type="time" class="open-time" name="thursday-open" value="09:00">
+                                <label for="thursday-enabled">Thursday</label>
+                                <input type="checkbox" class="day-enabled" name="thursday-enabled" id="thursday-enabled"
+                                    checked>
+                                <input type="time" class="open-time" name="thursday-open" id="thursday-open"
+                                    value="09:00" aria-label="Thursday opening time">
                                 <span>to</span>
-                                <input type="time" class="close-time" name="thursday-close" value="18:00">
+                                <input type="time" class="close-time" name="thursday-close" id="thursday-close"
+                                    value="18:00" aria-label="Thursday closing time">
                             </div>
                             <div class="day-schedule" data-day="friday">
-                                <label>Friday</label>
-                                <input type="checkbox" class="day-enabled" name="friday-enabled" checked>
-                                <input type="time" class="open-time" name="friday-open" value="09:00">
+                                <label for="friday-enabled">Friday</label>
+                                <input type="checkbox" class="day-enabled" name="friday-enabled" id="friday-enabled"
+                                    checked>
+                                <input type="time" class="open-time" name="friday-open" id="friday-open" value="09:00"
+                                    aria-label="Friday opening time">
                                 <span>to</span>
-                                <input type="time" class="close-time" name="friday-close" value="18:00">
+                                <input type="time" class="close-time" name="friday-close" id="friday-close"
+                                    value="18:00" aria-label="Friday closing time">
                             </div>
                             <div class="day-schedule" data-day="saturday">
-                                <label>Saturday</label>
-                                <input type="checkbox" class="day-enabled" name="saturday-enabled" checked>
-                                <input type="time" class="open-time" name="saturday-open" value="10:00">
+                                <label for="saturday-enabled">Saturday</label>
+                                <input type="checkbox" class="day-enabled" name="saturday-enabled" id="saturday-enabled"
+                                    checked>
+                                <input type="time" class="open-time" name="saturday-open" id="saturday-open"
+                                    value="10:00" aria-label="Saturday opening time">
                                 <span>to</span>
-                                <input type="time" class="close-time" name="saturday-close" value="16:00">
+                                <input type="time" class="close-time" name="saturday-close" id="saturday-close"
+                                    value="16:00" aria-label="Saturday closing time">
                             </div>
                             <div class="day-schedule" data-day="sunday">
-                                <label>Sunday</label>
-                                <input type="checkbox" class="day-enabled" name="sunday-enabled">
-                                <input type="time" class="open-time" name="sunday-open" value="11:00" disabled>
+                                <label for="sunday-enabled">Sunday</label>
+                                <input type="checkbox" class="day-enabled" name="sunday-enabled" id="sunday-enabled">
+                                <input type="time" class="open-time" name="sunday-open" id="sunday-open" value="11:00"
+                                    disabled aria-label="Sunday opening time">
                                 <span>to</span>
-                                <input type="time" class="close-time" name="sunday-close" value="15:00" disabled>
+                                <input type="time" class="close-time" name="sunday-close" id="sunday-close"
+                                    value="15:00" disabled aria-label="Sunday closing time">
                             </div>
                         </div>
                     </div>
-
 
                     <div class="overtime-buffer-section">
                         <h3>Overtime Buffer</h3>
