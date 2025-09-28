@@ -46,7 +46,7 @@
             <form id="login-form" class="login-form">
                 <div class="form-group">
                     <label for="admin-password">Admin Password</label>
-                    <input type="password" id="admin-password" required>
+                    <input type="password" id="admin-password" name="admin-password" required>
                 </div>
                 <button type="submit" class="login-btn">Access Panel</button>
                 <div id="login-error" class="login-error" style="display: none;"></div>
@@ -265,52 +265,52 @@
                         <div class="schedule-grid">
                             <div class="day-schedule" data-day="monday">
                                 <label>Monday</label>
-                                <input type="checkbox" class="day-enabled" checked>
-                                <input type="time" class="open-time" value="09:00">
+                                <input type="checkbox" class="day-enabled" name="monday-enabled" checked>
+                                <input type="time" class="open-time" name="monday-open" value="09:00">
                                 <span>to</span>
-                                <input type="time" class="close-time" value="18:00">
+                                <input type="time" class="close-time" name="monday-close" value="18:00">
                             </div>
                             <div class="day-schedule" data-day="tuesday">
                                 <label>Tuesday</label>
-                                <input type="checkbox" class="day-enabled" checked>
-                                <input type="time" class="open-time" value="09:00">
+                                <input type="checkbox" class="day-enabled" name="tuesday-enabled" checked>
+                                <input type="time" class="open-time" name="tuesday-open" value="09:00">
                                 <span>to</span>
-                                <input type="time" class="close-time" value="18:00">
+                                <input type="time" class="close-time" name="tuesday-close" value="18:00">
                             </div>
                             <div class="day-schedule" data-day="wednesday">
                                 <label>Wednesday</label>
-                                <input type="checkbox" class="day-enabled" checked>
-                                <input type="time" class="open-time" value="09:00">
+                                <input type="checkbox" class="day-enabled" name="wednesday-enabled" checked>
+                                <input type="time" class="open-time" name="wednesday-open" value="09:00">
                                 <span>to</span>
-                                <input type="time" class="close-time" value="18:00">
+                                <input type="time" class="close-time" name="wednesday-close" value="18:00">
                             </div>
                             <div class="day-schedule" data-day="thursday">
                                 <label>Thursday</label>
-                                <input type="checkbox" class="day-enabled" checked>
-                                <input type="time" class="open-time" value="09:00">
+                                <input type="checkbox" class="day-enabled" name="thursday-enabled" checked>
+                                <input type="time" class="open-time" name="thursday-open" value="09:00">
                                 <span>to</span>
-                                <input type="time" class="close-time" value="18:00">
+                                <input type="time" class="close-time" name="thursday-close" value="18:00">
                             </div>
                             <div class="day-schedule" data-day="friday">
                                 <label>Friday</label>
-                                <input type="checkbox" class="day-enabled" checked>
-                                <input type="time" class="open-time" value="09:00">
+                                <input type="checkbox" class="day-enabled" name="friday-enabled" checked>
+                                <input type="time" class="open-time" name="friday-open" value="09:00">
                                 <span>to</span>
-                                <input type="time" class="close-time" value="18:00">
+                                <input type="time" class="close-time" name="friday-close" value="18:00">
                             </div>
                             <div class="day-schedule" data-day="saturday">
                                 <label>Saturday</label>
-                                <input type="checkbox" class="day-enabled" checked>
-                                <input type="time" class="open-time" value="10:00">
+                                <input type="checkbox" class="day-enabled" name="saturday-enabled" checked>
+                                <input type="time" class="open-time" name="saturday-open" value="10:00">
                                 <span>to</span>
-                                <input type="time" class="close-time" value="16:00">
+                                <input type="time" class="close-time" name="saturday-close" value="16:00">
                             </div>
                             <div class="day-schedule" data-day="sunday">
                                 <label>Sunday</label>
-                                <input type="checkbox" class="day-enabled">
-                                <input type="time" class="open-time" value="11:00" disabled>
+                                <input type="checkbox" class="day-enabled" name="sunday-enabled">
+                                <input type="time" class="open-time" name="sunday-open" value="11:00" disabled>
                                 <span>to</span>
-                                <input type="time" class="close-time" value="15:00" disabled>
+                                <input type="time" class="close-time" name="sunday-close" value="15:00" disabled>
                             </div>
                         </div>
                     </div>
