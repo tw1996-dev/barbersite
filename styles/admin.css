@@ -974,11 +974,9 @@ body {
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .save-btn:hover {
-  transform: translateY(-1px);
   box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
 }
 
@@ -990,7 +988,6 @@ body {
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .cancel-btn:hover {
@@ -1347,14 +1344,13 @@ body {
 
   /* Business Hours - compact layout for very small screens */
   .schedule-card {
-    padding: 16px;
+    padding: 4px;
   }
 
   .day-schedule {
-    grid-template-columns: 1fr;
     gap: 8px;
-    padding: 8px;
-    text-align: center;
+    padding: 8px 2px;
+    /* text-align: center; */
   }
 
   .day-schedule label {
@@ -1383,12 +1379,16 @@ body {
 
   .day-schedule span {
     font-size: 0.75rem;
-    margin: 0 4px;
+    /* margin: 0 4px; */
   }
 
   .preset-btn {
     font-size: 0.8rem;
     padding: 8px 10px;
+  }
+
+  .schedule-card h3 {
+    text-align: center;
   }
 
   /* Compact services selection */
