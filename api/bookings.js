@@ -115,34 +115,6 @@ async function sendEmail(booking) {
       "Elite Barber Studio, 123 Main Street, Downtown, NY 10001"
     )}`;
 
-    // Apple Calendar (simplified ICS for iOS/macOS)
-    const appleIcsContent = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Elite Barber Studio//Booking System//EN
-BEGIN:VEVENT
-UID:${booking.id || Date.now()}@elitebarberstudio.com
-DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z
-DTSTART:${startDateTime}Z
-DTEND:${endDateTime}Z
-SUMMARY:Appointment at Elite Barber Studio
-DESCRIPTION:Services: ${booking.services.join(", ")}\\nDuration: ${
-      booking.duration
-    } minutes\\nTotal: $${
-      booking.price
-    }\\n\\nPlease arrive 5 minutes early.\\n\\nElite Barber Studio\\n123 Main Street, Downtown, NY 10001\\nPhone: +1 (234) 567-890
-LOCATION:Elite Barber Studio, 123 Main Street, Downtown, NY 10001
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:Reminder: Appointment at Elite Barber Studio
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-END:VCALENDAR`;
-
-    const appleCalendarUrl = `data:text/calendar;charset=utf8,${encodeURIComponent(
-      appleIcsContent
-    )}`;
-
     await resend.emails.send({
       from: "Elite Barber Studio <booking@100kcalcost.com>",
       to: [booking.email],
@@ -163,7 +135,6 @@ END:VCALENDAR`;
     <div style="text-align: center; margin: 20px 0;">
       <a href="${googleCalendarUrl}" style="display: inline-block; background: #4285f4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Google Calendar</a>
       <a href="${outlookUrl}" style="display: inline-block; background: #0078d4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Outlook</a>
-      <a href="${appleCalendarUrl}" download="elite-barber-appointment.ics" style="display: inline-block; background: #007aff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">🍎 Apple Calendar</a>
     </div>
     
     <p><strong>Please arrive 5 minutes before your appointment time.</strong></p>
