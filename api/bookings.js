@@ -98,8 +98,25 @@ async function sendEmail(booking) {
       "Elite Barber Studio, 123 Main Street, Downtown, NY 10001"
     )}`;
 
-    // ICS file data URL
-    const icsContent = `BEGIN:VCALENDAR
+    // Microsoft Outlook URL
+    const outlookUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(
+      "Appointment at Elite Barber Studio"
+    )}&startdt=${new Date(
+      bookingDate + "T" + bookingTime
+    ).toISOString()}&enddt=${new Date(
+      bookingDate + "T" + endTime
+    ).toISOString()}&body=${encodeURIComponent(
+      `Services: ${booking.services.join(", ")}\nDuration: ${
+        booking.duration
+      } minutes\nTotal: $${
+        booking.price
+      }\n\nPlease arrive 5 minutes early.\n\nElite Barber Studio\n123 Main Street, Downtown, NY 10001\nPhone: +1 (234) 567-890`
+    )}&location=${encodeURIComponent(
+      "Elite Barber Studio, 123 Main Street, Downtown, NY 10001"
+    )}`;
+
+    // Apple Calendar (simplified ICS for iOS/macOS)
+    const appleIcsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Elite Barber Studio//Booking System//EN
 BEGIN:VEVENT
@@ -116,14 +133,14 @@ DESCRIPTION:Services: ${booking.services.join(", ")}\\nDuration: ${
 LOCATION:Elite Barber Studio, 123 Main Street, Downtown, NY 10001
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Reminder: Appointment at Elite Barber Studio tomorrow
+DESCRIPTION:Reminder: Appointment at Elite Barber Studio
 TRIGGER:-P1D
 END:VALARM
 END:VEVENT
 END:VCALENDAR`;
 
-    const icsDataUrl = `data:text/calendar;charset=utf8,${encodeURIComponent(
-      icsContent
+    const appleCalendarUrl = `data:text/calendar;charset=utf8,${encodeURIComponent(
+      appleIcsContent
     )}`;
 
     await resend.emails.send({
@@ -131,35 +148,27 @@ END:VCALENDAR`;
       to: [booking.email],
       subject: `Booking Confirmation - ${booking.date}`,
       html: `
-        <h2>Booking Confirmed!</h2>
-        <p>Hello ${booking.customer},</p>
-        <strong>Date:</strong> ${bookingDate}<br>
-        <strong>Time:</strong> ${bookingTime} - ${endTime}<br>
-        <strong>Services:</strong> ${booking.services.join(", ")}<br>
-        <strong>Duration:</strong> ${booking.duration} minutes<br>
-        <strong>Total:</strong> $${booking.price}</p>
-        <p>Address: 123 Main Street, Downtown, NY 10001<br>
-        Phone: +1 (234) 567-890</p>
-        
-      <div style="text-align: center; margin: 20px 0;">
-  <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-    "Appointment at Elite Barber Studio"
-  )}&dates=${startDateTime}/${endDateTime}&details=${encodeURIComponent(
-        `Services: ${booking.services.join(", ")}\nDuration: ${
-          booking.duration
-        } minutes\nTotal: $${
-          booking.price
-        }\n\nElite Barber Studio\n123 Main Street, Downtown, NY 10001\nPhone: +1 (234) 567-890`
-      )}&location=${encodeURIComponent(
-        "Elite Barber Studio, 123 Main Street, Downtown, NY 10001"
-      )}" style="display: inline-block; background: #4285f4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Add to Google Calendar</a>
-  <a href="${icsDataUrl}" download="elite-barber-appointment.ics" style="display: inline-block; background: #34a853; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📲 Add to Calendar (.ics)</a>
-</div>
-
-        
-        <p><strong>Please arrive 5 minutes before your appointment time.</strong></p>
-        <p>If you need to reschedule or cancel, please call us at +1 (234) 567-890.</p>
-      `,
+    <h2>Booking Confirmed!</h2>
+    <p>Hello ${booking.customer},</p>
+    <p>
+      <strong>Date:</strong> ${bookingDate}<br>
+      <strong>Time:</strong> ${bookingTime} - ${endTime}<br>
+      <strong>Services:</strong> ${booking.services.join(", ")}<br>
+      <strong>Duration:</strong> ${booking.duration} minutes<br>
+      <strong>Total:</strong> $${booking.price}
+    </p>
+    <p>Address: 123 Main Street, Downtown, NY 10001<br>
+    Phone: +1 (234) 567-890</p>
+    
+    <div style="text-align: center; margin: 20px 0;">
+      <a href="${googleCalendarUrl}" style="display: inline-block; background: #4285f4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Google Calendar</a>
+      <a href="${outlookUrl}" style="display: inline-block; background: #0078d4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Outlook</a>
+      <a href="${appleCalendarUrl}" download="elite-barber-appointment.ics" style="display: inline-block; background: #007aff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">🍎 Apple Calendar</a>
+    </div>
+    
+    <p><strong>Please arrive 5 minutes before your appointment time.</strong></p>
+    <p>If you need to reschedule or cancel, please call us at +1 (234) 567-890.</p>
+  `,
     });
     return true;
   } catch (error) {
