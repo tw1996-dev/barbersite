@@ -499,6 +499,7 @@ function getFilteredRecentBookings() {
 
   // Limit to 15 unless showAll is true
   // return showAll ? filteredBookings : filteredBookings.slice(0, 15);
+  return filteredBookings;
 }
 
 function updateMobileBookingsView() {
