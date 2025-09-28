@@ -130,24 +130,47 @@ export function renderAdminCalendar() {
       (b) => b.date === dayDate && b.status === "confirmed"
     );
 
-    // Check if day has available slots for standard service (45 min)
-    const dayDateStr = `${currentCalendarYear}-${String(
-      currentCalendarMonth + 1
-    ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    const hasAvailableSlots = checkDayAvailability(
-      dayDateStr,
-      45,
-      businessHours,
-      currentBookings,
-      getEditingBookingId()
-    );
+    // Check business hours for this day of week first
+    const dayOfWeek = new Date(
+      currentCalendarYear,
+      currentCalendarMonth,
+      day
+    ).getDay();
+    const dayNames = [
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ];
+    const dayName = dayNames[dayOfWeek];
+    const dayHours = businessHours[dayName];
 
-    if (dayBookings.length === 0) {
-      dayElement.classList.add("available");
-    } else if (hasAvailableSlots) {
-      dayElement.classList.add("busy");
+    // If salon is closed on this day, mark as closed
+    if (!dayHours || !dayHours.enabled) {
+      dayElement.classList.add("closed");
     } else {
-      dayElement.classList.add("full");
+      // Check if day has available slots for standard service (45 min)
+      const dayDateStr = `${currentCalendarYear}-${String(
+        currentCalendarMonth + 1
+      ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      const hasAvailableSlots = checkDayAvailability(
+        dayDateStr,
+        45,
+        businessHours,
+        currentBookings,
+        getEditingBookingId()
+      );
+
+      if (dayBookings.length === 0) {
+        dayElement.classList.add("available");
+      } else if (hasAvailableSlots) {
+        dayElement.classList.add("busy");
+      } else {
+        dayElement.classList.add("full");
+      }
     }
 
     dayElement.addEventListener("click", () => {
