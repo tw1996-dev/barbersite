@@ -735,7 +735,10 @@ body {
 
 @media (max-width: 410px) {
   .form-section {
-    padding: 2px;
+    padding: 4px;
+  }
+  .form-section h3 {
+    text-align: center;
   }
 }
 
