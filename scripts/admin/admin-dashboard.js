@@ -589,51 +589,51 @@ function updateDesktopBookingsTable() {
   // }
 }
 
-// function showAllBookings(viewType) {
-//   const allBookings = getFilteredRecentBookings(true);
+function showAllBookings(viewType) {
+  const allBookings = getFilteredRecentBookings(true);
 
-//   if (viewType === "mobile") {
-//     const mobileContainer = document.querySelector(
-//       ".recent-bookings .mobile-bookings-container"
-//     );
-//     mobileContainer.innerHTML = "";
+  if (viewType === "mobile") {
+    const mobileContainer = document.querySelector(
+      ".recent-bookings .mobile-bookings-container"
+    );
+    mobileContainer.innerHTML = "";
 
-//     allBookings.forEach((booking) => {
-//       const card = createMobileBookingCard(booking);
-//       mobileContainer.appendChild(card);
-//     });
+    allBookings.forEach((booking) => {
+      const card = createMobileBookingCard(booking);
+      mobileContainer.appendChild(card);
+    });
 
-//     // Add "Show Less" button
-//     const showLessBtn = document.createElement("button");
-//     showLessBtn.className = "action-btn cancel-btn";
-//     showLessBtn.textContent = "Show Less";
-//     showLessBtn.style.width = "100%";
-//     showLessBtn.style.marginTop = "16px";
-//     showLessBtn.addEventListener("click", () => updateMobileBookingsView());
-//     mobileContainer.appendChild(showLessBtn);
-//   } else {
-//     const tableBody = document.querySelector("#recent-bookings-table tbody");
-//     tableBody.innerHTML = "";
+    // Add "Show Less" button
+    const showLessBtn = document.createElement("button");
+    showLessBtn.className = "action-btn cancel-btn";
+    showLessBtn.textContent = "Show Less";
+    showLessBtn.style.width = "100%";
+    showLessBtn.style.marginTop = "16px";
+    showLessBtn.addEventListener("click", () => updateMobileBookingsView());
+    mobileContainer.appendChild(showLessBtn);
+  } else {
+    const tableBody = document.querySelector("#recent-bookings-table tbody");
+    tableBody.innerHTML = "";
 
-//     allBookings.forEach((booking) => {
-//       const row = createBookingRow(booking, false);
-//       tableBody.appendChild(row);
-//     });
+    allBookings.forEach((booking) => {
+      const row = createBookingRow(booking, false);
+      tableBody.appendChild(row);
+    });
 
-//     // Add "Show Less" button row
-//     const row = document.createElement("tr");
-//     row.innerHTML = `<td colspan="6" style="text-align: center; padding: 16px;">
-//             <button class="action-btn cancel-btn" onclick="updateDesktopBookingsTable()" style="padding: 8px 16px;">
-//                 Show Less
-//             </button>
-//         </td>`;
-//     tableBody.appendChild(row);
-//   }
-// }
+    // Add "Show Less" button row
+    const row = document.createElement("tr");
+    row.innerHTML = `<td colspan="6" style="text-align: center; padding: 16px;">
+            <button class="action-btn cancel-btn" onclick="updateDesktopBookingsTable()" style="padding: 8px 16px;">
+                Show Less
+            </button>
+        </td>`;
+    tableBody.appendChild(row);
+  }
+}
 
 // Make functions available globally for onclick handlers
-// window.showAllBookings = showAllBookings;
-// window.updateDesktopBookingsTable = updateDesktopBookingsTable;
+window.showAllBookings = showAllBookings;
+window.updateDesktopBookingsTable = updateDesktopBookingsTable;
 
 function createMobileBookingCard(booking) {
   const card = document.createElement("div");
