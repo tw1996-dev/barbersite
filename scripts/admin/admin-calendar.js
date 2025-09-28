@@ -173,9 +173,12 @@ export function renderAdminCalendar() {
       }
     }
 
-    dayElement.addEventListener("click", () => {
-      showDayBookings(dayDate, dayBookings);
-    });
+    // Only add click handler for open days
+    if (dayHours && dayHours.enabled) {
+      dayElement.addEventListener("click", () => {
+        showDayBookings(dayDate, dayBookings);
+      });
+    }
 
     calendarGrid.appendChild(dayElement);
   }
