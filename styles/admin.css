@@ -733,6 +733,12 @@ body {
   color: #e8eaed;
 }
 
+@media (max-width: 410px) {
+  .form-section {
+    padding: 2px;
+  }
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr;
@@ -1348,7 +1354,7 @@ body {
   }
 
   .day-schedule {
-    gap: 8px;
+    gap: 4px;
     padding: 8px 2px;
     /* text-align: center; */
   }
