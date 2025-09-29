@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
       confirmBtn.textContent = "Cancelling...";
       confirmBtn.disabled = true;
 
-      const response = await fetch(`/api/booking/${currentToken}`, {
+      const response = await fetch(`/api/manage/${currentToken}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
