@@ -1,6 +1,7 @@
 import { Pool } from "pg";
 import { Resend } from "resend";
 import { requireAuth } from "./auth/auth-middleware.js";
+import crypto from "crypto";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -137,8 +138,38 @@ async function sendEmail(booking) {
       <a href="${outlookUrl}" style="display: inline-block; background: #0078d4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Outlook</a>
     </div>
     
+    ${
+      booking.managementUrl
+        ? `
+    <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #dc3545;">
+      <h3 style="color: #dc3545; margin-bottom: 15px; font-size: 18px;">📱 Manage Your Booking</h3>
+      <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">
+        Need to cancel your appointment? Use the secure link below:
+      </p>
+      <div style="text-align: center;">
+        <a href="${booking.managementUrl}" 
+           style="display: inline-block; 
+                  background: #dc3545; 
+                  color: white; 
+                  padding: 12px 30px; 
+                  text-decoration: none; 
+                  border-radius: 8px; 
+                  font-weight: bold;
+                  font-size: 16px;">
+          🔗 Manage Booking
+        </a>
+      </div>
+      <p style="color: #6c757d; font-size: 12px; margin-top: 15px; text-align: center;">
+        This link expires 30 minutes after your appointment time for security.<br>
+        For rescheduling or other changes, please call us at +1 (234) 567-890.
+      </p>
+    </div>
+    `
+        : ""
+    }
+    
     <p><strong>Please arrive 5 minutes before your appointment time.</strong></p>
-    <p>If you need to reschedule or cancel, please call us at +1 (234) 567-890.</p>
+    <p>If you need to reschedule or have questions, please call us at +1 (234) 567-890.</p>
   `,
     });
     return true;
@@ -226,6 +257,44 @@ async function handler(req, res) {
         ]
       );
 
+      // Generate management token for the new booking
+      try {
+        const newBooking = result.rows[0];
+
+        // Import crypto if not already imported at the top of file
+        // import crypto from "crypto";
+
+        // Generate secure token using same method as api/generate-token.js
+        const token = crypto.randomUUID();
+
+        // Calculate token expiration (30 minutes after appointment time)
+        const bookingDateTime = new Date(
+          `${newBooking.date}T${newBooking.time}:00`
+        );
+        const tokenExpiration = new Date(
+          bookingDateTime.getTime() + 30 * 60 * 1000
+        );
+
+        // Store token in database
+        await pool.query(
+          "INSERT INTO booking_tokens (booking_id, token, expires_at, is_active) VALUES ($1, $2, $3, true)",
+          [newBooking.id, token, tokenExpiration]
+        );
+
+        // Add management URL to booking object for email template
+        const siteUrl =
+          process.env.SITE_URL ||
+          process.env.VERCEL_URL ||
+          "https://barbersite-eight.vercel.app/";
+        newBooking.managementUrl = `${siteUrl}/booking-manager.html?token=${token}`;
+        newBooking.managementToken = token;
+
+        console.log(`Generated management token for booking ${newBooking.id}`);
+      } catch (tokenError) {
+        // Don't fail the booking if token generation fails
+        console.error("Failed to generate management token:", tokenError);
+        // Continue without token - booking still succeeds
+      }
       // Send confirmation email
       await sendEmail(result.rows[0]);
 
