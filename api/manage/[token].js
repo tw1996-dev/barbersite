@@ -319,6 +319,7 @@ async function handler(req, res) {
         success: true,
         message: "Booking cancelled successfully",
         bookingId: booking.id,
+        emailSent: emailSent,
       });
     } else {
       return res.status(405).json({ error: "Method not allowed" });
