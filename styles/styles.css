@@ -1571,14 +1571,14 @@ body {
 }
 
 /* Hide contact text and details - only show buttons */
-.confirmation-contact-text,
+/* .confirmation-contact-text,
 .confirmation-contact-details {
   display: none;
 }
 
 .confirmation-contact-icon {
   display: none;
-}
+} */
 
 /* Contact Section Fix -  */
 .confirmation-contact-info {
@@ -1609,13 +1609,13 @@ body {
   width: 100%;
 }
 
-.confirmation-contact-text {
+/* .confirmation-contact-text {
   display: none;
 }
 
 .confirmation-contact-icon {
   display: none;
-}
+} */
 
 .nav-button,
 .contact-button {
