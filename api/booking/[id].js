@@ -206,10 +206,9 @@ async function handler(req, res) {
                   
                   <div class="contact-info">
                     <p><strong>Need immediate assistance?</strong></p>
-                    <p>☎️ Call us: +1 (234) 567-890<br>
-                    📧 Email: info@elitebarberstudio.com<br>
-                    📍 Visit us: 123 Main Street, Downtown, NY 10001</p>
-                  </div>
+                  <p>☎️ <strong>Call us:</strong> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
+                  <p>📧 <strong>Email:</strong> <a href="mailto:info@elitebarberstudio.com">info@elitebarberstudio.com</a></p>
+                  <p>📍 <strong>Visit us:</strong> 123 Main Street, Downtown, NY 10001</p>
                 </div>
                 
                 <div class="footer">
