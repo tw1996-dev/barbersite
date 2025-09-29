@@ -138,11 +138,23 @@ function formatBookingResponse(booking) {
 
 async function sendCancellationEmailByCustomer(booking) {
   try {
+    console.log(`=== EMAIL DEBUG START ===`);
     console.log(
       `Sending cancellation email to ${booking.email} for booking ${booking.id}`
     );
 
-    const result = await resend.emails.send({
+    // Check if RESEND_API_KEY exists
+    const apiKey = process.env.RESEND_API_KEY;
+    console.log(`RESEND_API_KEY exists: ${!!apiKey}`);
+    console.log(`RESEND_API_KEY length: ${apiKey ? apiKey.length : "N/A"}`);
+    console.log(
+      `RESEND_API_KEY starts with: ${
+        apiKey ? apiKey.substring(0, 10) + "..." : "N/A"
+      }`
+    );
+
+    // Prepare email data
+    const emailData = {
       from: "Elite Barber Studio <bookings@elitebarberstudio.com>",
       to: booking.email,
       subject: `Booking Cancelled - Appointment #${booking.id}`,
@@ -162,17 +174,40 @@ async function sendCancellationEmailByCustomer(booking) {
       
       <p>Thank you,<br>Elite Barber Studio Team</p>
       `,
+    };
+
+    console.log("Email data prepared:", {
+      from: emailData.from,
+      to: emailData.to,
+      subject: emailData.subject,
+      htmlLength: emailData.html.length,
     });
 
-    console.log(`Cancellation email sent successfully: ${result.id}`);
-    return true;
+    console.log("Calling resend.emails.send()...");
+    const result = await resend.emails.send(emailData);
+
+    console.log("Resend result type:", typeof result);
+    console.log("Resend result:", JSON.stringify(result, null, 2));
+
+    if (result && result.id) {
+      console.log(`✅ Cancellation email sent successfully: ${result.id}`);
+      console.log(`=== EMAIL DEBUG END - SUCCESS ===`);
+      return true;
+    } else if (result && result.error) {
+      console.error(`❌ Resend API error:`, result.error);
+      console.log(`=== EMAIL DEBUG END - RESEND ERROR ===`);
+      return false;
+    } else {
+      console.error(`❌ Unexpected result from Resend:`, result);
+      console.log(`=== EMAIL DEBUG END - UNEXPECTED RESULT ===`);
+      return false;
+    }
   } catch (error) {
-    console.error("Customer cancellation email error:", error);
-    console.error("Error details:", {
-      message: error.message,
-      email: booking.email,
-      bookingId: booking.id,
-    });
+    console.error("❌ Customer cancellation email error:", error);
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    console.log(`=== EMAIL DEBUG END - EXCEPTION ===`);
     return false;
   }
 }
@@ -257,15 +292,15 @@ async function handler(req, res) {
       });
     } else if (req.method === "DELETE") {
       // Check if cancellation is allowed (booking hasn't started)
-      // const bookingDateTime = new Date(`${booking.date}T${booking.time}:00`);
-      // const now = new Date();
+      const bookingDateTime = new Date(`${booking.date}T${booking.time}:00`);
+      const now = new Date();
 
-      // if (bookingDateTime <= now) {
-      //   return res.status(400).json({
-      //     error: "Cancellation not allowed",
-      //     message: "Cannot cancel booking that has already started or passed",
-      //   });
-      // }
+      if (bookingDateTime <= now) {
+        return res.status(400).json({
+          error: "Cancellation not allowed",
+          message: "Cannot cancel booking that has already started or passed",
+        });
+      }
 
       // Attempt to cancel booking
       const cancelled = await cancelBooking(booking.id, token);
