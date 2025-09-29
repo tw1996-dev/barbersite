@@ -313,7 +313,7 @@ async function handler(req, res) {
       }
       // Send cancellation email to customer
       const formattedBooking = formatBookingResponse(booking);
-      await sendCancellationEmailByCustomer(formattedBooking);
+      const emailSent = await sendCancellationEmailByCustomer(formattedBooking);
 
       return res.status(200).json({
         success: true,
