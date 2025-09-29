@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       showLoadingState();
 
-      const response = await fetch(`/api/booking/${currentToken}`, {
+      const response = await fetch(`/api/manage/${currentToken}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
