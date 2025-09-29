@@ -258,54 +258,72 @@ async function handler(req, res) {
       );
 
       // Generate management token for the new booking
-      try {
-        const newBooking = result.rows[0];
-
-        // Import crypto if not already imported at the top of file
-        // import crypto from "crypto";
-
-        // Generate secure token using same method as api/generate-token.js
-        const token = crypto.randomUUID();
-
-        // Calculate token expiration (30 minutes after appointment time)
-        const bookingDateTime = new Date(
-          `${newBooking.date}T${newBooking.time}:00`
-        );
-        const tokenExpiration = new Date(
-          bookingDateTime.getTime() + 30 * 60 * 1000
-        );
-
-        // Store token in database
-        await pool.query(
-          "INSERT INTO booking_tokens (booking_id, token, expires_at, is_active) VALUES ($1, $2, $3, true)",
-          [newBooking.id, token, tokenExpiration]
-        );
-
-        // Add management URL to booking object for email template
-        const siteUrl =
-          process.env.SITE_URL ||
-          process.env.VERCEL_URL ||
-          "https://barbersite-eight.vercel.app/";
-        newBooking.managementUrl = `${siteUrl}/booking-manager.html?token=${token}`;
-        newBooking.managementToken = token;
-
-        console.log(`Generated management token for booking ${newBooking.id}`);
-      } catch (tokenError) {
-        // Don't fail the booking if token generation fails
-        console.error("Failed to generate management token:", tokenError);
-        // Continue without token - booking still succeeds
-      }
-      // Send confirmation email
-      await sendEmail(result.rows[0]);
-
-      return res.status(201).json(result.rows[0]);
-    } catch (error) {
-      console.error("Database error:", error);
-      return res.status(500).json({ error: "Database error" });
-    }
+try {
+  const newBooking = result.rows[0];
+  
+  // DEBUG: Check what we got from database
+  console.log("=== TOKEN GENERATION DEBUG ===");
+  console.log("newBooking.date:", newBooking.date, typeof newBooking.date);
+  console.log("newBooking.time:", newBooking.time, typeof newBooking.time);
+  
+  // Ensure we have valid date and time before proceeding
+  if (!newBooking.date || !newBooking.time) {
+    throw new Error(`Missing date (${newBooking.date}) or time (${newBooking.time})`);
   }
-
-  return res.status(405).json({ error: "Method not allowed" });
+  
+  // Format date properly for JavaScript Date constructor
+  let formattedDate = newBooking.date;
+  if (newBooking.date instanceof Date) {
+    // Convert Date object to YYYY-MM-DD string
+    formattedDate = newBooking.date.toISOString().split('T')[0];
+  }
+  
+  // Ensure time is in HH:MM format (remove seconds if present)
+  let formattedTime = newBooking.time;
+  if (typeof newBooking.time === 'string' && newBooking.time.length > 5) {
+    formattedTime = newBooking.time.substring(0, 5); // "09:00:00" -> "09:00"
+  }
+  
+  console.log("formattedDate:", formattedDate);
+  console.log("formattedTime:", formattedTime);
+  
+  // Generate secure token using same method as api/generate-token.js
+  const token = crypto.randomUUID();
+  
+  // Calculate token expiration (30 minutes after appointment time)
+  const bookingDateTime = new Date(`${formattedDate}T${formattedTime}:00`);
+  
+  // Validate the parsed date
+  if (isNaN(bookingDateTime.getTime())) {
+    throw new Error(`Invalid date/time: ${formattedDate}T${formattedTime}:00`);
+  }
+  
+  const tokenExpiration = new Date(bookingDateTime.getTime() + 30 * 60 * 1000);
+  
+  console.log("bookingDateTime:", bookingDateTime.toISOString());
+  console.log("tokenExpiration:", tokenExpiration.toISOString());
+  
+  // Store token in database
+  await pool.query(
+    "INSERT INTO booking_tokens (booking_id, token, expires_at, is_active) VALUES ($1, $2, $3, true)",
+    [newBooking.id, token, tokenExpiration]
+  );
+  
+  // Add management URL to booking object for email template
+  const siteUrl =
+    process.env.SITE_URL ||
+    process.env.VERCEL_URL ||
+    "https://barbersite-eight.vercel.app";
+  newBooking.managementUrl = `${siteUrl}/booking-manager.html?token=${token}`;
+  newBooking.managementToken = token;
+  
+  console.log(`Generated management token for booking ${newBooking.id}: ${token}`);
+  
+} catch (tokenError) {
+  // Don't fail the booking if token generation fails
+  console.error("Failed to generate management token:", tokenError);
+  console.error("Token error stack:", tokenError.stack);
+  // Continue without token - booking still succeeds
 }
 
 // Export without auth protection - public API for booking page
