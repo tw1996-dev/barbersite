@@ -274,9 +274,7 @@ async function handler(req, res) {
 
           // Only proceed if date is valid
           if (!isNaN(bookingDateTime.getTime())) {
-            const tokenExpiration = new Date(
-              bookingDateTime.getTime() + 30 * 60 * 1000
-            );
+            const tokenExpiration = new Date(bookingDateTime.getTime());
 
             // Store token in database
             await pool.query(

@@ -41,6 +41,12 @@ async function handler(req, res) {
           .json({ error: "Booking not found or already cancelled" });
       }
 
+      // Deactivate all tokens for this cancelled booking
+      await pool.query(
+        "UPDATE booking_tokens SET is_active = false WHERE booking_id = $1",
+        [id]
+      );
+
       console.log(`Admin cancelled booking ${id}`);
       return res.status(200).json({
         message: "Booking cancelled successfully",

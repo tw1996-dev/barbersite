@@ -53,8 +53,8 @@ function calculateTokenExpiration(bookingDate, bookingTime) {
   // Parse booking date and time
   const bookingDateTime = new Date(`${bookingDate}T${bookingTime}:00`);
 
-  // Token expires 30 minutes after appointment start time
-  return new Date(bookingDateTime.getTime() + 30 * 60 * 1000);
+  // Token expires AT appointment start time (cannot cancel after it starts)
+  return bookingDateTime;
 }
 
 /**
