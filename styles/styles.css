@@ -1580,17 +1580,6 @@ body {
   display: none;
 }
 
-/* Add icons to buttons via pseudo-elements */
-/* .nav-button::before {
-  content: "📍";
-  font-size: 1rem;
-}
-
-.contact-button::before {
-  content: "☎";
-  font-size: 1rem;
-} */
-
 /* Contact Section Fix -  */
 .confirmation-contact-info {
   margin-top: 30px;
