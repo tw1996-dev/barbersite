@@ -26,6 +26,7 @@
  */
 
 import { Pool } from "pg";
+import { Resend } from "resend";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -33,6 +34,8 @@ const pool = new Pool({
     rejectUnauthorized: false,
   },
 });
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
  * Validate management token and return associated booking
@@ -134,6 +137,41 @@ function formatBookingResponse(booking) {
 }
 
 /**
+ * Send cancellation email when customer cancels booking
+ * @param {Object} booking - Booking data object
+ * @returns {boolean} Success status
+ */
+async function sendCancellationEmailByCustomer(booking) {
+  try {
+    await resend.emails.send({
+      from: "Elite Barber Studio <bookings@elitebarberstudio.com>",
+      to: booking.email,
+      subject: `Booking Cancelled - Appointment #${booking.id}`,
+      html: `
+      <h2>📅 Appointment Cancelled</h2>
+      <p>Hi ${booking.customer},</p>
+      
+      <p><strong>You have successfully cancelled your appointment #${
+        booking.id
+      }.</strong></p>
+      
+      <p>Date: ${booking.formattedDate}<br>
+         Time: ${booking.time} - ${booking.endTime}<br>
+         Services: ${booking.services.join(", ")}</p>
+      
+      <p>We're sorry to see you cancel. To book a new appointment, visit our website or call +1 (234) 567-890.</p>
+      
+      <p>Thank you,<br>Elite Barber Studio Team</p>
+      `,
+    });
+    return true;
+  } catch (error) {
+    console.error("Customer cancellation email error:", error);
+    return false;
+  }
+}
+
+/**
  * Cancel booking and deactivate associated tokens
  * Updates booking status and cleans up tokens
  * @param {number} bookingId - ID of booking to cancel
@@ -213,15 +251,15 @@ async function handler(req, res) {
       });
     } else if (req.method === "DELETE") {
       // Check if cancellation is allowed (booking hasn't started)
-      const bookingDateTime = new Date(`${booking.date}T${booking.time}:00`);
-      const now = new Date();
+      // const bookingDateTime = new Date(`${booking.date}T${booking.time}:00`);
+      // const now = new Date();
 
-      if (bookingDateTime <= now) {
-        return res.status(400).json({
-          error: "Cancellation not allowed",
-          message: "Cannot cancel booking that has already started or passed",
-        });
-      }
+      // if (bookingDateTime <= now) {
+      //   return res.status(400).json({
+      //     error: "Cancellation not allowed",
+      //     message: "Cannot cancel booking that has already started or passed",
+      //   });
+      // }
 
       // Attempt to cancel booking
       const cancelled = await cancelBooking(booking.id, token);
@@ -232,6 +270,9 @@ async function handler(req, res) {
           message: "Unable to cancel booking. Please contact support.",
         });
       }
+      // Send cancellation email to customer
+      const formattedBooking = formatBookingResponse(booking);
+      await sendCancellationEmailByCustomer(formattedBooking);
 
       return res.status(200).json({
         success: true,
