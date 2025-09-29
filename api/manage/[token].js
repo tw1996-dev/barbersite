@@ -138,76 +138,43 @@ function formatBookingResponse(booking) {
 
 async function sendCancellationEmailByCustomer(booking) {
   try {
-    console.log(`=== EMAIL DEBUG START ===`);
-    console.log(
-      `Sending cancellation email to ${booking.email} for booking ${booking.id}`
-    );
+    // Use same format as confirmation email
+    const bookingDate =
+      booking.date instanceof Date
+        ? booking.date.toISOString().split("T")[0]
+        : booking.date;
 
-    // Check if RESEND_API_KEY exists
-    const apiKey = process.env.RESEND_API_KEY;
-    console.log(`RESEND_API_KEY exists: ${!!apiKey}`);
-    console.log(`RESEND_API_KEY length: ${apiKey ? apiKey.length : "N/A"}`);
-    console.log(
-      `RESEND_API_KEY starts with: ${
-        apiKey ? apiKey.substring(0, 10) + "..." : "N/A"
-      }`
-    );
-
-    // Prepare email data
-    const emailData = {
-      from: "Elite Barber Studio <bookings@elitebarberstudio.com>",
-      to: booking.email,
-      subject: `Booking Cancelled - Appointment #${booking.id}`,
-      html: `
-      <h2>📅 Appointment Cancelled</h2>
-      <p>Hi ${booking.customer},</p>
-      
-      <p><strong>You have successfully cancelled your appointment #${
-        booking.id
-      }.</strong></p>
-      
-      <p>Date: ${booking.formattedDate}<br>
-         Time: ${booking.time} - ${booking.endTime}<br>
-         Services: ${booking.services.join(", ")}</p>
-      
-      <p>We're sorry to see you cancel. To book a new appointment, visit our website or call +1 (234) 567-890.</p>
-      
-      <p>Thank you,<br>Elite Barber Studio Team</p>
-      `,
-    };
-
-    console.log("Email data prepared:", {
-      from: emailData.from,
-      to: emailData.to,
-      subject: emailData.subject,
-      htmlLength: emailData.html.length,
+    const formattedDate = new Date(bookingDate).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
 
-    console.log("Calling resend.emails.send()...");
-    const result = await resend.emails.send(emailData);
-
-    console.log("Resend result type:", typeof result);
-    console.log("Resend result:", JSON.stringify(result, null, 2));
-
-    if (result && result.id) {
-      console.log(`✅ Cancellation email sent successfully: ${result.id}`);
-      console.log(`=== EMAIL DEBUG END - SUCCESS ===`);
-      return true;
-    } else if (result && result.error) {
-      console.error(`❌ Resend API error:`, result.error);
-      console.log(`=== EMAIL DEBUG END - RESEND ERROR ===`);
-      return false;
-    } else {
-      console.error(`❌ Unexpected result from Resend:`, result);
-      console.log(`=== EMAIL DEBUG END - UNEXPECTED RESULT ===`);
-      return false;
-    }
+    await resend.emails.send({
+      from: "Elite Barber Studio <booking@100kcalcost.com>",
+      to: booking.email,
+      subject: `Booking Cancelled - ${formattedDate}`,
+      html: `
+        <h2>📅 Appointment Cancelled</h2>
+        <p>Hi ${booking.customer},</p>
+        
+        <p><strong>You have successfully cancelled your appointment #${
+          booking.id
+        }.</strong></p>
+        
+        <p>Date: ${formattedDate}<br>
+           Time: ${booking.time} - ${booking.endTime}<br>
+           Services: ${booking.services.join(", ")}</p>
+        
+        <p>We're sorry to see you cancel. To book a new appointment, visit our website or call +1 (234) 567-890.</p>
+        
+        <p>Thank you,<br>Elite Barber Studio Team</p>
+      `,
+    });
+    return true;
   } catch (error) {
-    console.error("❌ Customer cancellation email error:", error);
-    console.error("Error name:", error.name);
-    console.error("Error message:", error.message);
-    console.error("Error stack:", error.stack);
-    console.log(`=== EMAIL DEBUG END - EXCEPTION ===`);
+    console.error("Email error:", error);
     return false;
   }
 }
