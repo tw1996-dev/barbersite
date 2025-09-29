@@ -1,0 +1,13 @@
+name: Call Vercel API every hour
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping-vercel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Vercel endpoint
+        run: curl -X POST https://barbersite-eight.vercel.app/api/send-followup
