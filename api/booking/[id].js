@@ -28,14 +28,24 @@ async function handler(req, res) {
 
   if (req.method === "DELETE") {
     try {
+      // Instead of deleting, update status to 'cancelled'
+      // This keeps the booking in database but frees up the time slot
       const result = await pool.query(
-        "DELETE FROM bookings WHERE id = $1 RETURNING *",
-        [id]
+        "UPDATE bookings SET status = $1 WHERE id = $2 AND status != $1 RETURNING *",
+        ["cancelled", id]
       );
+
       if (result.rows.length === 0) {
-        return res.status(404).json({ error: "Booking not found" });
+        return res
+          .status(404)
+          .json({ error: "Booking not found or already cancelled" });
       }
-      return res.status(200).json({ message: "Booking deleted" });
+
+      console.log(`Admin cancelled booking ${id}`);
+      return res.status(200).json({
+        message: "Booking cancelled successfully",
+        booking: result.rows[0],
+      });
     } catch (error) {
       console.error("DELETE booking error:", error);
       return res.status(500).json({ error: "Database error" });
