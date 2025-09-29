@@ -285,8 +285,7 @@ async function handler(req, res) {
             );
 
             // Add management URL to booking object for email template
-            const siteUrl =
-              process.env.VERCEL_URL || "https://barbersite-eight.vercel.app";
+            const siteUrl = "https://barbersite-eight.vercel.app";
             newBooking.managementUrl = `${siteUrl}/booking-manager.html?token=${token}`;
             newBooking.managementToken = token;
 
