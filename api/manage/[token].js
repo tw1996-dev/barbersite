@@ -136,14 +136,13 @@ function formatBookingResponse(booking) {
   };
 }
 
-/**
- * Send cancellation email when customer cancels booking
- * @param {Object} booking - Booking data object
- * @returns {boolean} Success status
- */
 async function sendCancellationEmailByCustomer(booking) {
   try {
-    await resend.emails.send({
+    console.log(
+      `Sending cancellation email to ${booking.email} for booking ${booking.id}`
+    );
+
+    const result = await resend.emails.send({
       from: "Elite Barber Studio <bookings@elitebarberstudio.com>",
       to: booking.email,
       subject: `Booking Cancelled - Appointment #${booking.id}`,
@@ -164,9 +163,16 @@ async function sendCancellationEmailByCustomer(booking) {
       <p>Thank you,<br>Elite Barber Studio Team</p>
       `,
     });
+
+    console.log(`Cancellation email sent successfully: ${result.id}`);
     return true;
   } catch (error) {
     console.error("Customer cancellation email error:", error);
+    console.error("Error details:", {
+      message: error.message,
+      email: booking.email,
+      bookingId: booking.id,
+    });
     return false;
   }
 }

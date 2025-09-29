@@ -12,7 +12,6 @@
  *
  * Token Security:
  * - Uses crypto.randomUUID() for secure token generation
- * - Tokens expire 30 minutes after appointment start time
  * - One active token per booking (replaces old tokens)
  *
  * Database Tables Used:
@@ -44,7 +43,6 @@ function generateSecureToken() {
 
 /**
  * Calculate token expiration time based on booking datetime
- * Tokens expire 30 minutes after appointment start to allow late management
  * @param {string} bookingDate - Date in YYYY-MM-DD format
  * @param {string} bookingTime - Time in HH:MM format
  * @returns {Date} Expiration datetime
