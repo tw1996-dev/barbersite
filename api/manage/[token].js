@@ -129,8 +129,7 @@ function formatBookingResponse(booking) {
       month: "long",
       day: "numeric",
     }),
-    // Check if cancellation is still allowed (before appointment time)
-    canCancel: new Date(`${bookingDate}T${bookingTime}:00`) > new Date(),
+    canCancel: true,
   };
 }
 
