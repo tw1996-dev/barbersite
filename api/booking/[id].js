@@ -67,155 +67,39 @@ async function handler(req, res) {
           html: `
 <!DOCTYPE html>
 <html>
-<head>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'DM Sans', Arial, sans-serif;
-      background: radial-gradient(circle, #3d2f1f 0%, #2a1f15 40%, #1a1410 100%);
-      color: #e8eaed;
-    }
-    .email-container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: rgba(26, 20, 16, 0.95);
-      border: 2px solid #d4af37;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .email-header {
-      background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
-      color: #1a1410;
-      padding: 30px;
-      text-align: center;
-    }
-    .email-header h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-    .email-body {
-      padding: 30px;
-      background: rgba(42, 31, 21, 0.8);
-    }
-    .appointment-details {
-      background: rgba(26, 20, 16, 0.6);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: 8px;
-      padding: 20px;
-      margin: 20px 0;
-    }
-    .detail-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-      color: #e8eaed;
-    }
-    .detail-row:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-    }
-    .detail-label {
-      color: #d4af37;
-      font-weight: 600;
-    }
-    .notice {
-      background: rgba(212, 175, 55, 0.1);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: 8px;
-      padding: 20px;
-      margin: 20px 0;
-      text-align: center;
-    }
-    .notice h2 {
-      color: #d4af37;
-      margin: 0 0 10px 0;
-    }
-    .cta-button {
-      display: inline-block;
-      background: linear-gradient(90deg, #d4af37 0%, #f4d03f 100%);
-      color: #1a1410;
-      text-decoration: none;
-      padding: 15px 30px;
-      border-radius: 8px;
-      font-weight: 700;
-      margin: 20px 0;
-      text-align: center;
-    }
-    .footer {
-      background: rgba(15, 13, 10, 0.9);
-      padding: 20px;
-      text-align: center;
-      color: #999;
-      font-size: 14px;
-    }
-    .contact-info {
-      margin: 15px 0;
-      color: #bbb;
-    }
-  </style>
-</head>
 <body>
-  <div class="email-container">
-    <div class="email-header">
-      <h1>⚠️ Appointment Cancelled</h1>
-    </div>
+  <div>
+    <h1>⚠️ Appointment Cancelled</h1>
     
-    <div class="email-body">
-      <p>Dear ${booking.customer},</p>
-      
-      <div class="notice">
-        <h2>We Need to Cancel Your Appointment</h2>
-        <p>We sincerely apologize for any inconvenience, but we need to cancel your upcoming appointment.</p>
-      </div>
-      
-      <div class="appointment-details">
-        <h3 style="color: #d4af37; margin-bottom: 15px;">Cancelled Appointment Details:</h3>
-        <div class="detail-row">
-          <span class="detail-label">Booking ID:</span>
-          <span>#${booking.id}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Date:</span>
-          <span>${formattedDate}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Time:</span>
-          <span>${booking.time} - ${endTime}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Services:</span>
-          <span>${booking.services.join(", ")}</span>
-        </div>
-      </div>
-      
-      <p style="color: #e8eaed; line-height: 1.6;">
-        We understand this may cause inconvenience and we deeply apologize. 
-        Our team will be happy to help you reschedule at your earliest convenience.
-      </p>
-      
-      <center>
-        <a href="https://barbersite-eight.vercel.app/booking.html" class="cta-button">
-          📅 Book New Appointment
-        </a>
-      </center>
-      
-      <div class="contact-info">
-        <p><strong>Need immediate assistance?</strong></p>
-        <p>☎️ <strong>Call us:</strong> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
-        <p>📧 <strong>Email:</strong> <a href="mailto:info@elitebarberstudio.com">info@elitebarberstudio.com</a></p>
-        <p>📍 <strong>Visit us:</strong> 123 Main Street, Downtown, NY 10001</p>
-      </div>
-    </div>
+    <p>Dear ${booking.customer},</p>
     
-    <div class="footer">
-      <p>© 2025 Elite Barber Studio. All rights reserved.<br>
-      This is an automated message. Please do not reply to this email.</p>
-    </div>
+    <h2>We Need to Cancel Your Appointment</h2>
+    <p>We sincerely apologize for any inconvenience, but we need to cancel your upcoming appointment.</p>
+    
+    <h3>Cancelled Appointment Details:</h3>
+    <p>
+      <strong>Booking ID:</strong> #${booking.id}<br>
+      <strong>Date:</strong> ${formattedDate}<br>
+      <strong>Time:</strong> ${booking.time} - ${endTime}<br>
+      <strong>Services:</strong> ${booking.services.join(", ")}
+    </p>
+    
+    <p>
+      We understand this may cause inconvenience and we deeply apologize. 
+      Our team will be happy to help you reschedule at your earliest convenience.
+    </p>
+    
+    <p>
+      <a href="https://barbersite-eight.vercel.app/booking.html">📅 Book New Appointment</a>
+    </p>
+    
+    <p><strong>Need immediate assistance?</strong></p>
+    <p>☎️ <strong>Call us:</strong> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
+    <p>📧 <strong>Email:</strong> <a href="mailto:info@elitebarberstudio.com">info@elitebarberstudio.com</a></p>
+    <p>📍 <strong>Visit us:</strong> 123 Main Street, Downtown, NY 10001</p>
+    
+    <p>© 2025 Elite Barber Studio. All rights reserved.<br>
+    This is an automated message. Please do not reply to this email.</p>
   </div>
 </body>
 </html>
