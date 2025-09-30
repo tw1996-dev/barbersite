@@ -38,132 +38,34 @@ async function sendFollowUpEmail(booking) {
       to: booking.email,
       subject: `Thank You for Visiting Elite Barber Studio!`,
       html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            body {
-              margin: 0;
-              padding: 0;
-              font-family: 'DM Sans', Arial, sans-serif;
-              background: radial-gradient(circle, #3d2f1f 0%, #2a1f15 40%, #1a1410 100%);
-              color: #e8eaed;
-            }
-            .email-container {
-              max-width: 600px;
-              margin: 0 auto;
-              background: rgba(26, 20, 16, 0.95);
-              border: 2px solid #d4af37;
-              border-radius: 12px;
-              overflow: hidden;
-            }
-            .email-header {
-              background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
-              color: #1a1410;
-              padding: 30px;
-              text-align: center;
-            }
-            .email-header h1 {
-              margin: 0;
-              font-size: 28px;
-              font-weight: 700;
-              letter-spacing: 1px;
-            }
-            .email-body {
-              padding: 30px;
-              background: rgba(42, 31, 21, 0.8);
-            }
-            .thank-you-section {
-              background: rgba(212, 175, 55, 0.1);
-              border: 1px solid rgba(212, 175, 55, 0.3);
-              border-radius: 8px;
-              padding: 20px;
-              margin: 20px 0;
-              text-align: center;
-            }
-            .service-summary {
-              background: rgba(26, 20, 16, 0.6);
-              border: 1px solid rgba(212, 175, 55, 0.3);
-              border-radius: 8px;
-              padding: 20px;
-              margin: 20px 0;
-            }
-            .cta-buttons {
-              display: flex;
-              gap: 15px;
-              justify-content: center;
-              margin: 30px 0;
-              flex-wrap: wrap;
-            }
-            .cta-button {
-              display: inline-block;
-              background: linear-gradient(90deg, #d4af37 0%, #f4d03f 100%);
-              color: #1a1410;
-              text-decoration: none;
-              padding: 15px 25px;
-              border-radius: 8px;
-              font-weight: 700;
-              text-align: center;
-            }
-            .footer {
-              background: rgba(15, 13, 10, 0.9);
-              padding: 20px;
-              text-align: center;
-              color: #999;
-              font-size: 14px;
-            }
-            .rating-stars {
-              font-size: 30px;
-              color: #d4af37;
-              margin: 15px 0;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="email-container">
-            <div class="email-header">
-              <h1>✨ Thank You for Your Visit!</h1>
-            </div>
-            
-            <div class="email-body">
-              <p>Dear ${booking.customer},</p>
-              
-              <div class="thank-you-section">
-                <h2 style="color: #d4af37; margin: 0 0 15px 0;">We Hope You Enjoyed Your Experience!</h2>
-                <div class="rating-stars">⭐⭐⭐⭐⭐</div>
-                <p>Thank you for choosing Elite Barber Studio for your grooming needs.</p>
-              </div>
-              
-              <div class="service-summary">
-                <h3 style="color: #d4af37;">Your Visit Today:</h3>
-                <p><strong>Date:</strong> ${formattedDate}<br>
-                <strong>Services:</strong> ${booking.services.join(", ")}<br>
-                <strong>Barber:</strong> Your Elite Barber Professional</p>
-              </div>
-              
-              <p style="color: #e8eaed; line-height: 1.6; text-align: center;">
-                Your satisfaction is our top priority. We'd love to hear about your experience!
-              </p>
-              
-              <div class="cta-buttons">           
-                <a href="https://barbersite-eight.vercel.app/booking.html" class="cta-button">
-                  📅 Book Again
-                </a>
-              </div>
-              
-              <p style="color: #bbb; text-align: center; margin-top: 30px;">
-                <em>See you again soon at Elite Barber Studio!</em>
-              </p>
-            </div>
-            
-            <div class="footer">
-              <p>123 Main Street, Downtown, NY 10001<br>
-              ☎️ +1 (234) 567-890 | 📧 info@elitebarberstudio.com<br><br>
-              © 2025 Elite Barber Studio. All rights reserved.</p>
-            </div>
-          </div>
-        </body>
-        </html>
+    <h2>✨ Thank You for Your Visit!</h2>
+    <p>Dear ${booking.customer},</p>
+    
+    <h3>We Hope You Enjoyed Your Experience! ⭐⭐⭐⭐⭐</h3>
+    <p>Thank you for choosing Elite Barber Studio for your grooming needs.</p>
+    
+    <h3>Your Visit Today:</h3>
+    <p>
+      <strong>Date:</strong> ${formattedDate}<br>
+      <strong>Services:</strong> ${booking.services.join(", ")}<br>
+      <strong>Barber:</strong> Your Elite Barber Professional
+    </p>
+    
+    <p style="text-align: center;">Your satisfaction is our top priority. We'd love to hear about your experience!</p>
+    
+    <div style="text-align: center; margin: 20px 0;">
+      <a href="https://barbersite-eight.vercel.app/booking.html" style="display: inline-block; background: #d4af37; color: #1a1410; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Book Again</a>
+    </div>
+    
+    <p style="text-align: center;"><em>See you again soon at Elite Barber Studio!</em></p>
+    
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+    
+    <p style="text-align: center; color: #666; font-size: 12px;">
+      123 Main Street, Downtown, NY 10001<br>
+      ☎️ +1 (234) 567-890 | 📧 info@elitebarberstudio.com<br><br>
+      © 2025 Elite Barber Studio. All rights reserved.
+    </p>
       `,
     });
 
