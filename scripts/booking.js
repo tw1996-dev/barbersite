@@ -395,6 +395,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    // Get selected services total duration
+    const totals = calculateTotals();
+
     for (let i = 0; i < firstDay; i++) {
       const emptyDay = document.createElement("div");
       emptyDay.className = "calendar-day other-month";
@@ -408,6 +411,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const dayDate = new Date(currentYear, currentMonth, day);
       dayDate.setHours(0, 0, 0, 0);
+
+      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(
+        2,
+        "0"
+      )}-${String(day).padStart(2, "0")}`;
 
       if (dayDate < today) {
         dayElement.classList.add("disabled");
@@ -429,14 +437,81 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!dayHours || !dayHours.enabled) {
           dayElement.classList.add("disabled");
         } else {
-          dayElement.addEventListener("click", () =>
-            selectDate(dayDate, dayElement)
+          // Check if day has available slots for selected services
+          const hasAvailableSlots = checkDayHasAvailableSlots(
+            dateStr,
+            totals.duration
           );
+
+          if (totals.duration > 0 && !hasAvailableSlots) {
+            // No available slots - mark as disabled
+            dayElement.classList.add("disabled");
+          } else {
+            // Day has available slots or no services selected yet
+            dayElement.addEventListener("click", () =>
+              selectDate(dayDate, dayElement)
+            );
+          }
         }
       }
 
       calendarGrid.appendChild(dayElement);
     }
+  }
+
+  // Helper function to check if a day has any available time slots
+
+  function checkDayHasAvailableSlots(dateStr, duration) {
+    if (duration === 0) return true; // If no services selected, show all days as available
+
+    const date = new Date(dateStr);
+    const dayOfWeek = date.getDay();
+    const dayNames = [
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ];
+    const dayName = dayNames[dayOfWeek];
+    const dayHours = businessHours[dayName];
+
+    // If closed, no slots available
+    if (!dayHours || !dayHours.enabled) {
+      return false;
+    }
+
+    const [openHour, openMin] = dayHours.open.split(":").map(Number);
+    const [closeHour, closeMin] = dayHours.close.split(":").map(Number);
+
+    // Check each possible time slot with 15-minute intervals
+    for (
+      let hour = openHour;
+      hour < closeHour || (hour === closeHour && 0 < closeMin);
+      hour++
+    ) {
+      for (
+        let minute = hour === openHour ? openMin : 0;
+        minute < 60;
+        minute += 15
+      ) {
+        if (hour === closeHour && minute >= closeMin) break;
+
+        const timeStr = `${hour.toString().padStart(2, "0")}:${minute
+          .toString()
+          .padStart(2, "0")}`;
+
+        // Check if this time slot can accommodate the full duration of selected services
+        if (isTimeSlotAvailable(dateStr, timeStr, duration)) {
+          return true; // Found at least one available slot that fits the duration
+        }
+      }
+    }
+
+    // No available slots found for this service duration
+    return false;
   }
 
   function selectDate(date, element) {
