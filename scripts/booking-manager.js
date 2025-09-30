@@ -208,10 +208,12 @@ document.addEventListener("DOMContentLoaded", function () {
    * Calls API to cancel booking and updates UI
    */
   window.confirmCancellation = async function () {
+    // Get button reference and save original text
+    const confirmBtn = document.querySelector(".confirm-cancel-btn");
+    const originalText = confirmBtn.textContent;
+
     try {
       // Show loading in modal
-      const confirmBtn = document.querySelector(".confirm-cancel-btn");
-      const originalText = confirmBtn.textContent;
       confirmBtn.textContent = "Cancelling...";
       confirmBtn.disabled = true;
 
@@ -239,9 +241,8 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error cancelling booking:", error);
       alert(`Cancellation failed: ${error.message}`);
 
-      // Restore button state
-      const confirmBtn = document.querySelector(".confirm-cancel-btn");
-      confirmBtn.textContent = "Yes, Cancel";
+      // Restore button state using saved originalText
+      confirmBtn.textContent = originalText;
       confirmBtn.disabled = false;
     }
   };
