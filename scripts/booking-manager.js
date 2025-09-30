@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    cancelModal.style.display = "block";
+    cancelModal.style.display = "flex";
   };
 
   /**
