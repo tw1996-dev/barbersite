@@ -117,6 +117,10 @@ export function renderAdminCalendar() {
     calendarGrid.appendChild(emptyDay);
   }
 
+  // Get today's date for comparison
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   // Add days of current month
   for (let day = 1; day <= daysInMonth; day++) {
     const dayElement = document.createElement("div");
@@ -129,6 +133,17 @@ export function renderAdminCalendar() {
     const dayBookings = currentBookings.filter(
       (b) => b.date === dayDate && b.status === "confirmed"
     );
+
+    // Check if this is today
+    const currentDate = new Date(
+      currentCalendarYear,
+      currentCalendarMonth,
+      day
+    );
+    currentDate.setHours(0, 0, 0, 0);
+    if (currentDate.getTime() === today.getTime()) {
+      dayElement.classList.add("today");
+    }
 
     // Check business hours for this day of week first
     const dayOfWeek = new Date(

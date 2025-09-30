@@ -1664,3 +1664,8 @@ body {
   left: 50%;
   transform: translateX(-50%);
 }
+/* TODAY IN CALENDAR ADMIN */
+.calendar-day.today {
+  border: 2px solid #4a9eff;
+  box-shadow: 0 0 8px rgba(74, 158, 255, 0.4);
+}
