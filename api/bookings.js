@@ -141,9 +141,29 @@ async function sendEmail(booking) {
     ${
       booking.managementUrl
         ? `
-    <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #dc3545;">
-      <h3 style="color: #dc3545; margin-bottom: 15px; font-size: 18px;">📱 Manage Your Booking</h3>
-      <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px;">
+    <h2>Booking Confirmed!</h2>
+    <p>Hello ${booking.customer},</p>
+    <p>
+      <strong>Date:</strong> ${bookingDate}<br>
+      <strong>Time:</strong> ${bookingTime} - ${endTime}<br>
+      <strong>Services:</strong> ${booking.services.join(", ")}<br>
+      <strong>Duration:</strong> ${booking.duration} minutes<br>
+      <strong>Total:</strong> $${booking.price}
+    </p>
+    <p>Address: 123 Main Street, Downtown, NY 10001<br>
+    Phone: +1 (234) 567-890</p>
+    
+    <div style="text-align: center; margin: 20px 0;">
+      <a href="${googleCalendarUrl}" style="display: inline-block; background: #4285f4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Google Calendar</a>
+      <a href="${outlookUrl}" style="display: inline-block; background: #0078d4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: bold;">📅 Outlook</a>
+    </div>
+    
+    ${
+      booking.managementUrl
+        ? `
+    <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0;">
+      <h3 style="color: #dc3545; margin-bottom: 15px; font-size: 18px; text-align: center;">📱 Manage Your Booking</h3>
+      <p style="color: #6c757d; margin-bottom: 15px; font-size: 14px; text-align: center;">
         Need to cancel your appointment? Use the secure link below:
       </p>
       <div style="text-align: center;">
@@ -165,6 +185,12 @@ async function sendEmail(booking) {
       </p>
     </div>
     `
+        : ""
+    }
+    
+    <p><strong>Please arrive 5 minutes before your appointment time.</strong></p>
+    <p>If you need to reschedule or have questions, please call us at +1 (234) 567-890.</p>
+  `
         : ""
     }
     
