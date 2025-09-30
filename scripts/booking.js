@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setupCalendar();
     setupForm();
     updateSummary();
+    renderCalendar();
 
     // Start auto-refresh every 5 seconds (faster than admin panel)
     bookingRefreshInterval = setInterval(async () => {
@@ -461,6 +462,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Helper function to check if a day has any available time slots
 
+  // Helper function to check if a day has any available time slots
   function checkDayHasAvailableSlots(dateStr, duration) {
     if (duration === 0) return true; // If no services selected, show all days as available
 
@@ -485,6 +487,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const [openHour, openMin] = dayHours.open.split(":").map(Number);
     const [closeHour, closeMin] = dayHours.close.split(":").map(Number);
+    const overtimeBuffer = dayHours.overtime_buffer_minutes || 0;
+    const closeMinutes = timeToMinutes(dayHours.close);
 
     // Check each possible time slot with 15-minute intervals
     for (
@@ -505,7 +509,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Check if this time slot can accommodate the full duration of selected services
         if (isTimeSlotAvailable(dateStr, timeStr, duration)) {
-          return true; // Found at least one available slot that fits the duration
+          // Additionally check if service fits within business hours + overtime buffer
+          const endTime = getBookingEndTime(timeStr, duration);
+          const endMinutes = timeToMinutes(endTime);
+          const fitsInBusinessHours =
+            endMinutes <= closeMinutes + overtimeBuffer;
+
+          if (fitsInBusinessHours) {
+            return true; // Found at least one available slot that fits the duration AND business hours
+          }
         }
       }
     }
