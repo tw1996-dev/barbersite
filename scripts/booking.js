@@ -419,8 +419,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (dayDate < today) {
         dayElement.classList.add("disabled");
-      } else {
-        // Check business hours for this day of week
+      } else if (dayDate.getTime() === today.getTime()) {
+        // Today - check if there are any available slots
         const dayOfWeek = dayDate.getDay();
         const dayNames = [
           "sunday",
@@ -437,17 +437,45 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!dayHours || !dayHours.enabled) {
           dayElement.classList.add("disabled");
         } else {
-          // Check if day has available slots for selected services
           const hasAvailableSlots = checkDayHasAvailableSlots(
             dateStr,
             totals.duration
           );
 
           if (totals.duration > 0 && !hasAvailableSlots) {
-            // No available slots - mark as disabled
             dayElement.classList.add("disabled");
           } else {
-            // Day has available slots or no services selected yet
+            dayElement.addEventListener("click", () =>
+              selectDate(dayDate, dayElement)
+            );
+          }
+        }
+      } else {
+        // Future days
+        const dayOfWeek = dayDate.getDay();
+        const dayNames = [
+          "sunday",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+        ];
+        const dayName = dayNames[dayOfWeek];
+        const dayHours = businessHours[dayName];
+
+        if (!dayHours || !dayHours.enabled) {
+          dayElement.classList.add("disabled");
+        } else {
+          const hasAvailableSlots = checkDayHasAvailableSlots(
+            dateStr,
+            totals.duration
+          );
+
+          if (totals.duration > 0 && !hasAvailableSlots) {
+            dayElement.classList.add("disabled");
+          } else {
             dayElement.addEventListener("click", () =>
               selectDate(dayDate, dayElement)
             );
