@@ -1,3 +1,4 @@
+// Helper function to normalize booking data from API
 function normalizeBookingData(bookings) {
   return bookings.map((booking) => ({
     ...booking,
@@ -6,9 +7,38 @@ function normalizeBookingData(bookings) {
   }));
 }
 
+// Convert time string to minutes for comparison
 function timeToMinutes(timeStr) {
   const [hours, minutes] = timeStr.split(":").map(Number);
   return hours * 60 + minutes;
+}
+
+// Calculate booking end time based on start time and duration
+function getBookingEndTime(startTime, duration) {
+  const [hours, minutes] = startTime.split(":").map(Number);
+  const startMinutes = hours * 60 + minutes;
+  const endMinutes = startMinutes + duration;
+
+  const endHours = Math.floor(endMinutes / 60);
+  const endMins = endMinutes % 60;
+
+  return `${endHours.toString().padStart(2, "0")}:${endMins
+    .toString()
+    .padStart(2, "0")}`;
+}
+
+// Get next available time slot after a booking (includes 15-min buffer)
+function getNextAvailableSlot(endTime) {
+  const [hours, minutes] = endTime.split(":").map(Number);
+  const endMinutes = hours * 60 + minutes;
+  const nextAvailableMinutes = endMinutes + 15; // 15-minute buffer
+
+  const nextHours = Math.floor(nextAvailableMinutes / 60);
+  const nextMins = nextAvailableMinutes % 60;
+
+  return `${nextHours.toString().padStart(2, "0")}:${nextMins
+    .toString()
+    .padStart(2, "0")}`;
 }
 
 // Booking System JavaScript
@@ -116,23 +146,29 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Check if time slot is available
-  function isTimeSlotAvailable(date, time, duration) {
+  // Check if time slot is available - accepts bookings parameter for current data
+  function isTimeSlotAvailable(date, time, duration, bookings = null) {
     const endTime = getBookingEndTime(time, duration);
     const newStartMinutes = timeToMinutes(time);
     const newEndMinutes = timeToMinutes(endTime);
 
-    const dayBookings = existingBookings.filter(
+    // Use provided bookings or fall back to existingBookings
+    const bookingsToCheck = bookings || existingBookings;
+
+    // Check conflicts with existing bookings
+    const dayBookings = bookingsToCheck.filter(
       (booking) => booking.date === date && booking.status === "confirmed"
     );
 
     for (const booking of dayBookings) {
       const existingStartMinutes = timeToMinutes(booking.time);
       const existingEndTime = getBookingEndTime(booking.time, booking.duration);
-      const existingEndMinutes = timeToMinutes(existingEndTime);
+      const existingNextAvailable = getNextAvailableSlot(existingEndTime);
+      const existingNextAvailableMinutes = timeToMinutes(existingNextAvailable);
 
+      // Check if new booking conflicts with existing booking + buffer
       if (
-        newStartMinutes < existingEndMinutes &&
+        newStartMinutes < existingNextAvailableMinutes &&
         newEndMinutes > existingStartMinutes
       ) {
         return false;
@@ -140,19 +176,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     return true;
-  }
-
-  function getBookingEndTime(startTime, duration) {
-    const [hours, minutes] = startTime.split(":").map(Number);
-    const startMinutes = hours * 60 + minutes;
-    const endMinutes = startMinutes + duration;
-
-    const endHours = Math.floor(endMinutes / 60);
-    const endMins = endMinutes % 60;
-
-    return `${endHours
-      .toString()
-      .padStart(2, "0")}:${endMins.toString().padStart(2, "0")}`;
   }
 
   // Refresh bookings from API - with improved error handling
@@ -211,6 +234,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (selectedDate) {
       generateTimeSlots(selectedDate);
     }
+
+    // Re-render calendar when services change (affects day availability)
+    renderCalendar();
 
     validateBooking();
   }
@@ -283,6 +309,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (selectedDate) {
       generateTimeSlots(selectedDate);
     }
+
+    // Re-render calendar when package is applied
+    renderCalendar();
 
     validateBooking();
   }
@@ -441,7 +470,8 @@ document.addEventListener("DOMContentLoaded", function () {
           // Check if day has available slots for selected services
           const hasAvailableSlots = checkDayHasAvailableSlots(
             dateStr,
-            totals.duration
+            totals.duration,
+            existingBookings
           );
 
           if (totals.duration > 0 && !hasAvailableSlots) {
@@ -461,9 +491,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Helper function to check if a day has any available time slots
-
-  // Helper function to check if a day has any available time slots
-  function checkDayHasAvailableSlots(dateStr, duration) {
+  // Check availability using the same logic as admin panel
+  function checkDayHasAvailableSlots(dateStr, duration, bookings) {
     if (duration === 0) return true; // If no services selected, show all days as available
 
     const date = new Date(dateStr);
@@ -490,7 +519,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const overtimeBuffer = dayHours.overtime_buffer_minutes || 0;
     const closeMinutes = timeToMinutes(dayHours.close);
 
-    // Check each possible time slot with 15-minute intervals
+    // Check each possible time slot with 30-minute intervals (same as admin)
     for (
       let hour = openHour;
       hour < closeHour || (hour === closeHour && 0 < closeMin);
@@ -499,7 +528,7 @@ document.addEventListener("DOMContentLoaded", function () {
       for (
         let minute = hour === openHour ? openMin : 0;
         minute < 60;
-        minute += 15
+        minute += 30
       ) {
         if (hour === closeHour && minute >= closeMin) break;
 
@@ -507,8 +536,8 @@ document.addEventListener("DOMContentLoaded", function () {
           .toString()
           .padStart(2, "0")}`;
 
-        // Check if this time slot can accommodate the full duration of selected services
-        if (isTimeSlotAvailable(dateStr, timeStr, duration)) {
+        // Check if this time slot can accommodate the full duration with proper booking data
+        if (isTimeSlotAvailable(dateStr, timeStr, duration, bookings)) {
           // Additionally check if service fits within business hours + overtime buffer
           const endTime = getBookingEndTime(timeStr, duration);
           const endMinutes = timeToMinutes(endTime);
@@ -620,7 +649,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const isAvailable = isTimeSlotAvailable(
           dateStr,
           timeString,
-          totals.duration
+          totals.duration,
+          existingBookings
         );
         const endTime = getBookingEndTime(timeString, totals.duration);
         const endMinutes = timeToMinutes(endTime);
@@ -812,7 +842,14 @@ document.addEventListener("DOMContentLoaded", function () {
         selectedDate.getMonth() + 1
       ).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
 
-      if (!isTimeSlotAvailable(dateStr, selectedTimeSlot, totals.duration)) {
+      if (
+        !isTimeSlotAvailable(
+          dateStr,
+          selectedTimeSlot,
+          totals.duration,
+          existingBookings
+        )
+      ) {
         alert(
           "Sorry, this time slot is no longer available. Please select another time."
         );
