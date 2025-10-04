@@ -720,6 +720,32 @@ document.addEventListener("DOMContentLoaded", function () {
         previouslySelected.classList.add("selected");
       }
     }
+    // Check if all time slots are unavailable - if yes, mark day as disabled in calendar
+    const allSlots = timeGrid.querySelectorAll(".time-slot");
+    const unavailableSlots = timeGrid.querySelectorAll(
+      ".time-slot.unavailable"
+    );
+
+    if (allSlots.length > 0 && allSlots.length === unavailableSlots.length) {
+      // All slots unavailable - find and disable the corresponding day in calendar
+      const dateStr = `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      const today = new Date().toISOString().split("T")[0];
+
+      // Only disable if it's today (past dates already disabled, future dates should remain clickable)
+      if (dateStr === today) {
+        const calendarDays = document.querySelectorAll(
+          ".calendar-day:not(.other-month)"
+        );
+        calendarDays.forEach((dayElement) => {
+          if (dayElement.textContent.trim() === date.getDate().toString()) {
+            dayElement.classList.add("disabled");
+            dayElement.style.pointerEvents = "none";
+          }
+        });
+      }
+    }
   }
 
   function formatTime(hour, minute) {
