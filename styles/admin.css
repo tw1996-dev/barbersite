@@ -97,12 +97,12 @@ body {
   transition: all 0.3s ease;
   margin-top: 10px;
 }
-
-.login-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.3);
+@media screen and (min-width: 1025px) {
+  .login-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(74, 158, 255, 0.3);
+  }
 }
-
 .login-error {
   color: #ef4444;
   font-size: 0.9rem;
@@ -169,12 +169,12 @@ body {
   transition: all 0.3s ease;
   font-size: 0.8rem;
 }
-
-.logout-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  transform: translateY(-1px);
+@media screen and (min-width: 1025px) {
+  .logout-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    transform: translateY(-1px);
+  }
 }
-
 /* Navigation - Mobile First */
 .admin-nav {
   background: rgba(26, 31, 46, 0.8);
@@ -200,12 +200,12 @@ body {
   min-width: fit-content;
   flex-shrink: 0;
 }
-
-.nav-item:hover {
-  color: #e8eaed;
-  background: rgba(255, 255, 255, 0.05);
+@media screen and (min-width: 1025px) {
+  .nav-item:hover {
+    color: #e8eaed;
+    background: rgba(255, 255, 255, 0.05);
+  }
 }
-
 .nav-item.active {
   color: #4a9eff;
   border-bottom-color: #4a9eff;
@@ -260,12 +260,12 @@ body {
   align-items: center;
   gap: 16px;
 }
-
-.revenue-card:hover {
-  border-color: rgba(74, 158, 255, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+@media screen and (min-width: 1025px) {
+  .revenue-card:hover {
+    border-color: rgba(74, 158, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
 }
-
 .revenue-card.hidden {
   display: none;
 }
@@ -410,11 +410,11 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 0.85rem;
 }
-
-.bookings-table tbody tr:hover {
-  background: rgba(74, 158, 255, 0.05);
+@media screen and (min-width: 1025px) {
+  .bookings-table tbody tr:hover {
+    background: rgba(74, 158, 255, 0.05);
+  }
 }
-
 /* Status Badges */
 .status-badge {
   display: inline-block;
@@ -467,12 +467,12 @@ body {
   color: #ef4444;
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
-
-.action-btn:hover {
-  transform: translateY(-1px);
-  opacity: 0.8;
+@media screen and (min-width: 1025px) {
+  .action-btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.8;
+  }
 }
-
 /* Filters - Mobile First */
 .date-filter,
 .bookings-filters,
@@ -543,12 +543,12 @@ body {
   position: relative;
   min-height: 35px;
 }
-
-.calendar-day:hover {
-  border-color: rgba(74, 158, 255, 0.3);
-  background: rgba(74, 158, 255, 0.1);
+@media screen and (min-width: 1025px) {
+  .calendar-day:hover {
+    border-color: rgba(74, 158, 255, 0.3);
+    background: rgba(74, 158, 255, 0.1);
+  }
 }
-
 .calendar-day.available {
   border-color: rgba(16, 185, 129, 0.3);
 }
@@ -706,12 +706,12 @@ body {
   text-align: left;
   font-size: 0.85rem;
 }
-
-.preset-btn:hover {
-  background: rgba(74, 158, 255, 0.2);
-  transform: translateY(-1px);
+@media screen and (min-width: 1025px) {
+  .preset-btn:hover {
+    background: rgba(74, 158, 255, 0.2);
+    transform: translateY(-1px);
+  }
 }
-
 /* Add Booking Form - Mobile First */
 .add-booking-form {
   max-width: 100%;
@@ -818,12 +818,12 @@ body {
   min-height: 35px;
   position: relative;
 }
-
-.admin-calendar-day:hover:not(.disabled):not(.unavailable) {
-  border-color: rgba(74, 158, 255, 0.3);
-  background: rgba(74, 158, 255, 0.1);
+@media screen and (min-width: 1025px) {
+  .admin-calendar-day:hover:not(.disabled):not(.unavailable) {
+    border-color: rgba(74, 158, 255, 0.3);
+    background: rgba(74, 158, 255, 0.1);
+  }
 }
-
 .admin-calendar-day.selected {
   background: #4a9eff;
   color: #0f1419;
@@ -869,12 +869,12 @@ body {
   transition: all 0.3s ease;
   font-size: 0.85rem;
 }
-
-.admin-time-slot:hover:not(.unavailable) {
-  border-color: #4a9eff;
-  background: rgba(74, 158, 255, 0.1);
+@media screen and (min-width: 1025px) {
+  .admin-time-slot:hover:not(.unavailable) {
+    border-color: #4a9eff;
+    background: rgba(74, 158, 255, 0.1);
+  }
 }
-
 .admin-time-slot.selected {
   background: #4a9eff;
   color: #0f1419;
@@ -905,12 +905,12 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
-.service-checkbox:hover {
-  border-color: rgba(74, 158, 255, 0.3);
-  background: rgba(74, 158, 255, 0.05);
+@media screen and (min-width: 1025px) {
+  .service-checkbox:hover {
+    border-color: rgba(74, 158, 255, 0.3);
+    background: rgba(74, 158, 255, 0.05);
+  }
 }
-
 .service-checkbox input[type="checkbox"] {
   width: auto;
   margin-right: 12px;
@@ -982,11 +982,11 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
-
-.save-btn:hover {
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+@media screen and (min-width: 1025px) {
+  .save-btn:hover {
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+  }
 }
-
 .cancel-btn {
   background: rgba(64, 64, 64, 0.8);
   color: #e8eaed;
@@ -996,12 +996,12 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
-
-.cancel-btn:hover {
-  background: rgba(64, 64, 64, 0.9);
-  transform: translateY(-1px);
+@media screen and (min-width: 1025px) {
+  .cancel-btn:hover {
+    background: rgba(64, 64, 64, 0.9);
+    transform: translateY(-1px);
+  }
 }
-
 /* Modal - Mobile First */
 .modal {
   position: fixed;
@@ -1051,12 +1051,12 @@ body {
   border-radius: 4px;
   transition: all 0.3s ease;
 }
-
-.modal-close:hover {
-  color: #e8eaed;
-  background: rgba(255, 255, 255, 0.1);
+@media screen and (min-width: 1025px) {
+  .modal-close:hover {
+    color: #e8eaed;
+    background: rgba(255, 255, 255, 0.1);
+  }
 }
-
 .modal-body {
   padding: 0 20px 16px;
 }
@@ -1593,11 +1593,11 @@ body {
   cursor: pointer;
   font-size: 0.85rem;
 }
-
-.clear-search-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
+@media screen and (min-width: 1025px) {
+  .clear-search-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+  }
 }
-
 .search-results-counter {
   margin-top: 12px;
   color: #94a3b8;
@@ -1610,11 +1610,11 @@ body {
   position: relative;
   user-select: none;
 }
-
-[data-sort]:hover {
-  color: #4a9eff;
+@media screen and (min-width: 1025px) {
+  [data-sort]:hover {
+    color: #4a9eff;
+  }
 }
-
 [data-sort]::after {
   content: "↕";
   position: absolute;
@@ -1649,20 +1649,21 @@ body {
   cursor: not-allowed;
   pointer-events: none;
 }
-
-.action-btn[title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  white-space: nowrap;
-  z-index: 1000;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+@media screen and (min-width: 1025px) {
+  .action-btn[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 1000;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 /* TODAY IN CALENDAR ADMIN */
 .calendar-day.today {
