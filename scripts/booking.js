@@ -550,6 +550,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 .padStart(2, "0")}`
             );
 
+        if (isPastTime) {
+          continue;
+        }
+
         // Check if this time slot can accommodate the full duration with proper booking data
         if (isTimeSlotAvailable(dateStr, timeStr, duration, bookings)) {
           // Additionally check if service fits within business hours + overtime buffer
@@ -720,7 +724,7 @@ document.addEventListener("DOMContentLoaded", function () {
         previouslySelected.classList.add("selected");
       }
     }
-    
+  }
 
   function formatTime(hour, minute) {
     const period = hour >= 12 ? "PM" : "AM";
