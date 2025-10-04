@@ -536,6 +536,20 @@ document.addEventListener("DOMContentLoaded", function () {
           .toString()
           .padStart(2, "0")}`;
 
+        // Check if slot is in the past (only for today)
+        const now = new Date();
+        const today = new Date().toISOString().split("T")[0];
+        const isToday = dateStr === today;
+        const isPastTime =
+          isToday &&
+          timeToMinutes(timeStr) <=
+            timeToMinutes(
+              `${now.getHours().toString().padStart(2, "0")}:${now
+                .getMinutes()
+                .toString()
+                .padStart(2, "0")}`
+            );
+
         // Check if this time slot can accommodate the full duration with proper booking data
         if (isTimeSlotAvailable(dateStr, timeStr, duration, bookings)) {
           // Additionally check if service fits within business hours + overtime buffer
@@ -671,6 +685,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 .toString()
                 .padStart(2, "0")}`
             );
+        // Skip past time slots
+        if (isPastTime) {
+          continue;
+        }
 
         if (!isAvailable || !fitsInBusinessHours || isPastTime) {
           timeSlot.classList.add("unavailable");
