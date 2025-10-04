@@ -95,7 +95,7 @@ body {
 .nav-item {
   cursor: pointer;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .nav-item:hover {
     color: #d4af37;
   }
@@ -227,7 +227,7 @@ body {
   vertical-align: top;
 }
 
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .pricing-table tbody tr:hover {
     background: rgba(212, 175, 55, 0.1);
     transition: background-color 0.3s ease;
@@ -430,7 +430,7 @@ body {
   /* border-bottom: 1px solid rgba(255, 255, 255, 0.1); */
   transition: color 0.2s ease;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .mobile-nav-item a:hover {
     color: #d4af37;
   }
@@ -446,7 +446,7 @@ body {
   margin-top: 20px;
   border-bottom: none;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .mobile-booking a:hover {
     color: #1a1410 !important;
     background: linear-gradient(90deg, #f4d03f 0%, #d4af37 100%);
@@ -568,7 +568,7 @@ body {
   text-decoration: none;
   transition: color 0.3s ease;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .contact-link:hover {
     color: #d4af37;
   }
@@ -663,7 +663,7 @@ body {
   transition: color 0.3s ease;
   cursor: pointer;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .contact-address:hover {
     color: #d4af37;
   }
@@ -695,7 +695,7 @@ body {
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .book-appointment-btn:hover {
     background: linear-gradient(90deg, #f4d03f 0%, #d4af37 100%);
     transform: translateY(-2px);
@@ -770,7 +770,7 @@ body {
   box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
 }
 
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .service-card-booking:hover {
     border-color: #d4af37;
     background: rgba(212, 175, 55, 0.1);
@@ -835,7 +835,7 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   #apply-package:hover {
     background: rgba(26, 20, 16, 0.8);
     transform: translateY(-1px);
@@ -887,7 +887,7 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .calendar-nav:hover {
     background: rgba(212, 175, 55, 0.3);
   }
@@ -928,7 +928,7 @@ body {
   align-items: center;
   justify-content: center;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .calendar-day:not(.disabled):hover {
     background: rgba(212, 175, 55, 0.2);
   }
@@ -980,7 +980,7 @@ body {
   transition: all 0.3s ease;
   font-family: "DM Sans", sans-serif;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .time-slot:hover {
     border-color: #d4af37;
     background: rgba(212, 175, 55, 0.1);
@@ -1185,7 +1185,7 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .confirm-btn:hover:not(:disabled) {
     background: linear-gradient(90deg, #f4d03f 0%, #d4af37 100%);
     transform: translateY(-2px);
@@ -1329,7 +1329,7 @@ body {
   transition: background-color 0.3s ease;
   flex-shrink: 0;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .close-confirmation:hover {
     background: rgba(212, 175, 55, 0.1);
   }
@@ -1432,7 +1432,7 @@ body {
   display: inline-block;
   font-family: "DM Sans", sans-serif;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .nav-button:hover,
   .contact-button:hover {
     background: rgba(212, 175, 55, 0.25);
@@ -1572,7 +1572,7 @@ body {
   gap: 8px;
   width: 100%;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .nav-button:hover,
   .contact-button:hover {
     background: rgba(212, 175, 55, 0.25);
@@ -1645,7 +1645,7 @@ body {
   width: 100%;
   margin-top: 8px;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .nav-button:hover,
   .contact-button:hover {
     background: rgba(212, 175, 55, 0.25);

@@ -27,7 +27,7 @@
   cursor: pointer;
 }
 
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .cancel-booking-btn:hover {
     background: rgba(239, 68, 68, 0.25);
     transform: translateY(-1px);
@@ -78,7 +78,7 @@
   transition: all 0.3s ease;
 }
 
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .confirm-cancel-btn:hover {
     background: rgba(239, 68, 68, 1);
     transform: translateY(-1px);
@@ -96,7 +96,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
 }
-@media (hover: hover) {
+@media screen and (min-width: 1025px) {
   .keep-booking-btn:hover {
     background: rgba(212, 175, 55, 0.3);
     transform: translateY(-1px);
