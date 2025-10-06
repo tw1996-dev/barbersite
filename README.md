@@ -1,22 +1,22 @@
 # Elite Barber Studio - Booking System
 
-**🔴 NOTICE FOR RECRUITERS:** The admin panel password is not publicly available for security reasons.To access the administrator account (e.g., for testing management features), please contact me directly - contact information is available in my CV.
+** NOTICE FOR RECRUITERS:** The admin panel password is not publicly available for security reasons.To access the administrator account (e.g., for testing management features), please contact me directly - contact information is available in my CV.
 
-**⚠️ "DIRTY CODE" DISCLAIMER:** This is my first major fullstack project. The code contains duplicates, non-optimal solutions, and areas requiring refactoring. I treat this as a learning experience and consciously show the real learning process - with mistakes, iterations, and gradual improvement. The project is fully functional, but the code is not production-ready in terms of best practices.
+** "DIRTY CODE" DISCLAIMER:** This is my first major fullstack project. The code contains duplicates, non-optimal solutions, and areas requiring refactoring. I treat this as a learning experience and consciously show the real learning process - with mistakes, iterations, and gradual improvement. The project is fully functional, but the code is not production-ready in terms of best practices.
 
-## 📍 Live Demo
+## Live Demo
 
 **Homepage:** https://barbersite-eight.vercel.app/
 
 **Admin Panel:** https://barbersite-eight.vercel.app/admin.html
 
-## 📖 About The Project
+## About The Project
 
 Elite Barber Studio is a complete booking system for barbershops. The application offers an intuitive user interface for booking appointments and an advanced admin panel for managing the calendar, bookings, and business hours.
 
 The project was built with small and medium-sized salons in mind, providing all necessary features without unnecessary complexity.
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 barbersite/
@@ -80,9 +80,9 @@ barbersite/
 └── vercel.json                       # Vercel deployment configuration
 ```
 
-## 🚀 Key Features
+## Key Features
 
-### 👥 Customer Side
+### Customer Side
 
 - **Booking Appointments:**
 
@@ -98,7 +98,7 @@ barbersite/
   - Automatic confirmation emails
   - Google Calendar integration and .ics files
 
-### 🔐 Admin Panel
+### Admin Panel
 
 - **Authentication System:**
 
@@ -141,7 +141,7 @@ barbersite/
   - Adaptive layouts (mobile cards, desktop tables)
   - Auto-refresh every 30 seconds
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Frontend
 
@@ -179,7 +179,7 @@ barbersite/
 - **Neon** - Serverless PostgreSQL database
 - **GitHub Actions** - Automated API calls (follow-up emails)
 
-## ⚡ Real-Time Updates
+## Real-Time Updates
 
 **Current Implementation: Polling (periodic refresh)**
 
@@ -203,7 +203,7 @@ However, this project uses **Vercel's free serverless functions**, which are sta
 
 For a small barbershop booking system, the current polling approach provides adequate responsiveness while remaining **completely free to host** and simple to maintain. The trade-off between cost/complexity and real-time performance is appropriate for this use case.
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### Table: `bookings`
 
@@ -593,7 +593,7 @@ Update business hours.
 - `429` - Too Many Requests (rate limiting)
 - `500` - Internal Server Error (database error, server error)
 
-## 🔐 Security
+## Security
 
 ### Authentication & Authorization
 
@@ -645,7 +645,7 @@ npm install -g bcryptjs
 node -e "console.log(require('bcryptjs').hashSync('your-password', 10))"
 ```
 
-## 📧 Email System
+## Email System
 
 ### Provider: Resend
 
@@ -717,7 +717,7 @@ HTML template with inline CSS for compatibility with various email clients.
 - Branded colors (gold & black)
 - Professional typography
 
-## 🎯 Testing the Application
+## Testing the Application
 
 ### Customer Flow
 
