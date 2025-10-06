@@ -258,7 +258,7 @@ body {
 }
 
 /* Responsive Design */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 773px) {
   .services-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
