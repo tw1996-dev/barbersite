@@ -85,6 +85,7 @@ barbersite/
 ### 👥 Customer Side
 
 - **Booking Appointments:**
+
   - Select multiple services simultaneously
   - Dynamic calendar with availability
   - Automatic conflict detection
@@ -100,18 +101,21 @@ barbersite/
 ### 🔐 Admin Panel
 
 - **Authentication System:**
+
   - Secure login with bcrypt
   - JWT tokens with 8-hour sessions
   - Rate limiting (5 attempts / 15 minutes)
   - Database session management
 
 - **Dashboard:**
+
   - Daily/weekly/monthly revenue
   - Booking statistics
   - Upcoming appointments list
   - Daily schedule
 
 - **Booking Management:**
+
   - Complete list of all bookings
   - Advanced search (ID, customer, phone)
   - Sorting and filtering
@@ -119,12 +123,14 @@ barbersite/
   - Manual booking creation
 
 - **Calendar View:**
+
   - Monthly booking overview
   - Day status indicators (available, busy, full, closed)
   - Detailed day view with schedule gaps
   - Daily timeline of appointments
 
 - **Business Hours:**
+
   - Configure hours for each weekday
   - Overtime buffer (extra minutes after closing)
   - Quick presets (Standard, Extended, Weekend Only)
@@ -138,11 +144,13 @@ barbersite/
 ## 🛠️ Technology Stack
 
 ### Frontend
+
 - **Vanilla JavaScript (ES6+)** - Modular architecture without frameworks
 - **HTML5 & CSS3** - Semantic markup, CSS Grid, Flexbox
 - **Mobile-First Design** - Responsive on all devices
 
 ### Backend
+
 - **Node.js** - Runtime environment for API
 - **Vercel Serverless Functions** - Serverless API endpoints
 - **PostgreSQL** (Neon Database) - Relational database
@@ -151,27 +159,54 @@ barbersite/
 
 ```json
 {
-  "bcryptjs": "^3.0.2",         // Password hashing (secure admin auth)
-  "jsonwebtoken": "^9.0.2",     // JWT token generation & verification
-  "pg": "^8.11.0",              // PostgreSQL client for Node.js
-  "resend": "^3.2.0"            // Email service (booking confirmations)
+  "bcryptjs": "^3.0.2", // Password hashing (secure admin auth)
+  "jsonwebtoken": "^9.0.2", // JWT token generation & verification
+  "pg": "^8.11.0", // PostgreSQL client for Node.js
+  "resend": "^3.2.0" // Email service (booking confirmations)
 }
 ```
 
 **Why these libraries:**
+
 - `bcryptjs` - Secure admin password hashing (bcrypt with salt rounds)
 - `jsonwebtoken` - JWT standard for authentication tokens with expiration
 - `pg` - Official PostgreSQL client with connection pooling
 - `resend` - Modern email API (alternative to SendGrid/Mailgun)
 
 ### Deployment & Hosting
+
 - **Vercel** - Static hosting + serverless functions
 - **Neon** - Serverless PostgreSQL database
 - **GitHub Actions** - Automated API calls (follow-up emails)
 
+## ⚡ Real-Time Updates
+
+**Current Implementation: Polling (periodic refresh)**
+
+The application uses periodic API polling to keep data synchronized:
+
+- **Customer booking page:** Refreshes availability every 5 seconds
+- **Admin panel:**
+  - Dashboard: every 30 seconds
+  - Calendar view: every 1 second
+  - Bookings list: on-demand refresh
+
+**Why not WebSockets?**
+
+In a production environment, WebSockets would be the ideal solution for real-time synchronization, providing instant updates when multiple users interact with the system simultaneously.
+
+However, this project uses **Vercel's free serverless functions**, which are stateless and don't support persistent WebSocket connections. Implementing WebSockets would require:
+
+- **Paid third-party services** (Pusher, Ably, Socket.io Cloud: ~$29-99/month)
+- **Separate WebSocket server** (VPS or cloud hosting + maintenance costs)
+- **Increased infrastructure complexity**
+
+For a small barbershop booking system, the current polling approach provides adequate responsiveness while remaining **completely free to host** and simple to maintain. The trade-off between cost/complexity and real-time performance is appropriate for this use case.
+
 ## 🗄️ Database Schema
 
 ### Table: `bookings`
+
 Main table storing all bookings.
 
 ```sql
@@ -192,6 +227,7 @@ CREATE TABLE bookings (
 ```
 
 ### Table: `booking_tokens`
+
 Tokens enabling customers to manage bookings without login.
 
 ```sql
@@ -206,6 +242,7 @@ CREATE TABLE booking_tokens (
 ```
 
 ### Table: `admin_sessions`
+
 Admin sessions with JWT tokens stored in database.
 
 ```sql
@@ -221,6 +258,7 @@ CREATE TABLE admin_sessions (
 ```
 
 ### Table: `business_hours`
+
 Business hours configuration for each weekday.
 
 ```sql
@@ -235,11 +273,12 @@ CREATE TABLE business_hours (
 ```
 
 ### View: `public_availability`
+
 Publicly safe view - contains only availability data without personal information.
 
 ```sql
 CREATE VIEW public_availability AS
-SELECT 
+SELECT
     date,
     time,
     duration,
@@ -248,10 +287,12 @@ FROM bookings;
 ```
 
 **Relations:**
+
 - `booking_tokens.booking_id` → `bookings.id` (CASCADE DELETE)
 - `business_hours` - no relations, standalone config table
 
 **Indexes:**
+
 ```sql
 CREATE INDEX idx_bookings_date_time ON bookings(date, time);
 CREATE INDEX idx_bookings_status ON bookings(status);
@@ -264,9 +305,11 @@ CREATE INDEX idx_admin_sessions_token ON admin_sessions(session_token);
 ### Public Endpoints (no authentication required)
 
 #### `POST /api/bookings`
+
 Create a new booking.
 
 **Request Body:**
+
 ```json
 {
   "date": "2025-10-15",
@@ -276,12 +319,13 @@ Create a new booking.
   "email": "john@example.com",
   "services": ["Haircut", "Beard Trim"],
   "duration": 60,
-  "price": 45.00,
+  "price": 45.0,
   "notes": "Please use scissors only"
 }
 ```
 
 **Response (201):**
+
 ```json
 {
   "id": 123,
@@ -300,15 +344,18 @@ Create a new booking.
 ```
 
 **Features:**
+
 - Automatic time conflict detection
 - Management token generation
 - Email confirmation sending
 - Business hours validation
 
 #### `GET /api/availability`
+
 Get availability data (for booking calendar).
 
 **Response (200):**
+
 ```json
 [
   {
@@ -321,9 +368,11 @@ Get availability data (for booking calendar).
 ```
 
 #### `GET /api/business-hours`
+
 Get business hours.
 
 **Response (200):**
+
 ```json
 [
   {
@@ -337,9 +386,11 @@ Get business hours.
 ```
 
 #### `GET /api/manage/[token]`
+
 Get booking details using token.
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -356,9 +407,11 @@ Get booking details using token.
 ```
 
 #### `DELETE /api/manage/[token]`
+
 Cancel booking using token.
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -375,9 +428,11 @@ Cancel booking using token.
 **Authorization:** JWT token in `admin_token` cookie or `Authorization: Bearer {token}` header
 
 #### `POST /api/auth/login`
+
 Admin login.
 
 **Request Body:**
+
 ```json
 {
   "password": "admin_password_here"
@@ -385,6 +440,7 @@ Admin login.
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -394,15 +450,18 @@ Admin login.
 ```
 
 **Features:**
+
 - Rate limiting: 5 attempts / 15 minutes per IP
 - Bcrypt password verification
 - JWT token in HTTP-only cookie
 - Session stored in database
 
 #### `POST /api/auth/verify`
+
 Verify active session.
 
 **Response (200):**
+
 ```json
 {
   "valid": true,
@@ -413,9 +472,11 @@ Verify active session.
 ```
 
 #### `POST /api/auth/logout`
+
 Logout (session deactivation).
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -424,9 +485,11 @@ Logout (session deactivation).
 ```
 
 #### `GET /api/bookings`
+
 Get all bookings (admin only).
 
 **Response (200):**
+
 ```json
 [
   {
@@ -447,9 +510,11 @@ Get all bookings (admin only).
 ```
 
 #### `GET /api/booking/[id]`
+
 Get single booking.
 
 **Response (200):**
+
 ```json
 {
   "id": 123,
@@ -461,9 +526,11 @@ Get single booking.
 ```
 
 #### `PUT /api/booking/[id]`
+
 Update booking.
 
 **Request Body:**
+
 ```json
 {
   "date": "2025-10-16",
@@ -473,16 +540,18 @@ Update booking.
   "email": "john@example.com",
   "services": ["Haircut"],
   "duration": 30,
-  "price": 25.00,
+  "price": 25.0,
   "status": "confirmed",
   "notes": "Updated booking"
 }
 ```
 
 #### `DELETE /api/booking/[id]`
+
 Delete booking (admin cancel).
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -491,9 +560,11 @@ Delete booking (admin cancel).
 ```
 
 #### `PUT /api/business-hours`
+
 Update business hours.
 
 **Request Body:**
+
 ```json
 {
   "monday": {
@@ -525,6 +596,7 @@ Update business hours.
 ## 🔐 Security
 
 ### Authentication & Authorization
+
 - **Bcrypt password hashing** - Admin password with salt rounds (cost factor 10)
 - **JWT tokens** - 8-hour session with automatic expiration
 - **HTTP-only cookies** - Token inaccessible to JavaScript (XSS protection)
@@ -532,18 +604,21 @@ Update business hours.
 - **Rate limiting** - 5 login attempts / 15 minutes per IP
 
 ### Token Management
+
 - **UUID v4 tokens** - Cryptographically secure tokens for customers
 - **Token expiration** - Automatic expiration at appointment start time
 - **Single active token** - One active token per booking
 - **Token deactivation** - Deactivation after booking cancellation
 
 ### Database Security
+
 - **Prepared statements** - SQL injection protection (pg library)
 - **Connection pooling** - Limited number of connections
 - **SSL connections** - Encrypted connection to Neon PostgreSQL
 - **Environment variables** - Sensitive data in `.env` (not in repo)
 
 ### API Security
+
 - **CORS configuration** - Restricted API access
 - **Input validation** - Validation of all input data
 - **Error handling** - No information leaks in error messages
@@ -564,6 +639,7 @@ RESEND_API_KEY=re_your_api_key
 ```
 
 **Generate password hash:**
+
 ```bash
 npm install -g bcryptjs
 node -e "console.log(require('bcryptjs').hashSync('your-password', 10))"
@@ -572,14 +648,17 @@ node -e "console.log(require('bcryptjs').hashSync('your-password', 10))"
 ## 📧 Email System
 
 ### Provider: Resend
+
 Modern alternative to SendGrid/Mailgun with simple API.
 
 ### Email Types
 
 #### 1. Booking Confirmation
+
 Sent automatically after booking creation.
 
 **Contains:**
+
 - Booking confirmation with ID
 - Date and time of appointment
 - Service list and price
@@ -589,6 +668,7 @@ Sent automatically after booking creation.
 - .ics file attachment
 
 **Example:**
+
 ```
 Subject: Booking Confirmation #123 - Elite Barber Studio
 
@@ -604,18 +684,22 @@ Add to Calendar: [Google Calendar] [Download .ics]
 ```
 
 #### 2. Cancellation Email (by Customer)
+
 Sent after customer cancellation.
 
 **Contains:**
+
 - Cancellation confirmation
 - Cancelled appointment details
 - Link to new booking
 - Salon contact information
 
 #### 3. Cancellation Email (by Admin)
+
 Sent after admin cancellation.
 
 **Contains:**
+
 - Information about salon cancellation
 - Reason for cancellation (if provided)
 - Apology
@@ -623,9 +707,11 @@ Sent after admin cancellation.
 - Salon contact information
 
 ### Email Templates
+
 HTML template with inline CSS for compatibility with various email clients.
 
 **Responsive design:**
+
 - Mobile-friendly layout
 - Clear call-to-action buttons
 - Branded colors (gold & black)
@@ -634,6 +720,7 @@ HTML template with inline CSS for compatibility with various email clients.
 ## 🎯 Testing the Application
 
 ### Customer Flow
+
 1. Visit the [booking page](https://barbersite-eight.vercel.app/booking.html)
 2. Select services from the list
 3. Choose date and available time
@@ -642,6 +729,7 @@ HTML template with inline CSS for compatibility with various email clients.
 6. Use the management link to view or cancel your booking
 
 ### Admin Panel Access
+
 1. Visit the [admin panel](https://barbersite-eight.vercel.app/admin.html)
 2. **Contact me directly for the admin password** (see CV for contact details)
 3. After login, you can:
