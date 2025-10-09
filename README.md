@@ -1,8 +1,8 @@
 # Elite Barber Studio - Booking System
 
-** NOTICE FOR RECRUITERS:** The admin panel password is not publicly available for security reasons.To access the administrator account (e.g., for testing management features), please contact me directly - contact information is available in my CV.
+**NOTICE FOR RECRUITERS:** The admin panel password is not publicly available for security reasons.To access the administrator account (e.g., for testing management features), please contact me directly - contact information is available in my CV.
 
-** "DIRTY CODE" DISCLAIMER:** This is my first major fullstack project. The code contains duplicates, non-optimal solutions, and areas requiring refactoring. I treat this as a learning experience and consciously show the real learning process - with mistakes, iterations, and gradual improvement. The project is fully functional, but the code is not production-ready in terms of best practices.
+**"DIRTY CODE" DISCLAIMER:** This is my first major fullstack project. The code contains duplicates, non-optimal solutions, and areas requiring refactoring. I treat this as a learning experience and consciously show the real learning process - with mistakes, iterations, and gradual improvement. The project is fully functional, but the code is not production-ready in terms of best practices.
 
 ## Live Demo
 
